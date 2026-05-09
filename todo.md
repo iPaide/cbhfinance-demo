@@ -29,3 +29,7 @@
 - [x] Remove exposed `Access User Portal` and `Open Admin Panel` hero buttons from the first public landing screen, replacing them with a more professional public CTA and keeping admin access available only through `/secure-admin` or a less prominent route.
 - [x] Remove all account balance and sensitive account preview information from the public landing page before sign-in, replacing it with a non-sensitive trust/security visual.
 - [x] Fix `/secure-admin` OTP verification so entering the configured admin OTP proceeds into the admin panel instead of staying on the verification screen.
+- [x] Add backend support-case capture from the Contact page and show submitted cases in the admin panel.
+- [x] Replace statement download placeholders with branded PDF statement downloads for the seeded statement history.
+- [x] Remove always-visible test credentials from login pages while preserving a controlled way to reveal them for testing.
+- [x] Add explicit loading and error states for the admin support-cases query so loading or failures do not appear as an empty state.

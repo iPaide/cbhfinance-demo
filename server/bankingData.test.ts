@@ -10,9 +10,13 @@ import {
   blockOutgoingPayment,
   getAccounts,
   getAuditLogs,
+  createSupportCase,
   getDashboardSummary,
+  getStatements,
+  getSupportCases,
   getTransactions,
   resetDemoStateForTests,
+  updateSupportCaseStatus,
 } from "./bankingData";
 
 describe("CBHfinance banking data", () => {
@@ -67,5 +71,21 @@ describe("CBHfinance banking data", () => {
       locked = result.locked;
     }
     expect(locked).toBe(true);
+  });
+
+  it("captures support cases and lets admin review status change", () => {
+    const ticket = createSupportCase({ fullName: "Emily Ann Johnson", email: "emily.johnson@cbhfinance.online", subject: "Statement access", message: "Please review my latest statement download request." });
+    expect(ticket.caseNumber).toMatch(/^CBH-\d{4}-00001$/);
+    expect(getSupportCases()).toHaveLength(1);
+    const reviewed = updateSupportCaseStatus({ id: ticket.id, status: "In Review" });
+    expect(reviewed.status).toBe("In Review");
+  });
+
+  it("returns branded PDF data URLs for statements instead of placeholder paths", () => {
+    const statement = getStatements()[0];
+    expect(statement.fileUrl).toMatch(/^data:application\/pdf;base64,/);
+    const decoded = Buffer.from(statement.fileUrl.split(",")[1], "base64").toString("binary");
+    expect(decoded.startsWith("%PDF-1.4")).toBe(true);
+    expect(decoded).toContain("CBHfinance Online Banking");
   });
 });

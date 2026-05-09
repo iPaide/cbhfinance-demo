@@ -8,6 +8,7 @@ import {
   adminAdjustBalance,
   attemptCredentialLogin,
   blockOutgoingPayment,
+  createSupportCase,
   getAccounts,
   getAdminOverview,
   getAuditLogs,
@@ -18,10 +19,12 @@ import {
   getSecurityPolicy,
   getSeedCoverage,
   getStatements,
+  getSupportCases,
   getTransactions,
   recordPasswordChangeNotification,
   recordSessionWarningNotification,
   setCustomerStatus,
+  updateSupportCaseStatus,
   verifyOtp,
 } from "./bankingData";
 
@@ -29,6 +32,7 @@ const roleSchema = z.enum(["user", "admin"]);
 const accountTypeSchema = z.enum(["All", "Checking", "Savings", "IRA"]);
 const methodSchema = z.enum(["All", "ACH", "Wire", "Zelle", "Bill Pay", "Internal", "Interest", "Investment", "Admin"]);
 const statusSchema = z.enum(["All", "Completed", "Pending", "Failed"]);
+const supportCaseStatusSchema = z.enum(["New", "In Review", "Closed"]);
 
 function requireAdminToken(token?: string) {
   if (token !== "cbh-admin-demo-token") {
@@ -61,6 +65,21 @@ export const appRouter = router({
     paymentSettings: publicProcedure.query(() => getPaymentSettings()),
     seedCoverage: publicProcedure.query(() => getSeedCoverage()),
     statements: publicProcedure.query(() => getStatements()),
+    createSupportCase: publicProcedure
+      .input(z.object({ fullName: z.string().min(2), email: z.string().email(), subject: z.string().min(3), message: z.string().min(10) }))
+      .mutation(({ input }) => createSupportCase(input)),
+    supportCases: publicProcedure
+      .input(z.object({ token: z.string().optional() }))
+      .query(({ input }) => {
+        requireAdminToken(input.token);
+        return getSupportCases();
+      }),
+    updateSupportCaseStatus: publicProcedure
+      .input(z.object({ token: z.string().optional(), id: z.string().min(1), status: supportCaseStatusSchema }))
+      .mutation(({ input, ctx }) => {
+        requireAdminToken(input.token);
+        return updateSupportCaseStatus({ id: input.id, status: input.status, ipAddress: ctx.req.ip || ctx.req.socket.remoteAddress || "127.0.0.1" });
+      }),
     recordSessionWarning: publicProcedure.mutation(() => recordSessionWarningNotification()),
     recordPasswordChange: publicProcedure.mutation(() => recordPasswordChangeNotification()),
     transactions: publicProcedure
