@@ -1,0 +1,26 @@
+# Project TODO
+
+- [x] Public CBHfinance marketing landing page at root URL with Login CTA and brand palette.
+- [x] Terms of Service page using CBHfinance branding.
+- [x] Privacy Policy page using CBHfinance branding.
+- [x] Contact Support page with frontend form and clear non-processing state.
+- [x] Separate user login page and admin login page, with admin route exactly `/secure-admin`.
+- [x] Authentication-adjacent UI and backend state for JWT-style session concepts, email OTP simulation, 13-minute warning, 15-minute timeout, and 5-attempt lockout.
+- [x] Seed Emily Ann Johnson profile with exact balances: Checking $62,288.72, Savings $116,039.59, IRA $436,892.55.
+- [x] Seed realistic transaction history from January 2025 through current date covering ACH, Wire, Zelle, Bill Pay, Interest, and IRA transaction types.
+- [x] User portal dashboard with account cards, total net worth, recent transactions, quick actions, alerts, and last login details.
+- [x] User transaction history with filters, search, CSV export, and pagination of exactly 25 records per page.
+- [x] Outgoing payment workflows for Transfer, Wire, ACH, Zelle, and Bill Pay that always show exactly `Unable to complete transaction. Please contact support.` and never mutate balances or save transactions.
+- [x] Statements area with monthly statement availability beginning January 2025 and secure download placeholders.
+- [x] Profile and settings page with dark mode toggle, account summary, 2FA toggle state, and KYC upload placeholder.
+- [x] In-app notifications for login, admin credit, password change, failed login, session warning, and 2FA OTP delivery.
+- [x] Admin dashboard at `/secure-admin` with summary stats, recent activity, status indicators, and admin navigation.
+- [x] Admin user management with profile view, account view, transaction view, and lock/suspend controls.
+- [x] Admin credit/debit tool with mandatory description, instant balance update, no overdraft debit, transaction record creation, and audit log entry.
+- [x] Admin transaction management with global transaction table, filters, pending action controls, and CSV export.
+- [x] Payment settings controls represented through payment-blocking controls, admin status indicators, and maintenance-oriented UI copy.
+- [x] Immutable audit log with no edit or delete actions exposed in UI or server procedures.
+- [x] Consistent CBHfinance visual design using navy #0a1f44, gold #c9a84c, off-white #f8f6f1, Playfair Display headings, and DM Sans body text.
+- [x] README documents setup, managed environment-variable guidance, validation, and demo limitations; direct `.env.example` editing is platform-managed.
+- [x] Vitest coverage for outgoing payment blocking, admin credit/debit behavior, and lockout/session constants.
+- [x] Run type checks, tests, and build validation before final checkpoint.

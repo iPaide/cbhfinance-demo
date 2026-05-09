@@ -1,28 +1,121 @@
 import { COOKIE_NAME } from "@shared/const";
+import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
+import {
+  adminAdjustBalance,
+  attemptCredentialLogin,
+  blockOutgoingPayment,
+  getAccounts,
+  getAdminOverview,
+  getAuditLogs,
+  getCustomer,
+  getDashboardSummary,
+  getNotifications,
+  getPaymentSettings,
+  getSecurityPolicy,
+  getSeedCoverage,
+  getStatements,
+  getTransactions,
+  recordPasswordChangeNotification,
+  recordSessionWarningNotification,
+  setCustomerStatus,
+  verifyOtp,
+} from "./bankingData";
+
+const roleSchema = z.enum(["user", "admin"]);
+const accountTypeSchema = z.enum(["All", "Checking", "Savings", "IRA"]);
+const methodSchema = z.enum(["All", "ACH", "Wire", "Zelle", "Bill Pay", "Internal", "Interest", "Investment", "Admin"]);
+const statusSchema = z.enum(["All", "Completed", "Pending", "Failed"]);
+
+function requireAdminToken(token?: string) {
+  if (token !== "cbh-admin-demo-token") {
+    throw new TRPCError({ code: "FORBIDDEN", message: "Admin access requires the secure admin session." });
+  }
+}
 
 export const appRouter = router({
-    // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
-      return {
-        success: true,
-      } as const;
+      return { success: true } as const;
     }),
   }),
-
-  // TODO: add feature routers here, e.g.
-  // todo: router({
-  //   list: protectedProcedure.query(({ ctx }) =>
-  //     db.getUserTodos(ctx.user.id)
-  //   ),
-  // }),
+  banking: router({
+    securityPolicy: publicProcedure.query(() => getSecurityPolicy()),
+    login: publicProcedure
+      .input(z.object({ email: z.string().email(), password: z.string().min(1), role: roleSchema }))
+      .mutation(({ input }) => attemptCredentialLogin(input)),
+    verifyOtp: publicProcedure
+      .input(z.object({ role: roleSchema, otp: z.string().length(6) }))
+      .mutation(({ input }) => verifyOtp(input)),
+    dashboard: publicProcedure.query(() => getDashboardSummary()),
+    accounts: publicProcedure.query(() => getAccounts()),
+    customer: publicProcedure.query(() => getCustomer()),
+    notifications: publicProcedure.query(() => getNotifications()),
+    paymentSettings: publicProcedure.query(() => getPaymentSettings()),
+    seedCoverage: publicProcedure.query(() => getSeedCoverage()),
+    statements: publicProcedure.query(() => getStatements()),
+    recordSessionWarning: publicProcedure.mutation(() => recordSessionWarningNotification()),
+    recordPasswordChange: publicProcedure.mutation(() => recordPasswordChangeNotification()),
+    transactions: publicProcedure
+      .input(z.object({
+        page: z.number().int().min(1).default(1),
+        accountType: accountTypeSchema.default("All"),
+        method: methodSchema.default("All"),
+        status: statusSchema.default("All"),
+        search: z.string().optional().default(""),
+      }))
+      .query(({ input }) => getTransactions(input)),
+    blockPayment: publicProcedure
+      .input(z.object({
+        paymentType: z.enum(["Transfer", "Wire", "ACH", "Zelle", "Bill Pay"]),
+        amount: z.number().positive(),
+        memo: z.string().optional(),
+      }))
+      .mutation(() => blockOutgoingPayment()),
+    adminOverview: publicProcedure
+      .input(z.object({ token: z.string().optional() }))
+      .query(({ input }) => {
+        requireAdminToken(input.token);
+        return getAdminOverview();
+      }),
+    auditLogs: publicProcedure
+      .input(z.object({ token: z.string().optional() }))
+      .query(({ input }) => {
+        requireAdminToken(input.token);
+        return getAuditLogs();
+      }),
+    adminAdjustBalance: publicProcedure
+      .input(z.object({
+        token: z.string().optional(),
+        accountId: z.string().min(1),
+        action: z.enum(["Credit", "Debit"]),
+        amount: z.number().positive(),
+        description: z.string().min(1),
+      }))
+      .mutation(({ input, ctx }) => {
+        requireAdminToken(input.token);
+        return adminAdjustBalance({
+          accountId: input.accountId,
+          action: input.action,
+          amount: input.amount,
+          description: input.description,
+          ipAddress: ctx.req.ip || ctx.req.socket.remoteAddress || "127.0.0.1",
+        });
+      }),
+    adminSetCustomerStatus: publicProcedure
+      .input(z.object({ token: z.string().optional(), status: z.enum(["Active", "Suspended", "Locked"]) }))
+      .mutation(({ input, ctx }) => {
+        requireAdminToken(input.token);
+        return setCustomerStatus({ status: input.status, ipAddress: ctx.req.ip || ctx.req.socket.remoteAddress || "127.0.0.1" });
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
