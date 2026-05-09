@@ -28,3 +28,4 @@
 - [x] Change the typography treatment for the `Total net worth` balance amount `$615,220.86` to a different, more distinct font style.
 - [x] Remove exposed `Access User Portal` and `Open Admin Panel` hero buttons from the first public landing screen, replacing them with a more professional public CTA and keeping admin access available only through `/secure-admin` or a less prominent route.
 - [x] Remove all account balance and sensitive account preview information from the public landing page before sign-in, replacing it with a non-sensitive trust/security visual.
+- [x] Fix `/secure-admin` OTP verification so entering the configured admin OTP proceeds into the admin panel instead of staying on the verification screen.
