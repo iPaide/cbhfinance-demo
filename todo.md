@@ -24,3 +24,5 @@
 - [x] README documents setup, managed environment-variable guidance, validation, and demo limitations; direct `.env.example` editing is platform-managed.
 - [x] Vitest coverage for outgoing payment blocking, admin credit/debit behavior, and lockout/session constants.
 - [x] Run type checks, tests, and build validation before final checkpoint.
+- [x] Remove visible `Private Banking Demo` and similar demo/private-demo wording from public-facing interface copy while preserving internal demo documentation.
+- [x] Change the typography treatment for the `Total net worth` balance amount `$615,220.86` to a different, more distinct font style.

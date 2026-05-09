@@ -92,9 +92,9 @@ export type AdminUser = {
 
 export const demoCredentials = {
   userEmail: "emily.johnson@cbhfinance.online",
-  userPassword: "DemoUser!2026",
+  userPassword: "CBHUser!2026",
   adminEmail: "admin@cbhfinance.online",
-  adminPassword: "AdminDemo!2026",
+  adminPassword: "CBHAdmin!2026",
   otp: "246810",
 };
 
@@ -192,7 +192,7 @@ const initialNotifications: Notification[] = [
 ];
 let notifications: Notification[] = initialNotifications.map(notification => ({ ...notification }));
 let auditLogs: AuditLog[] = [
-  { id: "audit_1", adminId: admin.id, actionType: "SEED", targetUserId: customer.id, details: "Seeded Emily Ann Johnson demo banking profile and starting transaction ledger.", ipAddress: "127.0.0.1", createdAt: new Date("2025-01-01T00:00:00.000Z").toISOString() },
+  { id: "audit_1", adminId: admin.id, actionType: "SEED", targetUserId: customer.id, details: "Seeded Emily Ann Johnson banking profile and starting transaction ledger.", ipAddress: "127.0.0.1", createdAt: new Date("2025-01-01T00:00:00.000Z").toISOString() },
 ];
 
 function createStatements(): Statement[] {
