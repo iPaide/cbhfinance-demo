@@ -102,7 +102,6 @@ function Footer() {
 }
 
 function LandingPage() {
-  const dashboard = trpc.banking.dashboard.useQuery();
   return (
     <div className="min-h-screen bg-[#f8f6f1] text-[#0a1f44]">
       <MarketingNav />
@@ -122,26 +121,31 @@ function LandingPage() {
             </div>
             <div className="rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-2xl shadow-[#0a1f44]/20 backdrop-blur">
               <div className="rounded-[1.5rem] bg-[#0a1f44] p-6 text-white">
-                <div className="flex items-center justify-between">
+                <div className="flex items-start justify-between gap-6">
                   <div>
-                    <p className="text-sm text-white/60">Total net worth</p>
-                    <p className="mt-2 font-balance text-4xl font-semibold tracking-tight">{dashboard.data ? money(dashboard.data.totalNetWorth) : "Loading"}</p>
+                    <p className="text-sm uppercase tracking-[0.28em] text-white/60">Client privacy first</p>
+                    <h2 className="mt-3 font-serif text-4xl font-semibold leading-tight">Account details stay behind secure sign-in.</h2>
+                    <p className="mt-4 text-sm leading-6 text-white/70">Balances, account numbers, statements, and transaction history are only presented after client authentication and OTP verification.</p>
                   </div>
-                  <ShieldCheck className="h-10 w-10 text-[#c9a84c]" />
+                  <ShieldCheck className="h-10 w-10 shrink-0 text-[#c9a84c]" />
                 </div>
                 <div className="mt-8 grid gap-3">
-                  {(dashboard.data?.accounts ?? []).map(account => (
-                    <div key={account.id} className="rounded-2xl border border-white/10 bg-white/10 p-4">
-                      <div className="flex items-center justify-between text-sm text-white/70"><span>{account.type}</span><span>{mask(account.number)}</span></div>
-                      <div className="mt-2 text-2xl font-semibold text-[#c9a84c]">{money(account.balance)}</div>
+                  {[
+                    ["Protected dashboard", "Sensitive account data is not shown on public pages."],
+                    ["Verified access", "Client sign-in uses password and OTP verification controls."],
+                    ["Controlled payments", "Payment requests are routed through support safeguards."],
+                  ].map(([title, copy]) => (
+                    <div key={title} className="rounded-2xl border border-white/10 bg-white/10 p-4">
+                      <div className="flex items-center gap-3 text-[#c9a84c]"><Lock className="h-4 w-4" /><span className="font-semibold">{title}</span></div>
+                      <p className="mt-2 text-sm leading-6 text-white/70">{copy}</p>
                     </div>
                   ))}
                 </div>
               </div>
               <div className="mt-5 grid grid-cols-3 gap-3 text-center text-sm">
-                <div className="rounded-2xl bg-[#f8f6f1] p-4"><div className="font-semibold">2FA</div><div className="text-slate-500">Email OTP</div></div>
-                <div className="rounded-2xl bg-[#f8f6f1] p-4"><div className="font-semibold">13 min</div><div className="text-slate-500">Warning</div></div>
-                <div className="rounded-2xl bg-[#f8f6f1] p-4"><div className="font-semibold">15 min</div><div className="text-slate-500">Timeout</div></div>
+                <div className="rounded-2xl bg-[#f8f6f1] p-4"><div className="font-semibold">Private</div><div className="text-slate-500">Balances</div></div>
+                <div className="rounded-2xl bg-[#f8f6f1] p-4"><div className="font-semibold">Secure</div><div className="text-slate-500">Sign-in</div></div>
+                <div className="rounded-2xl bg-[#f8f6f1] p-4"><div className="font-semibold">Verified</div><div className="text-slate-500">OTP</div></div>
               </div>
             </div>
           </div>
