@@ -26,3 +26,4 @@
 - [x] Run type checks, tests, and build validation before final checkpoint.
 - [x] Remove visible `Private Banking Demo` and similar demo/private-demo wording from public-facing interface copy while preserving internal demo documentation.
 - [x] Change the typography treatment for the `Total net worth` balance amount `$615,220.86` to a different, more distinct font style.
+- [x] Remove exposed `Access User Portal` and `Open Admin Panel` hero buttons from the first public landing screen, replacing them with a more professional public CTA and keeping admin access available only through `/secure-admin` or a less prominent route.

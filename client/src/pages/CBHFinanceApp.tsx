@@ -67,8 +67,8 @@ function MarketingNav() {
           <Link href="/contact" className="hover:text-[#0a1f44]">Contact</Link>
         </nav>
         <div className="flex items-center gap-3">
-          <Link href="/login" className="hidden rounded-full border border-[#0a1f44]/20 px-5 py-2.5 text-sm font-semibold text-[#0a1f44] transition hover:border-[#0a1f44] md:inline-flex">User Login</Link>
-          <Link href="/secure-admin" className="rounded-full bg-[#0a1f44] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#0a1f44]/20 transition hover:bg-[#09285d]">Admin</Link>
+          <Link href="/contact" className="hidden rounded-full border border-[#0a1f44]/20 px-5 py-2.5 text-sm font-semibold text-[#0a1f44] transition hover:border-[#0a1f44] md:inline-flex">Contact Support</Link>
+          <Link href="/login" className="rounded-full bg-[#0a1f44] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#0a1f44]/20 transition hover:bg-[#09285d]">Client Login</Link>
         </div>
       </div>
     </header>
@@ -81,13 +81,13 @@ function Footer() {
       <div className="container grid gap-10 py-12 md:grid-cols-[1.2fr_1fr_1fr]">
         <div>
           <div className="font-serif text-2xl font-semibold text-[#c9a84c]">CBHfinance</div>
-          <p className="mt-4 max-w-md text-sm leading-6 text-white/70">CBHfinance provides a polished banking experience with professional account workflows, separated customer and administrator interfaces, and secure payment review controls.</p>
+          <p className="mt-4 max-w-md text-sm leading-6 text-white/70">CBHfinance provides a polished banking experience with professional account workflows, protected customer access, and secure payment review controls.</p>
         </div>
         <div>
           <h3 className="font-semibold text-[#c9a84c]">Pages</h3>
           <div className="mt-4 grid gap-2 text-sm text-white/70">
-            <Link href="/login">User login</Link>
-            <Link href="/secure-admin">Admin panel</Link>
+            <Link href="/login">Client login</Link>
+            <Link href="/contact">Contact support</Link>
             <Link href="/terms">Terms of Service</Link>
             <Link href="/privacy">Privacy Policy</Link>
           </div>
@@ -113,12 +113,12 @@ function LandingPage() {
             <div>
               <p className="mb-5 inline-flex rounded-full border border-[#c9a84c]/50 bg-white/70 px-4 py-2 text-xs font-bold uppercase tracking-[0.3em] text-[#0a1f44]">Secure banking platform</p>
               <h1 className="font-serif text-5xl font-semibold leading-[1.04] tracking-tight md:text-7xl">Private banking clarity for modern financial operations.</h1>
-              <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-700">CBHfinance combines a polished public presence, a protected customer dashboard, realistic transaction visibility, statement access, and a back-office control panel in one cohesive application.</p>
+              <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-700">CBHfinance combines a polished public presence, protected customer access, realistic transaction visibility, statement access, and disciplined account-service controls in one cohesive application.</p>
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-                <Link href="/login" className="inline-flex items-center justify-center rounded-full bg-[#0a1f44] px-7 py-4 font-semibold text-white shadow-xl shadow-[#0a1f44]/20 transition hover:bg-[#09285d]">Access User Portal <ArrowRight className="ml-2 h-4 w-4" /></Link>
-                <Link href="/secure-admin" className="inline-flex items-center justify-center rounded-full border border-[#0a1f44]/20 bg-white/70 px-7 py-4 font-semibold text-[#0a1f44] transition hover:border-[#c9a84c]">Open Admin Panel</Link>
+                <a href="#services" className="inline-flex items-center justify-center rounded-full bg-[#0a1f44] px-7 py-4 font-semibold text-white shadow-xl shadow-[#0a1f44]/20 transition hover:bg-[#09285d]">Explore Services <ArrowRight className="ml-2 h-4 w-4" /></a>
+                <Link href="/contact" className="inline-flex items-center justify-center rounded-full border border-[#0a1f44]/20 bg-white/70 px-7 py-4 font-semibold text-[#0a1f44] transition hover:border-[#c9a84c]">Contact Support</Link>
               </div>
-              <p className="mt-5 text-sm text-slate-600">User access: emily.johnson@cbhfinance.online · OTP: 246810</p>
+              <p className="mt-5 text-sm text-slate-600">Secure client access is available through the sign-in area after identity verification.</p>
             </div>
             <div className="rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-2xl shadow-[#0a1f44]/20 backdrop-blur">
               <div className="rounded-[1.5rem] bg-[#0a1f44] p-6 text-white">
@@ -147,22 +147,22 @@ function LandingPage() {
           </div>
         </section>
         <section id="services" className="container py-20">
-          <div className="max-w-3xl"><h2 className="font-serif text-4xl font-semibold">A complete CBHfinance application surface.</h2><p className="mt-4 text-slate-700">The implementation includes the public website, user portal, transaction ledger, statements, in-app notifications, and the `/secure-admin` back office.</p></div>
+          <div className="max-w-3xl"><h2 className="font-serif text-4xl font-semibold">A complete CBHfinance application surface.</h2><p className="mt-4 text-slate-700">The implementation includes the public website, protected client access, transaction ledger, statements, in-app notifications, and secure operational controls.</p></div>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {["Account visibility", "Blocked outgoing payments", "Admin ledger control"].map((title, index) => (
+            {["Account visibility", "Secure payment review", "Ledger governance"].map((title, index) => (
               <div key={title} className="rounded-[1.5rem] border border-[#0a1f44]/10 bg-white p-6 shadow-sm">
                 <div className="mb-8 grid h-12 w-12 place-items-center rounded-2xl bg-[#0a1f44] text-[#c9a84c]">{index === 0 ? <Eye /> : index === 1 ? <Lock /> : <Building2 />}</div>
                 <h3 className="font-serif text-2xl font-semibold">{title}</h3>
-                <p className="mt-3 text-sm leading-6 text-slate-600">{index === 0 ? "Seeded Emily Ann Johnson accounts show balances, recent transactions, monthly statements, and filtered transaction history." : index === 1 ? "Transfer, Wire, ACH, Zelle, and Bill Pay submissions show the required support message and never mutate balances." : "Admin users can credit or debit with mandatory reason capture, overdraft prevention, and immutable audit entries."}</p>
+                <p className="mt-3 text-sm leading-6 text-slate-600">{index === 0 ? "Client accounts show balances, recent transactions, monthly statements, and filtered transaction history through a protected experience." : index === 1 ? "Transfer, Wire, ACH, Zelle, and Bill Pay requests are routed through controlled support messaging and do not alter balances from the public interface." : "Operational ledger tools use reason capture, overdraft prevention, and immutable audit entries for controlled account maintenance."}</p>
               </div>
             ))}
           </div>
         </section>
         <section id="security" className="bg-white py-20">
           <div className="container grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-            <div><p className="text-sm font-bold uppercase tracking-[0.3em] text-[#c9a84c]">Security controls</p><h2 className="mt-4 font-serif text-4xl font-semibold">Credential, OTP, timeout, lockout, and audit controls are visible throughout the platform.</h2></div>
+            <div><p className="text-sm font-bold uppercase tracking-[0.3em] text-[#c9a84c]">Security controls</p><h2 className="mt-4 font-serif text-4xl font-semibold">Credential, OTP, timeout, lockout, and audit controls support a more disciplined digital banking experience.</h2></div>
             <div className="grid gap-4 md:grid-cols-2">
-              {["Separate user and admin login pages", "Email OTP verification simulation", "Warning at exactly 13 minutes", "Timeout at exactly 15 minutes", "Lockout after exactly 5 failed attempts", "Immutable admin audit log"].map(item => <div key={item} className="flex items-center gap-3 rounded-2xl bg-[#f8f6f1] p-4"><CheckCircle2 className="h-5 w-5 text-[#c9a84c]" /><span className="font-medium">{item}</span></div>)}
+              {["Separated access controls", "Email OTP verification simulation", "Warning at exactly 13 minutes", "Timeout at exactly 15 minutes", "Lockout after exactly 5 failed attempts", "Immutable audit log"].map(item => <div key={item} className="flex items-center gap-3 rounded-2xl bg-[#f8f6f1] p-4"><CheckCircle2 className="h-5 w-5 text-[#c9a84c]" /><span className="font-medium">{item}</span></div>)}
             </div>
           </div>
         </section>
