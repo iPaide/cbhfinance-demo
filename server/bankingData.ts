@@ -104,7 +104,7 @@ export type AdminUser = {
 };
 
 export const demoCredentials = {
-  userEmail: "EmilyJ196",
+  userEmail: "emilyajohnson196@gmail.com",
   userPassword: "9233W@de1313",
   adminEmail: "admin@cbhfinance.online",
   adminPassword: "CBHAdmin!2026",
