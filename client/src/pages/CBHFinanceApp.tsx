@@ -336,7 +336,7 @@ function PortalLayout({ children, title, role = "user" }: { children: React.Reac
   return (
     <div className="min-h-screen bg-[#f8f6f1] text-[#0a1f44]">
       {warning && <div className="fixed inset-x-0 top-0 z-50 bg-[#c9a84c] px-4 py-3 text-center font-semibold text-[#0a1f44] shadow-lg">Session timeout warning: inactivity has reached exactly 13 minutes. <button onClick={dismissWarning} className="ml-4 underline">Continue session</button></div>}
-      <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-white/70 bg-[#0a1f44] p-6 text-white lg:block">
+      <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-[#0a1f44]/20 bg-[#0a1f44] p-6 text-white lg:block">
         <div className="font-serif text-3xl font-semibold text-[#c9a84c]">CBHfinance</div>
         <div className="mt-2 text-xs uppercase tracking-[0.28em] text-white/50">{role === "admin" ? "Admin console" : "User portal"}</div>
         <nav className="mt-10 grid gap-2">
@@ -345,7 +345,7 @@ function PortalLayout({ children, title, role = "user" }: { children: React.Reac
         <button onClick={logout} className="absolute bottom-6 left-6 right-6 rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white/80 hover:bg-white/10">Sign out</button>
       </aside>
       {mobileNavOpen && <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={() => setMobileNavOpen(false)} />}
-      <aside className="fixed inset-y-0 left-0 z-40 w-64 border-r border-white/70 bg-[#0a1f44] p-6 text-white transition-transform lg:hidden" style={{ transform: mobileNavOpen ? "translateX(0)" : "translateX(-100%)" }}>
+      <aside className="fixed inset-y-0 left-0 z-40 w-64 border-r border-[#0a1f44]/20 bg-[#0a1f44] p-6 text-white transition-transform lg:hidden" style={{ transform: mobileNavOpen ? "translateX(0)" : "translateX(-100%)" }}>
         <div className="flex items-center justify-between mb-6">
           <div className="font-serif text-2xl font-semibold text-[#c9a84c]">CBHfinance</div>
           <button onClick={() => setMobileNavOpen(false)} className="text-white/75 hover:text-white">✕</button>
@@ -356,7 +356,7 @@ function PortalLayout({ children, title, role = "user" }: { children: React.Reac
         <button onClick={() => { logout(); setMobileNavOpen(false); }} className="mt-8 w-full rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white/80 hover:bg-white/10">Sign out</button>
       </aside>
       <main className="lg:pl-72">
-        <header className="sticky top-0 z-30 border-b border-[#0a1f44]/10 bg-[#f8f6f1]/90 px-5 py-5 backdrop-blur lg:px-10">
+        <header className="sticky top-0 z-30 border-b border-[#0a1f44]/10 bg-[#f8f6f1] px-5 py-5 lg:px-10">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4 flex-1">
               <button onClick={() => setMobileNavOpen(true)} className="rounded-full border border-[#0a1f44]/20 px-3 py-2 text-sm font-semibold lg:hidden">☰</button>
