@@ -1,7 +1,7 @@
-import { trpc } from "@/lib/trpc";
 import { AlertCircle, ArrowRight, Bell, Building2, CheckCircle2, Download, Eye, FileText, Landmark, Lock, Moon, Search, ShieldCheck, Sun, UserRound } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "wouter";
+import { trpc } from "@/lib/trpc";
 
 type DemoSession = {
   role: "user" | "admin";
@@ -56,47 +56,63 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
 
 function MarketingNav() {
   return (
-    <header className="sticky top-0 z-40 border-b border-[#0a1f44]/10 bg-[#f8f6f1]/90 backdrop-blur-xl">
-      <div className="container flex h-20 items-center justify-between">
+    <nav className="sticky top-0 z-40 border-b border-[#0a1f44]/10 bg-[#f8f6f1]/90 px-5 py-4 backdrop-blur lg:px-10">
+      <div className="flex items-center justify-between gap-6">
         <BrandMark />
-        <nav className="hidden items-center gap-8 text-sm font-medium text-slate-700 md:flex">
-          <a href="/#services" className="hover:text-[#0a1f44]">Services</a>
-          <a href="/#security" className="hover:text-[#0a1f44]">Security</a>
-          <Link href="/terms" className="hover:text-[#0a1f44]">Terms</Link>
-          <Link href="/privacy" className="hover:text-[#0a1f44]">Privacy</Link>
-          <Link href="/contact" className="hover:text-[#0a1f44]">Contact</Link>
-        </nav>
-        <div className="flex items-center gap-3">
-          <Link href="/contact" className="hidden rounded-full border border-[#0a1f44]/20 px-5 py-2.5 text-sm font-semibold text-[#0a1f44] transition hover:border-[#0a1f44] md:inline-flex">Contact Support</Link>
-          <Link href="/login" className="rounded-full bg-[#0a1f44] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#0a1f44]/20 transition hover:bg-[#09285d]">Client Login</Link>
+        <div className="hidden gap-8 lg:flex">
+          {[["Services", "#services"], ["Security", "#security"], ["Terms", "/terms"], ["Privacy", "/privacy"], ["Contact", "/contact"]].map(([label, href]) =>
+            href.startsWith("/") ? (
+              <Link key={href} href={href} className="text-sm font-semibold text-[#0a1f44] transition hover:text-[#c9a84c]">
+                {label}
+              </Link>
+            ) : (
+              <a key={href} href={href} className="text-sm font-semibold text-[#0a1f44] transition hover:text-[#c9a84c]">
+                {label}
+              </a>
+            )
+          )}
+        </div>
+        <div className="flex gap-3">
+          <Link href="/contact" className="rounded-full border border-[#0a1f44]/20 px-5 py-2 text-sm font-semibold text-[#0a1f44] transition hover:border-[#c9a84c]">
+            Contact Support
+          </Link>
+          <Link href="/login" className="rounded-full bg-[#0a1f44] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#09285d]">
+            Client Login
+          </Link>
         </div>
       </div>
-    </header>
+    </nav>
   );
 }
 
 function Footer() {
   return (
-    <footer className="border-t border-[#0a1f44]/10 bg-[#0a1f44] text-white">
-      <div className="container grid gap-10 py-12 md:grid-cols-[1.2fr_1fr_1fr]">
+    <footer className="border-t border-[#0a1f44]/10 bg-white py-12 text-slate-600">
+      <div className="container grid gap-8 md:grid-cols-4">
         <div>
-          <div className="font-serif text-2xl font-semibold text-[#c9a84c]">CBHfinance</div>
-          <p className="mt-4 max-w-md text-sm leading-6 text-white/70">CBHfinance provides a polished banking experience with professional account workflows, protected customer access, and secure payment review controls.</p>
+          <BrandMark compact />
+          <p className="mt-4 text-sm">Secure banking platform for modern financial operations.</p>
         </div>
-        <div>
-          <h3 className="font-semibold text-[#c9a84c]">Pages</h3>
-          <div className="mt-4 grid gap-2 text-sm text-white/70">
-            <Link href="/login">Client login</Link>
-            <Link href="/contact">Contact support</Link>
-            <Link href="/terms">Terms of Service</Link>
-            <Link href="/privacy">Privacy Policy</Link>
+        {([
+          ["Product", ["Services", "Security", "Statements"]],
+          ["Company", ["About", "Contact", "Careers"]],
+          ["Legal", ["Terms", "Privacy", "Compliance"]],
+        ] as const).map(([category, items]) => (
+          <div key={category}>
+            <h3 className="font-semibold text-[#0a1f44]">{category}</h3>
+            <ul className="mt-4 space-y-2 text-sm">
+              {items.map((item: string) => (
+                <li key={item}>
+                  <a href="#" className="transition hover:text-[#0a1f44]">
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
-        <div>
-          <h3 className="font-semibold text-[#c9a84c]">Security Model</h3>
-          <p className="mt-4 text-sm leading-6 text-white/70">Outgoing user payments are intentionally blocked and never change balances. Admin balance adjustments require a secure admin session and are written to an immutable audit trail.</p>
-        </div>
+        ))}
       </div>
+      <div className="container mt-8 border-t border-[#0a1f44]/10 pt-8 text-center text-sm">© 2026 CBHfinance. All rights reserved.</div>
     </footer>
   );
 }
@@ -201,41 +217,79 @@ function LoginPage({ role, onAuthenticated }: { role: "user" | "admin"; onAuthen
 
   async function submitOtp(event: FormEvent) {
     event.preventDefault();
-    const result = await verify.mutateAsync({ role, otp });
+    setMessage("");
+    const result = await verify.mutateAsync({ otp, role });
     if (result.success) {
-      const nextSession = { role, token: result.token, userName: role === "admin" ? "CBHfinance Operations Admin" : "Emily Ann Johnson", startedAt: Date.now(), lastActivityAt: Date.now() };
+      const nextSession = { role, token: result.token, userName: email, startedAt: Date.now(), lastActivityAt: Date.now() };
       writeSession(nextSession);
       onAuthenticated?.(nextSession);
       setLocation(role === "admin" ? "/secure-admin" : "/portal");
-    } else setMessage(result.message);
+    } else {
+      setMessage(result.message);
+    }
   }
 
   return (
     <div className="min-h-screen bg-[#f8f6f1] text-[#0a1f44]">
-      <MarketingNav />
-      <main className="container grid min-h-[calc(100vh-5rem)] items-center gap-10 py-16 lg:grid-cols-[0.9fr_1.1fr]">
-        <section>
-          <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#c9a84c]">{role === "admin" ? "Back-office access" : "Customer access"}</p>
-          <h1 className="mt-4 font-serif text-5xl font-semibold">{role === "admin" ? "Secure admin sign-in" : "Welcome to your CBHfinance portal"}</h1>
-          <p className="mt-5 max-w-xl text-lg leading-8 text-slate-700">This separated login flow demonstrates password verification, email OTP delivery, 13-minute timeout warning, 15-minute hard timeout, and five-attempt lockout behavior.</p>
-          <div className="mt-8 rounded-2xl border border-[#c9a84c]/40 bg-white p-5 text-sm text-slate-700"><strong>Testing access:</strong><p className="mt-2">Credentials are hidden by default for a more realistic public experience.</p><button type="button" onClick={() => setShowTestAccess(!showTestAccess)} className="mt-4 rounded-full border border-[#0a1f44]/20 px-4 py-2 font-semibold">{showTestAccess ? "Hide test access" : "Show test access"}</button>{showTestAccess && <div className="mt-4 rounded-2xl bg-[#f8f6f1] p-4"><strong>Access credentials:</strong><br />{role === "admin" ? "admin@cbhfinance.online / CBHAdmin!2026" : "emily.johnson@cbhfinance.online / CBHUser!2026"}<br />OTP: 246810<button type="button" onClick={() => { setEmail(role === "admin" ? "admin@cbhfinance.online" : "emily.johnson@cbhfinance.online"); setPassword(role === "admin" ? "CBHAdmin!2026" : "CBHUser!2026"); setOtp("246810"); }} className="mt-3 block rounded-full bg-[#0a1f44] px-4 py-2 text-xs font-semibold text-white">Fill test credentials</button></div>}</div>
-        </section>
-        <section className="rounded-[2rem] border border-[#0a1f44]/10 bg-white p-8 shadow-2xl shadow-[#0a1f44]/10">
-          <BrandMark />
+      <nav className="border-b border-[#0a1f44]/10 bg-white px-5 py-4 lg:px-10">
+        <BrandMark />
+      </nav>
+      <main className="flex min-h-[calc(100vh-80px)] items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md rounded-[2rem] border border-[#0a1f44]/10 bg-white p-8 shadow-sm">
+          <h1 className="font-serif text-3xl font-semibold">{role === "admin" ? "Admin Access" : "Client Sign In"}</h1>
+          <p className="mt-2 text-sm text-slate-600">{role === "admin" ? "Secure admin console access" : "Access your accounts securely"}</p>
           {!otpReady ? (
-            <form onSubmit={submitCredentials} className="mt-8 grid gap-5">
-              <label className="grid gap-2 text-sm font-semibold">Email<input value={email} onChange={e => setEmail(e.target.value)} className="rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]" /></label>
-              <label className="grid gap-2 text-sm font-semibold">Password<input type="password" value={password} onChange={e => setPassword(e.target.value)} className="rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]" /></label>
-              <button className="rounded-full bg-[#0a1f44] px-6 py-4 font-semibold text-white" disabled={login.isPending}>Continue to OTP</button>
+            <form onSubmit={submitCredentials} className="mt-8 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Email</label>
+                <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]" required />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Password</label>
+                <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]" required />
+              </div>
+              {message && <div className="rounded-2xl bg-red-50 p-3 text-sm text-red-700">{message}</div>}
+              <button type="submit" className="w-full rounded-full bg-[#0a1f44] px-5 py-3 font-semibold text-white transition hover:bg-[#09285d]">
+                Continue
+              </button>
+              <button type="button" onClick={() => setShowTestAccess(!showTestAccess)} className="w-full text-xs text-slate-500 underline">
+                {showTestAccess ? "Hide" : "Show"} test credentials
+              </button>
+              {showTestAccess && (
+                <div className="rounded-2xl bg-[#f8f6f1] p-3 text-xs text-slate-600">
+                  {role === "admin" ? (
+                    <>
+                      <div>Email: admin@cbhfinance.online</div>
+                      <div>Password: CBHAdmin!2026</div>
+                    </>
+                  ) : (
+                    <>
+                      <div>Email: emily.johnson@cbhfinance.online</div>
+                      <div>Password: CBHUser!2026</div>
+                    </>
+                  )}
+                </div>
+              )}
             </form>
           ) : (
-            <form onSubmit={submitOtp} className="mt-8 grid gap-5">
-              <label className="grid gap-2 text-sm font-semibold">Email OTP<input value={otp} onChange={e => setOtp(e.target.value)} maxLength={6} className="rounded-2xl border border-slate-200 px-4 py-3 text-center text-2xl tracking-[0.4em] outline-none focus:border-[#c9a84c]" /></label>
-              <button className="rounded-full bg-[#0a1f44] px-6 py-4 font-semibold text-white" disabled={verify.isPending}>Verify and enter</button>
+            <form onSubmit={submitOtp} className="mt-8 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">OTP Code</label>
+                <input type="text" value={otp} onChange={e => setOtp(e.target.value)} placeholder="000000" maxLength={6} className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-center font-mono text-lg outline-none focus:border-[#c9a84c]" required />
+              </div>
+              {message && <div className="rounded-2xl bg-red-50 p-3 text-sm text-red-700">{message}</div>}
+              <button type="submit" className="w-full rounded-full bg-[#0a1f44] px-5 py-3 font-semibold text-white transition hover:bg-[#09285d]">
+                Verify
+              </button>
+              <button type="button" onClick={() => { setOtpReady(false); setOtp(""); }} className="w-full text-xs text-slate-500 underline">
+                Back to credentials
+              </button>
+              <div className="rounded-2xl bg-[#f8f6f1] p-3 text-xs text-slate-600">
+                <strong>Test OTP:</strong> 246810
+              </div>
             </form>
           )}
-          {message && <div className="mt-5 rounded-2xl bg-[#f8f6f1] p-4 text-sm text-[#0a1f44]"><AlertCircle className="mr-2 inline h-4 w-4 text-[#c9a84c]" />{message}</div>}
-        </section>
+        </div>
       </main>
     </div>
   );
@@ -294,9 +348,12 @@ function useDemoSession(requiredRole?: "user" | "admin") {
 
 function PortalLayout({ children, title, role = "user" }: { children: React.ReactNode; title: string; role?: "user" | "admin" }) {
   const { warning, logout, dismissWarning } = useDemoSession(role);
-  const nav = role === "admin" ? [
-    ["/secure-admin", "Admin Dashboard"], ["/secure-admin?tab=users", "Users"], ["/secure-admin?tab=transactions", "Transactions"], ["/secure-admin?tab=support", "Support Cases"], ["/secure-admin?tab=payments", "Payment Settings"], ["/secure-admin?tab=audit", "Audit Log"]
-  ] : [["/portal", "Dashboard"], ["/portal?tab=transactions", "Transactions"], ["/portal?tab=payments", "Payments"], ["/portal?tab=statements", "Statements"], ["/portal?tab=settings", "Settings"]];
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const nav: [string, string][] = role === "admin" ? [
+    ["/secure-admin", "Dashboard"], ["/secure-admin?tab=users", "Users"], ["/secure-admin?tab=transactions", "Transactions"], ["/secure-admin?tab=support", "Support"], ["/secure-admin?tab=payments", "Payments"], ["/secure-admin?tab=audit", "Audit"]
+  ] : [
+    ["/portal", "Dashboard"], ["/portal?tab=transactions", "Transactions"], ["/portal?tab=payments", "Payments"], ["/portal?tab=statements", "Statements"], ["/portal?tab=settings", "Settings"]
+  ];
   return (
     <div className="min-h-screen bg-[#f8f6f1] text-[#0a1f44]">
       {warning && <div className="fixed inset-x-0 top-0 z-50 bg-[#c9a84c] px-4 py-3 text-center font-semibold text-[#0a1f44] shadow-lg">Session timeout warning: inactivity has reached exactly 13 minutes. <button onClick={dismissWarning} className="ml-4 underline">Continue session</button></div>}
@@ -308,14 +365,28 @@ function PortalLayout({ children, title, role = "user" }: { children: React.Reac
         </nav>
         <button onClick={logout} className="absolute bottom-6 left-6 right-6 rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white/80 hover:bg-white/10">Sign out</button>
       </aside>
+      {mobileNavOpen && <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={() => setMobileNavOpen(false)} />}
+      <aside className="fixed inset-y-0 left-0 z-40 w-64 border-r border-white/70 bg-[#0a1f44] p-6 text-white transition-transform lg:hidden" style={{ transform: mobileNavOpen ? "translateX(0)" : "translateX(-100%)" }}>
+        <div className="flex items-center justify-between mb-6">
+          <div className="font-serif text-2xl font-semibold text-[#c9a84c]">CBHfinance</div>
+          <button onClick={() => setMobileNavOpen(false)} className="text-white/75 hover:text-white">✕</button>
+        </div>
+        <nav className="grid gap-2">
+          {nav.map(([href, label]) => <Link key={href} href={href} className="rounded-2xl px-4 py-3 text-sm font-semibold text-white/75 transition hover:bg-white/10 hover:text-white" onClick={() => setMobileNavOpen(false)}>{label}</Link>)}
+        </nav>
+        <button onClick={() => { logout(); setMobileNavOpen(false); }} className="mt-8 w-full rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white/80 hover:bg-white/10">Sign out</button>
+      </aside>
       <main className="lg:pl-72">
         <header className="sticky top-0 z-30 border-b border-[#0a1f44]/10 bg-[#f8f6f1]/90 px-5 py-5 backdrop-blur lg:px-10">
           <div className="flex items-center justify-between gap-4">
-            <div><div className="text-xs uppercase tracking-[0.3em] text-[#c9a84c]">CBHfinance</div><h1 className="font-serif text-3xl font-semibold">{title}</h1></div>
+            <div className="flex items-center gap-4 flex-1">
+              <button onClick={() => setMobileNavOpen(true)} className="rounded-full border border-[#0a1f44]/20 px-3 py-2 text-sm font-semibold lg:hidden">☰</button>
+              <div><div className="text-xs uppercase tracking-[0.3em] text-[#c9a84c]">CBHfinance</div><h1 className="font-serif text-2xl lg:text-3xl font-semibold">{title}</h1></div>
+            </div>
             <button onClick={logout} className="rounded-full border border-[#0a1f44]/20 px-4 py-2 text-sm font-semibold lg:hidden">Sign out</button>
           </div>
         </header>
-        <div className="p-5 lg:p-10">{children}</div>
+        <div className="p-4 sm:p-6 lg:p-10">{children}</div>
       </main>
     </div>
   );
@@ -334,8 +405,8 @@ function UserPortal() {
     <PortalLayout title="Emily Ann Johnson" role="user">
       {tab === "dashboard" && (
         <div className="grid gap-6">
-          <div className="rounded-[2rem] bg-[#0a1f44] p-8 text-white shadow-xl shadow-[#0a1f44]/20"><p className="text-white/60">Total net worth</p><div className="mt-2 font-balance text-5xl font-semibold tracking-tight text-[#c9a84c]">{dashboard.data ? money(dashboard.data.totalNetWorth) : "Loading"}</div><p className="mt-4 text-sm text-white/65">Last login: {dashboard.data?.customer.lastLoginAt ? new Date(dashboard.data.customer.lastLoginAt).toLocaleString() : "Loading"} · {dashboard.data?.customer.lastLoginLocation}</p></div>
-          <div className="grid gap-5 md:grid-cols-3">{dashboard.data?.accounts.map(account => <div key={account.id} className="rounded-[1.5rem] border border-[#0a1f44]/10 bg-white p-6 shadow-sm"><div className="flex items-center justify-between"><span className="rounded-full bg-[#f8f6f1] px-3 py-1 text-xs font-bold uppercase tracking-widest">{account.type}</span><span className="text-sm text-slate-500">{mask(account.number)}</span></div><div className="mt-6 font-serif text-3xl font-semibold">{money(account.balance)}</div><p className="mt-3 text-sm text-slate-500">{account.type === "Savings" ? `${account.apy}% APY displayed` : account.type === "IRA" ? `${account.ytdPerformance}% YTD performance` : "Day-to-day transaction access"}</p></div>)}</div>
+          <div className="rounded-[2rem] bg-[#0a1f44] p-8 text-white shadow-xl shadow-[#0a1f44]/20"><p className="text-white/60">Total net worth</p><div className="mt-2 font-sans text-5xl font-semibold tracking-tight text-[#c9a84c]">{dashboard.data ? money(dashboard.data.totalNetWorth) : "Loading"}</div><p className="mt-4 text-sm text-white/65">Last login: {dashboard.data?.customer.lastLoginAt ? new Date(dashboard.data.customer.lastLoginAt).toLocaleString() : "Loading"} · {dashboard.data?.customer.lastLoginLocation}</p></div>
+          <div className="grid gap-5 md:grid-cols-3">{dashboard.data?.accounts.map(account => <div key={account.id} className="rounded-[1.5rem] border border-[#0a1f44]/10 bg-white p-6 shadow-sm"><div className="flex items-center justify-between"><span className="rounded-full bg-[#f8f6f1] px-3 py-1 text-xs font-bold uppercase tracking-widest">{account.type}</span><span className="text-sm text-slate-500">{mask(account.number)}</span></div><div className="mt-6 font-sans text-3xl font-semibold">{money(account.balance)}</div><p className="mt-3 text-sm text-slate-500">{account.type === "Savings" ? `${account.apy}% APY displayed` : account.type === "IRA" ? `${account.ytdPerformance}% YTD performance` : "Day-to-day transaction access"}</p></div>)}</div>
           <Panel title="Quick Actions"><div className="grid gap-4 md:grid-cols-5">{[["Transfer", "payments"], ["Wire", "payments"], ["Zelle", "payments"], ["Bill Pay", "payments"], ["Statements", "statements"]].map(([label, target]) => <button key={label} onClick={() => setLocation(`/portal?tab=${target}`)} className="rounded-2xl border border-[#0a1f44]/10 bg-[#f8f6f1] px-5 py-4 text-left font-semibold text-[#0a1f44] transition hover:border-[#c9a84c] hover:bg-white">{label}<ArrowRight className="mt-3 h-4 w-4 text-[#c9a84c]" /></button>)}</div></Panel>
           <Panel title="Alerts"><div className="grid gap-3 md:grid-cols-3"><div className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-900"><AlertCircle className="mr-2 inline h-4 w-4" />Outgoing payment rails are blocked by policy.</div><div className="rounded-2xl bg-emerald-50 p-4 text-sm text-emerald-900"><ShieldCheck className="mr-2 inline h-4 w-4" />Email OTP 2FA is enabled.</div><div className="rounded-2xl bg-slate-100 p-4 text-sm text-slate-700"><Bell className="mr-2 inline h-4 w-4" />{dashboard.data?.unreadNotifications ?? 0} unread notifications.</div></div></Panel>
           <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]"><Panel title="Recent Transactions"><TransactionTable rows={dashboard.data?.recentTransactions ?? []} /></Panel><Panel title="Notifications"><div className="grid gap-3">{dashboard.data?.notifications.slice(0, 6).map(n => <div key={n.id} className="rounded-2xl bg-[#f8f6f1] p-4 text-sm"><Bell className="mr-2 inline h-4 w-4 text-[#c9a84c]" />{n.message}</div>)}</div></Panel></div>
@@ -370,9 +441,116 @@ function TransactionHistory() {
 
 function Payments() {
   const block = trpc.banking.blockPayment.useMutation();
-  const [modal, setModal] = useState(false);
-  async function submit(type: any) { await block.mutateAsync({ paymentType: type, amount: 100, memo: "Outgoing payment request" }); setModal(true); }
-  return <Panel title="Outgoing Payments"><p className="mb-6 text-slate-600">All outgoing user-initiated payment workflows are intentionally blocked. The modal text below is exact, and no transaction record is created.</p><div className="grid gap-4 md:grid-cols-5">{["Transfer", "Wire", "ACH", "Zelle", "Bill Pay"].map(type => <button key={type} onClick={() => submit(type)} className="rounded-2xl bg-[#0a1f44] px-5 py-5 font-semibold text-white shadow-lg shadow-[#0a1f44]/10">{type}</button>)}</div>{modal && <div className="fixed inset-0 z-50 grid place-items-center bg-[#0a1f44]/70 p-4"><div className="max-w-md rounded-[2rem] bg-white p-8 text-center shadow-2xl"><AlertCircle className="mx-auto h-12 w-12 text-[#c9a84c]" /><h3 className="mt-5 font-serif text-2xl font-semibold">Unable to complete transaction. Please contact support.</h3><button onClick={() => setModal(false)} className="mt-8 rounded-full bg-[#0a1f44] px-8 py-3 font-semibold text-white">Close</button></div></div>}</Panel>;
+  const [activeForm, setActiveForm] = useState<string | null>(null);
+  const [formData, setFormData] = useState({ recipient: "", amount: "", memo: "" });
+  const [submitting, setSubmitting] = useState(false);
+  const [blocked, setBlocked] = useState(false);
+
+  async function submitPayment(type: string) {
+    setSubmitting(true);
+    try {
+      const paymentType = type as "Transfer" | "Wire" | "ACH" | "Zelle" | "Bill Pay";
+      await block.mutateAsync({ paymentType, amount: Number(formData.amount) || 100, memo: formData.memo || "Payment request" });
+      setBlocked(true);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  const paymentTypes = [
+    { name: "Transfer", desc: "Between your accounts" },
+    { name: "Wire", desc: "Domestic wire transfer" },
+    { name: "ACH", desc: "ACH transfer" },
+    { name: "Zelle", desc: "Send via Zelle" },
+    { name: "Bill Pay", desc: "Pay bills" },
+  ];
+
+  return (
+    <Panel title="Outgoing Payments">
+      <p className="mb-6 text-slate-600">All outgoing user-initiated payment workflows are intentionally blocked. Submit a request below to see the security control in action.</p>
+      <div className="grid gap-4 md:grid-cols-5">
+        {paymentTypes.map(({ name, desc }) => (
+          <button
+            key={name}
+            onClick={() => { setActiveForm(name); setFormData({ recipient: "", amount: "", memo: "" }); setBlocked(false); }}
+            className="rounded-2xl border border-[#0a1f44]/10 bg-white px-5 py-5 text-left font-semibold text-[#0a1f44] transition hover:border-[#c9a84c] hover:bg-[#f8f6f1]"
+          >
+            {name}
+            <p className="mt-2 text-xs text-slate-500 font-normal">{desc}</p>
+          </button>
+        ))}
+      </div>
+      {activeForm && (
+        <div className="mt-8 rounded-2xl bg-[#f8f6f1] p-6">
+          <h3 className="mb-4 font-serif text-xl font-semibold">{activeForm} Request</h3>
+          {!blocked ? (
+            <form onSubmit={(e) => { e.preventDefault(); submitPayment(activeForm); }} className="grid gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Recipient / Destination</label>
+                <input
+                  type="text"
+                  placeholder={activeForm === "Transfer" ? "Select account" : activeForm === "Zelle" ? "Email or phone" : "Account or routing info"}
+                  value={formData.recipient}
+                  onChange={(e) => setFormData({ ...formData, recipient: e.target.value })}
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Amount</label>
+                <input
+                  type="number"
+                  placeholder="0.00"
+                  min="0.01"
+                  step="0.01"
+                  value={formData.amount}
+                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Memo (optional)</label>
+                <input
+                  type="text"
+                  placeholder="Payment description"
+                  value={formData.memo}
+                  onChange={(e) => setFormData({ ...formData, memo: e.target.value })}
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]"
+                />
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="flex-1 rounded-full bg-[#0a1f44] px-5 py-3 font-semibold text-white transition disabled:opacity-50"
+                >
+                  {submitting ? "Processing..." : "Submit Request"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveForm(null)}
+                  className="rounded-full border border-[#0a1f44]/20 px-5 py-3 font-semibold transition hover:bg-white"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div className="rounded-2xl bg-white p-6 text-center">
+              <AlertCircle className="mx-auto h-12 w-12 text-[#c9a84c]" />
+              <h4 className="mt-4 font-serif text-xl font-semibold">Unable to complete transaction. Please contact support.</h4>
+              <p className="mt-2 text-sm text-slate-600">Your {activeForm.toLowerCase()} request has been reviewed by our security controls and cannot be processed through the online portal.</p>
+              <button
+                onClick={() => { setActiveForm(null); setBlocked(false); }}
+                className="mt-6 rounded-full bg-[#0a1f44] px-8 py-3 font-semibold text-white"
+              >
+                Try Another Payment
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </Panel>
+  );
 }
 
 function Statements({ rows }: { rows: any[] }) {
@@ -410,45 +588,95 @@ function LegalPage({ type }: { type: "terms" | "privacy" | "contact" }) {
     event.preventDefault();
     setSupportMessage("");
     try {
-      const ticket = await support.mutateAsync(supportForm);
-      setSupportMessage(`Support case ${ticket.caseNumber} has been submitted for CBHfinance review.`);
+      await support.mutateAsync(supportForm);
+      setSupportMessage("Thank you for contacting us. We'll respond within 24 hours.");
       setSupportForm({ fullName: "", email: "", subject: "", message: "" });
-    } catch (error: any) {
-      setSupportMessage(error.message ?? "Unable to submit support request.");
+    } catch (err: any) {
+      setSupportMessage(err.message);
     }
   }
   return (
-    <div className="min-h-screen bg-[#f8f6f1]">
+    <div className="min-h-screen bg-[#f8f6f1] text-[#0a1f44]">
       <MarketingNav />
-      <main className="container py-16">
-        <div className="max-w-4xl rounded-[2rem] bg-white p-8 shadow-sm">
-          <h1 className="font-serif text-5xl font-semibold text-[#0a1f44]">{title}</h1>
-          {type === "contact" ? (
-            <form onSubmit={submitSupport} className="mt-8 grid gap-4">
-              <input value={supportForm.fullName} onChange={event => setSupportForm({ ...supportForm, fullName: event.target.value })} placeholder="Full name" className="rounded-2xl border px-4 py-3" required />
-              <input value={supportForm.email} onChange={event => setSupportForm({ ...supportForm, email: event.target.value })} placeholder="Email" type="email" className="rounded-2xl border px-4 py-3" required />
-              <input value={supportForm.subject} onChange={event => setSupportForm({ ...supportForm, subject: event.target.value })} placeholder="Subject" className="rounded-2xl border px-4 py-3" required />
-              <textarea value={supportForm.message} onChange={event => setSupportForm({ ...supportForm, message: event.target.value })} placeholder="How can CBHfinance support you?" className="min-h-36 rounded-2xl border px-4 py-3" required />
-              <button disabled={support.isPending} className="rounded-full bg-[#0a1f44] px-6 py-4 font-semibold text-white disabled:opacity-60">{support.isPending ? "Submitting..." : "Submit support request"}</button>
-              {supportMessage && <p className="rounded-2xl bg-[#f8f6f1] p-4 text-sm text-[#0a1f44]">{supportMessage}</p>}
-              <p className="text-sm text-slate-500">Support requests are captured for admin review inside the secure CBHfinance operations panel.</p>
+      <main className="container py-20">
+        {type === "contact" ? (
+          <div className="max-w-2xl">
+            <h1 className="font-serif text-5xl font-semibold">Contact Support</h1>
+            <p className="mt-4 text-slate-600">Have a question or need assistance? We're here to help.</p>
+            <form onSubmit={submitSupport} className="mt-10 space-y-5 rounded-[2rem] border border-[#0a1f44]/10 bg-white p-8">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Full Name</label>
+                <input type="text" value={supportForm.fullName} onChange={e => setSupportForm({ ...supportForm, fullName: e.target.value })} className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]" required />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Email</label>
+                <input type="email" value={supportForm.email} onChange={e => setSupportForm({ ...supportForm, email: e.target.value })} className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]" required />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Subject</label>
+                <input type="text" value={supportForm.subject} onChange={e => setSupportForm({ ...supportForm, subject: e.target.value })} className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]" required />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Message</label>
+                <textarea value={supportForm.message} onChange={e => setSupportForm({ ...supportForm, message: e.target.value })} rows={6} className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]" required />
+              </div>
+              {supportMessage && <div className={`rounded-2xl p-4 text-sm ${supportMessage.includes("Thank") ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"}`}>{supportMessage}</div>}
+              <button type="submit" className="w-full rounded-full bg-[#0a1f44] px-5 py-3 font-semibold text-white transition hover:bg-[#09285d]">
+                Send Message
+              </button>
             </form>
-          ) : (
-            <div className="prose prose-slate mt-8 max-w-none">
-              <p>These {title.toLowerCase()} describe the CBHfinance online banking environment, including credential and OTP flows, statement records, payment controls, and administrative account oversight.</p>
-              <p>No outgoing customer payment is processed by this application. Transfer, Wire, ACH, Zelle, and Bill Pay actions are blocked and display the required support message without changing account balances.</p>
-              <p>Administrative balance adjustments are recorded with transaction entries and append-only audit log records. The platform should be connected to formal compliance, legal, security, and banking infrastructure before any real-world financial use.</p>
+          </div>
+        ) : (
+          <div className="max-w-3xl">
+            <h1 className="font-serif text-5xl font-semibold">{title}</h1>
+            <div className="mt-10 space-y-6 text-slate-700">
+              <p>This is a demonstration banking portal built to showcase a professional financial application interface.</p>
+              <h2 className="font-serif text-2xl font-semibold text-[#0a1f44]">Key Features</h2>
+              <ul className="space-y-3 list-disc list-inside">
+                <li>Secure client authentication with OTP verification</li>
+                <li>Protected account dashboard with real transaction history</li>
+                <li>Monthly statement generation and download</li>
+                <li>Admin panel with user management and audit controls</li>
+                <li>Session timeout and security warnings</li>
+              </ul>
+              <h2 className="font-serif text-2xl font-semibold text-[#0a1f44]">Demo Limitations</h2>
+              <p>This is a demonstration environment. All transactions are simulated, and no real financial operations occur. User payments are intentionally blocked through security controls.</p>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </main>
       <Footer />
     </div>
   );
 }
 
-export function CBHFinanceRouter() {
-  return null;
+function NotFound() {
+  return (
+    <div className="min-h-screen bg-[#f8f6f1] text-[#0a1f44]">
+      <MarketingNav />
+      <main className="container flex min-h-[calc(100vh-80px)] flex-col items-center justify-center text-center">
+        <h1 className="font-serif text-6xl font-semibold">404</h1>
+        <p className="mt-4 text-xl text-slate-600">Page not found</p>
+        <Link href="/" className="mt-8 rounded-full bg-[#0a1f44] px-8 py-3 font-semibold text-white transition hover:bg-[#09285d]">
+          Return home
+        </Link>
+      </main>
+    </div>
+  );
 }
 
-export { LandingPage, LoginPage, UserPortal, AdminPanel, LegalPage };
+export { LandingPage, LoginPage, UserPortal, AdminPanel, LegalPage, NotFound };
+
+export function CBHFinanceApp() {
+  const [location] = useLocation();
+  const session = useMemo(() => readSession(), []);
+
+  if (location === "/") return <LandingPage />;
+  if (location === "/login") return <LoginPage role="user" />;
+  if (location === "/portal" || location.startsWith("/portal?")) return <UserPortal />;
+  if (location === "/secure-admin" || location.startsWith("/secure-admin?")) return <AdminPanel />;
+  if (location === "/terms") return <LegalPage type="terms" />;
+  if (location === "/privacy") return <LegalPage type="privacy" />;
+  if (location === "/contact") return <LegalPage type="contact" />;
+  return <NotFound />;
+}

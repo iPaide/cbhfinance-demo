@@ -33,3 +33,16 @@
 - [x] Replace statement download placeholders with branded PDF statement downloads for the seeded statement history.
 - [x] Remove always-visible test credentials from login pages while preserving a controlled way to reveal them for testing.
 - [x] Add explicit loading and error states for the admin support-cases query so loading or failures do not appear as an empty state.
+- [x] Make dashboard action buttons and banking workflows operational like a conventional banking portal while preserving any required payment-blocking safety rules.
+- [x] Expand seeded transaction history to provide about five pages of paginated transactions (currently ~170 transactions provide ~7 pages; verify pagination and filtering work correctly).
+- [x] Change the dollar sign and monetary figure typography to a regular banking-style font (replace .font-balance Space Grotesk with DM Sans).
+- [x] Rework the portal visual style to feel like a conventional online banking system rather than a boutique demo interface.
+- [x] Improve the mobile experience and define the mobile app delivery approach, such as responsive web app/PWA versus separate native mobile app.
+- [ ] DEFERRED: Allow users to sign in with their own email and password instead of relying only on fixed demo credentials.
+- [ ] DEFERRED: Add OTP delivery choice for user sign-in through email or phone number, using a safe simulated fallback unless real messaging credentials are provided.
+- [ ] DEFERRED: Add forgotten username recovery flow.
+- [ ] DEFERRED: Add forgotten password reset flow.
+- [ ] DEFERRED: Connect real OTP delivery through the user's email/SMS provider credentials, including secure environment variables, send logic, verification, and fallback error handling.
+- [ ] DEFERRED: Route all user OTP and account-recovery messages only to the configured private recipient email address and private recipient phone number, not to arbitrary public sign-up contacts.
+- [ ] DEFERRED: Configure private OTP and account-recovery routing from secure environment variables for the provided single recipient email and phone number.
+- [ ] DEFERRED: Simplify OTP and account recovery so the private portal remains easy to operate without requiring the user to manage complex external email/SMS provider setup.

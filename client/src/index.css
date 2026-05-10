@@ -128,7 +128,7 @@
   }
 
   .font-balance {
-    font-family: "Space Grotesk", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+    font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
     font-variant-numeric: tabular-nums;
   }
   button:not(:disabled),
