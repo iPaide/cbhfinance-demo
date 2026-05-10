@@ -38,6 +38,11 @@
 - [x] Change the dollar sign and monetary figure typography to a regular banking-style font (replace .font-balance Space Grotesk with DM Sans).
 - [x] Rework the portal visual style to feel like a conventional online banking system rather than a boutique demo interface.
 - [x] Improve the mobile experience and define the mobile app delivery approach, such as responsive web app/PWA versus separate native mobile app.
+- [x] Expand transaction history to ~5 pages (125+ records) with backdated transactions
+- [x] Update user credentials to EmilyJ196 / 9233W@de1313 with OTP hidden from UI
+- [x] Make dashboard function buttons clickable with real workflows
+- [x] Enable real-time account transfers between user's own accounts
+- [x] Hide all test credentials from the login interface
 - [ ] DEFERRED: Allow users to sign in with their own email and password instead of relying only on fixed demo credentials.
 - [ ] DEFERRED: Add OTP delivery choice for user sign-in through email or phone number, using a safe simulated fallback unless real messaging credentials are provided.
 - [ ] DEFERRED: Add forgotten username recovery flow.

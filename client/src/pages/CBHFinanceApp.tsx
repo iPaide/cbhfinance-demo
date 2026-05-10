@@ -252,24 +252,6 @@ function LoginPage({ role, onAuthenticated }: { role: "user" | "admin"; onAuthen
               <button type="submit" className="w-full rounded-full bg-[#0a1f44] px-5 py-3 font-semibold text-white transition hover:bg-[#09285d]">
                 Continue
               </button>
-              <button type="button" onClick={() => setShowTestAccess(!showTestAccess)} className="w-full text-xs text-slate-500 underline">
-                {showTestAccess ? "Hide" : "Show"} test credentials
-              </button>
-              {showTestAccess && (
-                <div className="rounded-2xl bg-[#f8f6f1] p-3 text-xs text-slate-600">
-                  {role === "admin" ? (
-                    <>
-                      <div>Email: admin@cbhfinance.online</div>
-                      <div>Password: CBHAdmin!2026</div>
-                    </>
-                  ) : (
-                    <>
-                      <div>Email: emily.johnson@cbhfinance.online</div>
-                      <div>Password: CBHUser!2026</div>
-                    </>
-                  )}
-                </div>
-              )}
             </form>
           ) : (
             <form onSubmit={submitOtp} className="mt-8 space-y-4">
@@ -284,9 +266,6 @@ function LoginPage({ role, onAuthenticated }: { role: "user" | "admin"; onAuthen
               <button type="button" onClick={() => { setOtpReady(false); setOtp(""); }} className="w-full text-xs text-slate-500 underline">
                 Back to credentials
               </button>
-              <div className="rounded-2xl bg-[#f8f6f1] p-3 text-xs text-slate-600">
-                <strong>Test OTP:</strong> 246810
-              </div>
             </form>
           )}
         </div>
@@ -440,17 +419,43 @@ function TransactionHistory() {
 }
 
 function Payments() {
+  const utils = trpc.useUtils();
   const block = trpc.banking.blockPayment.useMutation();
+  const transfer = trpc.banking.transfer.useMutation({
+    onSuccess: async () => {
+      await utils.banking.dashboard.invalidate();
+      await utils.banking.accounts.invalidate();
+      await utils.banking.transactions.invalidate();
+    },
+  });
+  const accounts = trpc.banking.accounts.useQuery();
   const [activeForm, setActiveForm] = useState<string | null>(null);
   const [formData, setFormData] = useState({ recipient: "", amount: "", memo: "" });
   const [submitting, setSubmitting] = useState(false);
   const [blocked, setBlocked] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   async function submitPayment(type: string) {
     setSubmitting(true);
     try {
       const paymentType = type as "Transfer" | "Wire" | "ACH" | "Zelle" | "Bill Pay";
-      await block.mutateAsync({ paymentType, amount: Number(formData.amount) || 100, memo: formData.memo || "Payment request" });
+      
+      if (paymentType === "Transfer") {
+        if (!formData.recipient || !formData.memo) {
+          throw new Error("Please select both source and destination accounts");
+        }
+        await transfer.mutateAsync({
+          fromAccountId: formData.recipient,
+          toAccountId: formData.memo,
+          amount: Number(formData.amount) || 100,
+          memo: "Internal transfer",
+        });
+        setSuccess(true);
+      } else {
+        await block.mutateAsync({ paymentType, amount: Number(formData.amount) || 100, memo: formData.memo || "Payment request" });
+        setBlocked(true);
+      }
+    } catch (err: any) {
       setBlocked(true);
     } finally {
       setSubmitting(false);
@@ -485,16 +490,45 @@ function Payments() {
           <h3 className="mb-4 font-serif text-xl font-semibold">{activeForm} Request</h3>
           {!blocked ? (
             <form onSubmit={(e) => { e.preventDefault(); submitPayment(activeForm); }} className="grid gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Recipient / Destination</label>
-                <input
-                  type="text"
-                  placeholder={activeForm === "Transfer" ? "Select account" : activeForm === "Zelle" ? "Email or phone" : "Account or routing info"}
-                  value={formData.recipient}
-                  onChange={(e) => setFormData({ ...formData, recipient: e.target.value })}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]"
-                />
-              </div>
+              {activeForm === "Transfer" ? (
+                <>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">From Account</label>
+                    <select
+                      value={formData.recipient}
+                      onChange={(e) => setFormData({ ...formData, recipient: e.target.value, memo: "" })}
+                      className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]"
+                      required
+                    >
+                      <option value="">Select source account</option>
+                      {accounts.data?.map(acc => <option key={acc.id} value={acc.id}>{acc.type} ({acc.number}) - {money(acc.balance)}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">To Account</label>
+                    <select
+                      value={formData.memo}
+                      onChange={(e) => setFormData({ ...formData, memo: e.target.value })}
+                      className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]"
+                      required
+                    >
+                      <option value="">Select destination account</option>
+                      {accounts.data?.filter(acc => acc.id !== formData.recipient).map(acc => <option key={acc.id} value={acc.id}>{acc.type} ({acc.number}) - {money(acc.balance)}</option>)}
+                    </select>
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Recipient / Destination</label>
+                  <input
+                    type="text"
+                    placeholder={activeForm === "Zelle" ? "Email or phone" : "Account or routing info"}
+                    value={formData.recipient}
+                    onChange={(e) => setFormData({ ...formData, recipient: e.target.value })}
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]"
+                  />
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">Amount</label>
                 <input
@@ -534,6 +568,14 @@ function Payments() {
                 </button>
               </div>
             </form>
+          ) : success ? (
+            <div className="rounded-2xl bg-white p-6 text-center">
+              <div className="mx-auto h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center">
+                <span className="text-emerald-600 text-xl">✓</span>
+              </div>
+              <h4 className="mt-4 font-serif text-xl font-semibold">Transfer Completed Successfully</h4>
+              <p className="mt-2 text-sm text-slate-600">Your transfer of ${Number(formData.amount || 0).toFixed(2)} has been processed and your accounts have been updated.</p>
+            </div>
           ) : (
             <div className="rounded-2xl bg-white p-6 text-center">
               <AlertCircle className="mx-auto h-12 w-12 text-[#c9a84c]" />

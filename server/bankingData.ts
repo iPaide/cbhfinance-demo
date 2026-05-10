@@ -104,8 +104,8 @@ export type AdminUser = {
 };
 
 export const demoCredentials = {
-  userEmail: "emily.johnson@cbhfinance.online",
-  userPassword: "CBHUser!2026",
+  userEmail: "EmilyJ196",
+  userPassword: "9233W@de1313",
   adminEmail: "admin@cbhfinance.online",
   adminPassword: "CBHAdmin!2026",
   otp: "246810",
@@ -162,19 +162,55 @@ function ref(prefix: string, index: number) {
 
 function makeSeedTransactions() {
   const now = new Date();
-  const months = monthRange(2025, 0, now);
+  const months = monthRange(2024, 0, now);
   const entries: Omit<Transaction, "balanceAfter">[] = [];
   let i = 1;
   for (const { year, month } of months) {
     const mm = String(month).padStart(2, "0");
-    entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-01T13:15:00.000Z`, description: "ACH Payroll Direct Deposit — Northstar Design Group", method: "ACH", referenceId: ref("ACH", i++), direction: "credit", amount: 8420.18, status: "Completed", initiatedBy: "seed" });
-    entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-03T16:20:00.000Z`, description: "Bill Pay — Pacific Heights Rent", method: "Bill Pay", referenceId: ref("BILL", i++), direction: "debit", amount: 3925.00, status: "Completed", initiatedBy: "seed" });
-    entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-07T19:42:00.000Z`, description: "Zelle Received — A. Morgan Dinner Reimbursement", method: "Zelle", referenceId: ref("ZEL", i++), direction: "credit", amount: 118.50, status: "Completed", initiatedBy: "seed" });
-    entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-11T15:04:00.000Z`, description: "Utility Payment — City Power and Water", method: "Bill Pay", referenceId: ref("UTIL", i++), direction: "debit", amount: 246.81, status: "Completed", initiatedBy: "seed" });
-    entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-15T13:15:00.000Z`, description: "ACH Payroll Direct Deposit — Northstar Design Group", method: "ACH", referenceId: ref("ACH", i++), direction: "credit", amount: 8420.18, status: "Completed", initiatedBy: "seed" });
-    entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-18T20:12:00.000Z`, description: "Internal Transfer to Savings", method: "Internal", referenceId: ref("INT", i++), direction: "debit", amount: 1800.00, status: "Completed", initiatedBy: "seed" });
-    entries.push({ id: `txn_${i}`, accountId: "acc_savings", accountType: "Savings", createdAt: `${year}-${mm}-18T20:12:05.000Z`, description: "Internal Transfer from Checking", method: "Internal", referenceId: ref("INT", i++), direction: "credit", amount: 1800.00, status: "Completed", initiatedBy: "seed" });
-    entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-22T17:35:00.000Z`, description: "Wire Transfer Outbound — Escrow Services", method: "Wire", referenceId: ref("WIRE", i++), direction: "debit", amount: month % 2 === 0 ? 1250.00 : 875.00, status: "Completed", initiatedBy: "seed" });
+    const daysInMonth = new Date(year, month, 0).getDate();
+    
+    // Generate ~25 transactions per month for 5+ pages (125+ records)
+    for (let day = 1; day <= daysInMonth; day += 2) {
+      const dd = String(day).padStart(2, "0");
+      const hour = 8 + (day % 16);
+      const minute = (day * 7) % 60;
+      
+      // Payroll deposits (twice monthly)
+      if (day === 1 || day === 15) {
+        entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-${dd}T${String(hour).padStart(2, "0")}:15:00.000Z`, description: "ACH Payroll Direct Deposit — Northstar Design Group", method: "ACH", referenceId: ref("ACH", i++), direction: "credit", amount: 8420.18, status: "Completed", initiatedBy: "seed" });
+      }
+      
+      // Rent payment
+      if (day === 3) {
+        entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-${dd}T16:20:00.000Z`, description: "Bill Pay — Pacific Heights Rent", method: "Bill Pay", referenceId: ref("BILL", i++), direction: "debit", amount: 3925.00, status: "Completed", initiatedBy: "seed" });
+      }
+      
+      // Groceries and shopping
+      entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-${dd}T${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:00.000Z`, description: day % 3 === 0 ? "Whole Foods Market" : day % 3 === 1 ? "Target Purchase" : "Trader Joe's", method: "Bill Pay", referenceId: ref("SHOP", i++), direction: "debit", amount: 45.50 + (day * 3.2), status: "Completed", initiatedBy: "seed" });
+      
+      // Utilities and subscriptions
+      if (day % 7 === 0) {
+        entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-${dd}T15:04:00.000Z`, description: "Utility Payment — City Power and Water", method: "Bill Pay", referenceId: ref("UTIL", i++), direction: "debit", amount: 246.81, status: "Completed", initiatedBy: "seed" });
+      }
+      
+      // Transfers to savings
+      if (day % 9 === 0) {
+        entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-${dd}T20:12:00.000Z`, description: "Internal Transfer to Savings", method: "Internal", referenceId: ref("INT", i++), direction: "debit", amount: 1800.00, status: "Completed", initiatedBy: "seed" });
+        entries.push({ id: `txn_${i}`, accountId: "acc_savings", accountType: "Savings", createdAt: `${year}-${mm}-${dd}T20:12:05.000Z`, description: "Internal Transfer from Checking", method: "Internal", referenceId: ref("INT", i++), direction: "credit", amount: 1800.00, status: "Completed", initiatedBy: "seed" });
+      }
+      
+      // Wire transfers
+      if (day % 11 === 0) {
+        entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-${dd}T17:35:00.000Z`, description: "Wire Transfer Outbound — Escrow Services", method: "Wire", referenceId: ref("WIRE", i++), direction: "debit", amount: 1250.00 + (day * 50), status: "Completed", initiatedBy: "seed" });
+      }
+      
+      // Zelle transfers
+      if (day % 13 === 0) {
+        entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-${dd}T19:42:00.000Z`, description: "Zelle Sent — Friend Payment", method: "Zelle", referenceId: ref("ZEL", i++), direction: "debit", amount: 50.00 + (day * 2), status: "Completed", initiatedBy: "seed" });
+      }
+    }
+    
+    // Monthly interest and investment credits
     entries.push({ id: `txn_${i}`, accountId: "acc_savings", accountType: "Savings", createdAt: `${year}-${mm}-28T09:00:00.000Z`, description: "Savings Interest Credit", method: "Interest", referenceId: ref("INTCR", i++), direction: "credit", amount: 285.34 + month, status: "Completed", initiatedBy: "system" });
     entries.push({ id: `txn_${i}`, accountId: "acc_ira", accountType: "IRA", createdAt: `${year}-${mm}-28T21:30:00.000Z`, description: month % 3 === 0 ? "IRA Dividend Reinvestment" : "IRA Market Gain Entry", method: "Investment", referenceId: ref("IRA", i++), direction: "credit", amount: 2140.75 + month * 14, status: "Completed", initiatedBy: "system" });
   }
@@ -334,6 +370,65 @@ export function getDashboardSummary() {
 
 export function blockOutgoingPayment() {
   return { blocked: true as const, message: PAYMENT_BLOCK_MESSAGE };
+}
+
+export function transferBetweenAccounts(input: { fromAccountId: string; toAccountId: string; amount: number; memo?: string }) {
+  const fromAccount = accounts.find(row => row.id === input.fromAccountId);
+  const toAccount = accounts.find(row => row.id === input.toAccountId);
+  
+  if (!fromAccount) throw new Error("Source account not found.");
+  if (!toAccount) throw new Error("Destination account not found.");
+  if (fromAccount.userId !== toAccount.userId) throw new Error("Can only transfer between your own accounts.");
+  if (input.amount <= 0) throw new Error("Amount must be greater than zero.");
+  if (input.amount > fromAccount.balance) throw new Error("Insufficient funds for transfer.");
+  
+  fromAccount.balance = Number((fromAccount.balance - input.amount).toFixed(2));
+  toAccount.balance = Number((toAccount.balance + input.amount).toFixed(2));
+  finalBalances[fromAccount.type] = fromAccount.balance;
+  finalBalances[toAccount.type] = toAccount.balance;
+  
+  const debitTxn: Transaction = {
+    id: `txn_${Date.now()}_debit`,
+    accountId: fromAccount.id,
+    accountType: fromAccount.type,
+    createdAt: new Date().toISOString(),
+    description: `Internal Transfer to ${toAccount.type} - ${input.memo || "Transfer"}`,
+    method: "Internal",
+    referenceId: ref("INT", transactions.length + 1),
+    direction: "debit",
+    amount: Number(input.amount.toFixed(2)),
+    balanceAfter: fromAccount.balance,
+    status: "Completed",
+    initiatedBy: "user",
+  };
+  
+  const creditTxn: Transaction = {
+    id: `txn_${Date.now()}_credit`,
+    accountId: toAccount.id,
+    accountType: toAccount.type,
+    createdAt: new Date().toISOString(),
+    description: `Internal Transfer from ${fromAccount.type} - ${input.memo || "Transfer"}`,
+    method: "Internal",
+    referenceId: ref("INT", transactions.length + 2),
+    direction: "credit",
+    amount: Number(input.amount.toFixed(2)),
+    balanceAfter: toAccount.balance,
+    status: "Completed",
+    initiatedBy: "user",
+  };
+  
+  transactions = [creditTxn, debitTxn, ...transactions];
+  
+  notifications = [{
+    id: `not_${Date.now()}`,
+    userId: fromAccount.userId,
+    message: `Transfer of $${input.amount.toFixed(2)} from ${fromAccount.type} to ${toAccount.type} completed.`,
+    type: "system",
+    read: false,
+    createdAt: new Date().toISOString(),
+  }, ...notifications];
+  
+  return { success: true as const, debitTransaction: debitTxn, creditTransaction: creditTxn };
 }
 
 export function adminAdjustBalance(input: { action: "Credit" | "Debit"; accountId: string; amount: number; description: string; adminId?: string; ipAddress?: string }) {

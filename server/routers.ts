@@ -24,6 +24,7 @@ import {
   recordPasswordChangeNotification,
   recordSessionWarningNotification,
   setCustomerStatus,
+  transferBetweenAccounts,
   updateSupportCaseStatus,
   verifyOtp,
 } from "./bankingData";
@@ -53,7 +54,7 @@ export const appRouter = router({
   banking: router({
     securityPolicy: publicProcedure.query(() => getSecurityPolicy()),
     login: publicProcedure
-      .input(z.object({ email: z.string().email(), password: z.string().min(1), role: roleSchema }))
+      .input(z.object({ email: z.string().min(1), password: z.string().min(1), role: roleSchema }))
       .mutation(({ input }) => attemptCredentialLogin(input)),
     verifyOtp: publicProcedure
       .input(z.object({ role: roleSchema, otp: z.string().length(6) }))
@@ -98,6 +99,14 @@ export const appRouter = router({
         memo: z.string().optional(),
       }))
       .mutation(() => blockOutgoingPayment()),
+    transfer: publicProcedure
+      .input(z.object({
+        fromAccountId: z.string().min(1),
+        toAccountId: z.string().min(1),
+        amount: z.number().positive(),
+        memo: z.string().optional(),
+      }))
+      .mutation(({ input }) => transferBetweenAccounts(input)),
     adminOverview: publicProcedure
       .input(z.object({ token: z.string().optional() }))
       .query(({ input }) => {
