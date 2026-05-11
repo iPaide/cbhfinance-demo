@@ -422,16 +422,26 @@ function Payments() {
   const utils = trpc.useUtils();
   const block = trpc.banking.blockPayment.useMutation({
     onSuccess: async () => {
+      console.log("Block payment successful, invalidating queries...");
       await utils.banking.dashboard.invalidate();
       await utils.banking.accounts.invalidate();
       await utils.banking.transactions.invalidate();
+      console.log("Queries invalidated");
+    },
+    onError: (error) => {
+      console.error("Block payment error:", error);
     },
   });
   const transfer = trpc.banking.transfer.useMutation({
     onSuccess: async () => {
+      console.log("Transfer successful, invalidating queries...");
       await utils.banking.dashboard.invalidate();
       await utils.banking.accounts.invalidate();
       await utils.banking.transactions.invalidate();
+      console.log("Queries invalidated");
+    },
+    onError: (error) => {
+      console.error("Transfer error:", error);
     },
   });
   const accounts = trpc.banking.accounts.useQuery();
@@ -457,6 +467,12 @@ function Payments() {
           memo: "Internal transfer",
         });
         setSuccess(true);
+        // Auto-close after 3 seconds
+        setTimeout(() => {
+          setActiveForm(null);
+          setSuccess(false);
+          setFormData({ recipient: "", amount: "", memo: "" });
+        }, 3000);
       } else {
         await block.mutateAsync({ paymentType, amount: Number(formData.amount) || 100, memo: formData.memo || "Payment request" });
         setBlocked(true);
