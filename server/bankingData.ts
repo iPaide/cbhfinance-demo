@@ -227,7 +227,9 @@ function makeSeedTransactions() {
       completed.push({ ...entry, balanceAfter: running });
     }
   }
-  return completed.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const sorted = completed.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  console.log(`[Banking] Generated ${sorted.length} seeded transactions`);
+  return sorted;
 }
 
 let transactions: Transaction[] = makeSeedTransactions();
