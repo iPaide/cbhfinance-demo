@@ -704,7 +704,7 @@ function LegalPage({ type }: { type: "terms" | "privacy" | "contact" }) {
                 <li>Admin panel with user management and audit controls</li>
                 <li>Session timeout and security warnings</li>
               </ul>
-              <h2 className="font-serif text-2xl font-semibold text-[#0a1f44]">Demo Limitations</h2>
+              <h2 className="font-serif text-2xl font-semibold text-[#0a1f44]">System Limitations</h2>
               <p>This is a demonstration environment. All transactions are simulated, and no real financial operations occur. User payments are intentionally blocked through security controls.</p>
             </div>
           </div>

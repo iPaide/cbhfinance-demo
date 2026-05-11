@@ -55,3 +55,11 @@
 - [ ] DEFERRED: Route all user OTP and account-recovery messages only to the configured private recipient email address and private recipient phone number, not to arbitrary public sign-up contacts.
 - [ ] DEFERRED: Configure private OTP and account-recovery routing from secure environment variables for the provided single recipient email and phone number.
 - [ ] DEFERRED: Simplify OTP and account recovery so the private portal remains easy to operate without requiring the user to manage complex external email/SMS provider setup.
+- [x] Remove hardcoded demo user credentials from bankingData.ts
+- [x] Remove demo account seeding and replace with empty/setup state
+- [x] Remove demo transaction history seeding
+- [x] Remove demo alerts and notifications
+- [x] Remove demo-specific UI text and placeholders
+- [x] Update login page to show real user onboarding flow instead of demo credentials
+- [x] Update admin login to show real admin onboarding flow
+- [x] Clean up any console logging or debug statements

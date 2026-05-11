@@ -1,8 +1,8 @@
-# CBHfinance Demo Banking Portal
+# CBHfinance Banking Portal
 
 CBHfinance is a full-stack demo banking web application that combines a public marketing site, a seeded user banking portal, and a back-office admin panel at `/secure-admin`. The application is branded with the CBHfinance palette of navy `#0a1f44`, gold `#c9a84c`, off-white `#f8f6f1`, Playfair Display headings, and DM Sans body text.
 
-## Important Demo Scope
+## Important Scope
 
 This project is intentionally implemented as a controlled demo. It is not connected to a real bank, payment network, card processor, ACH rail, Zelle network, wire service, or investment custodian. All outgoing user payment actions are silently blocked and display exactly:
 
@@ -18,8 +18,8 @@ Admin balance adjustments are recorded inside the demo ledger and append-only au
 | User login | `/login` | Separate user credential page, OTP step, lockout simulation, session constants. |
 | User portal | `/portal` | Account cards, total net worth, recent transactions, quick actions, alerts, notifications, statements, settings. |
 | Admin panel | `/secure-admin` | Separate admin login, dashboard, user/account view, transaction table, admin credit/debit tool, immutable audit log. |
-| Terms | `/terms` | CBHfinance demo terms page. |
-| Privacy | `/privacy` | CBHfinance demo privacy page. |
+| Terms | `/terms` | CBHfinance terms page. |
+| Privacy | `/privacy` | CBHfinance privacy page. |
 | Contact | `/contact` | Branded contact support placeholder form. |
 
 ## Seeded Customer
@@ -34,12 +34,12 @@ Admin balance adjustments are recorded inside the demo ledger and append-only au
 | Transaction history | Starts January 2025 and runs through the current date. |
 | Statement history | Begins January 2025. |
 
-## Demo Credentials
+## Credentials
 
 | Role | Route | Email | Password | OTP |
 |---|---|---|---|---:|
-| User | `/login` | `emily.johnson@cbhfinance.online` | `DemoUser!2026` | `246810` |
-| Admin | `/secure-admin` | `admin@cbhfinance.online` | `AdminDemo!2026` | `246810` |
+| User | `/login` | `emilyajohnson196@gmail.com` | `9233W@de1313` | `246810` |
+| Admin | `/secure-admin` | `admin@cbhfinance.online` | `CBHAdmin!2026` | `246810` |
 
 ## Security and Banking Behaviors
 
@@ -76,4 +76,4 @@ Production build: passed
 
 ## Architecture Notes
 
-The project uses the scaffolded React, Express, tRPC, Drizzle, and database stack. Banking data is held in deterministic server-side demo state for immediate execution and testability, while schema tables are defined for customers, accounts, transactions, statements, notifications, and immutable admin logs. The generated database migration has been applied to the managed project database.
+The project uses the scaffolded React, Express, tRPC, Drizzle, and database stack. Banking data is held in deterministic server-side state for immediate execution and testability, while schema tables are defined for customers, accounts, transactions, statements, notifications, and immutable admin logs. The generated database migration has been applied to the managed project database.
