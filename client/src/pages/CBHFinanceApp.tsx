@@ -328,6 +328,7 @@ function useDemoSession(requiredRole?: "user" | "admin") {
 function PortalLayout({ children, title, role = "user" }: { children: React.ReactNode; title: string; role?: "user" | "admin" }) {
   const { warning, logout, dismissWarning } = useDemoSession(role);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [, setLocation] = useLocation();
   const nav: [string, string][] = role === "admin" ? [
     ["/secure-admin", "Dashboard"], ["/secure-admin?tab=users", "Users"], ["/secure-admin?tab=transactions", "Transactions"], ["/secure-admin?tab=support", "Support"], ["/secure-admin?tab=payments", "Payments"], ["/secure-admin?tab=audit", "Audit"]
   ] : [
@@ -340,7 +341,7 @@ function PortalLayout({ children, title, role = "user" }: { children: React.Reac
         <div className="font-serif text-3xl font-semibold text-[#c9a84c]">CBHfinance</div>
         <div className="mt-2 text-xs uppercase tracking-[0.28em] text-white/50">{role === "admin" ? "Admin console" : "User portal"}</div>
         <nav className="mt-10 grid gap-2">
-          {nav.map(([href, label]) => <Link key={href} href={href} className="rounded-2xl px-4 py-3 text-sm font-semibold text-white/75 transition hover:bg-white/10 hover:text-white">{label}</Link>)}
+          {nav.map(([href, label]) => <button key={href} onClick={() => setLocation(href)} className="rounded-2xl px-4 py-3 text-sm font-semibold text-white/75 transition hover:bg-white/10 hover:text-white text-left w-full">{label}</button>)}
         </nav>
         <button onClick={logout} className="absolute bottom-6 left-6 right-6 rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white/80 hover:bg-white/10">Sign out</button>
       </aside>
@@ -351,7 +352,7 @@ function PortalLayout({ children, title, role = "user" }: { children: React.Reac
           <button onClick={() => setMobileNavOpen(false)} className="text-white/75 hover:text-white">✕</button>
         </div>
         <nav className="grid gap-2">
-          {nav.map(([href, label]) => <Link key={href} href={href} className="rounded-2xl px-4 py-3 text-sm font-semibold text-white/75 transition hover:bg-white/10 hover:text-white" onClick={() => setMobileNavOpen(false)}>{label}</Link>)}
+          {nav.map(([href, label]) => <button key={href} onClick={() => { setLocation(href); setMobileNavOpen(false); }} className="rounded-2xl px-4 py-3 text-sm font-semibold text-white/75 transition hover:bg-white/10 hover:text-white text-left w-full">{label}</button>)}
         </nav>
         <button onClick={() => { logout(); setMobileNavOpen(false); }} className="mt-8 w-full rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white/80 hover:bg-white/10">Sign out</button>
       </aside>
