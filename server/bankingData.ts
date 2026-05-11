@@ -341,6 +341,7 @@ export function getAccounts() {
 
 export function getTransactions(input?: { page?: number; accountType?: AccountType | "All"; method?: PaymentMethod | "All"; status?: TransactionStatus | "All"; search?: string }) {
   const page = Math.max(1, input?.page ?? 1);
+  console.log(`[Banking] getTransactions: page=${page}, total_txns=${transactions.length}`);
   let filtered = transactions.slice();
   if (input?.accountType && input.accountType !== "All") filtered = filtered.filter(t => t.accountType === input.accountType);
   if (input?.method && input.method !== "All") filtered = filtered.filter(t => t.method === input.method);
