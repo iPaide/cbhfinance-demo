@@ -420,7 +420,13 @@ function TransactionHistory() {
 
 function Payments() {
   const utils = trpc.useUtils();
-  const block = trpc.banking.blockPayment.useMutation();
+  const block = trpc.banking.blockPayment.useMutation({
+    onSuccess: async () => {
+      await utils.banking.dashboard.invalidate();
+      await utils.banking.accounts.invalidate();
+      await utils.banking.transactions.invalidate();
+    },
+  });
   const transfer = trpc.banking.transfer.useMutation({
     onSuccess: async () => {
       await utils.banking.dashboard.invalidate();
@@ -454,6 +460,7 @@ function Payments() {
       } else {
         await block.mutateAsync({ paymentType, amount: Number(formData.amount) || 100, memo: formData.memo || "Payment request" });
         setBlocked(true);
+        setSuccess(true);
       }
     } catch (err: any) {
       setBlocked(true);

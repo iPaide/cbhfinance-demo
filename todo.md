@@ -46,6 +46,7 @@
 - [x] Ensure sufficient transactions are displayed in transaction history
 - [x] Make all navigation items clickable (Dashboard, Transactions, Payments, Statements, Settings)
 - [x] Remove glassmorphic effects and use solid conventional banking design
+- [x] Implement tRPC query invalidation after transfers and mutations
 - [ ] DEFERRED: Allow users to sign in with their own email and password instead of relying only on fixed demo credentials.
 - [ ] DEFERRED: Add OTP delivery choice for user sign-in through email or phone number, using a safe simulated fallback unless real messaging credentials are provided.
 - [ ] DEFERRED: Add forgotten username recovery flow.
