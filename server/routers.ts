@@ -28,6 +28,7 @@ import {
   updateSupportCaseStatus,
   verifyOtp,
 } from "./bankingData";
+import { transferFunds, getAccountsByUser, getTransactionsByAccount } from "./db";
 
 const roleSchema = z.enum(["user", "admin"]);
 const accountTypeSchema = z.enum(["All", "Checking", "Savings", "IRA"]);
@@ -106,7 +107,17 @@ export const appRouter = router({
         amount: z.number().positive(),
         memo: z.string().optional(),
       }))
-      .mutation(({ input }) => transferBetweenAccounts(input)),
+      .mutation(({ input, ctx }) => {
+        if (!ctx.user?.id) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "User not authenticated" });
+        }
+        return transferFunds({
+          fromAccountId: input.fromAccountId,
+          toAccountId: input.toAccountId,
+          amount: input.amount,
+          initiatedBy: String(ctx.user.id),
+        });
+      }),
     adminOverview: publicProcedure
       .input(z.object({ token: z.string().optional() }))
       .query(({ input }) => {

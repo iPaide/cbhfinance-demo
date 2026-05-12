@@ -63,3 +63,13 @@
 - [x] Update login page to show real user onboarding flow instead of demo credentials
 - [x] Update admin login to show real admin onboarding flow
 - [x] Clean up any console logging or debug statements
+
+## Real Database Integration (Major Upgrade)
+
+- [x] Add real account query: getAccountsByUser()
+- [x] Add real transaction query: getTransactionsByAccount()
+- [x] Build real transfer engine: transferFunds()
+- [x] Update tRPC procedures to use real database functions
+- [x] Test real transfers with database persistence
+- [x] Verify transaction history reflects real database data
+- [ ] Remove in-memory seeded data and use only database (optional - keep for fallback)

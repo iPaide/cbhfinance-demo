@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, cbhAccounts, cbhTransactions } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -90,3 +90,123 @@ export async function getUserByOpenId(openId: string) {
 }
 
 // TODO: add feature queries here as your schema grows.
+
+export async function getAccountsByUser(userId: string) {
+  const db = await getDb();
+
+  if (!db) {
+    throw new Error("Database unavailable");
+  }
+
+  return await db
+    .select()
+    .from(cbhAccounts)
+    .where(eq(cbhAccounts.userId, userId));
+}
+
+export async function getTransactionsByAccount(accountId: string) {
+  const db = await getDb();
+
+  if (!db) {
+    throw new Error("Database unavailable");
+  }
+
+  return await db
+    .select()
+    .from(cbhTransactions)
+    .where(eq(cbhTransactions.accountId, accountId));
+}
+
+export async function transferFunds({
+  fromAccountId,
+  toAccountId,
+  amount,
+  initiatedBy,
+}: {
+  fromAccountId: string;
+  toAccountId: string;
+  amount: number;
+  initiatedBy: string;
+}) {
+  const db = await getDb();
+
+  if (!db) {
+    throw new Error("Database unavailable");
+  }
+
+  const sender = await db
+    .select()
+    .from(cbhAccounts)
+    .where(eq(cbhAccounts.id, fromAccountId))
+    .limit(1);
+
+  const receiver = await db
+    .select()
+    .from(cbhAccounts)
+    .where(eq(cbhAccounts.id, toAccountId))
+    .limit(1);
+
+  if (!sender[0] || !receiver[0]) {
+    throw new Error("Account not found");
+  }
+
+  const senderBalance = Number(sender[0].balance);
+
+  if (senderBalance < amount) {
+    throw new Error("Insufficient funds");
+  }
+
+  const updatedSenderBalance = senderBalance - amount;
+  const updatedReceiverBalance =
+    Number(receiver[0].balance) + amount;
+
+  await db
+    .update(cbhAccounts)
+    .set({
+      balance: updatedSenderBalance.toFixed(2),
+    })
+    .where(eq(cbhAccounts.id, fromAccountId));
+
+  await db
+    .update(cbhAccounts)
+    .set({
+      balance: updatedReceiverBalance.toFixed(2),
+    })
+    .where(eq(cbhAccounts.id, toAccountId));
+
+  const referenceId = crypto.randomUUID();
+
+  await db.insert(cbhTransactions).values([
+    {
+      id: crypto.randomUUID(),
+      accountId: fromAccountId,
+      accountType: sender[0].accountType,
+      amount: amount.toFixed(2),
+      direction: "debit",
+      method: "Internal",
+      description: `Transfer to ${receiver[0].accountNumber}`,
+      referenceId: `${referenceId}-debit`,
+      balanceAfter: updatedSenderBalance.toFixed(2),
+      initiatedBy,
+      status: "Completed",
+    },
+    {
+      id: crypto.randomUUID(),
+      accountId: toAccountId,
+      accountType: receiver[0].accountType,
+      amount: amount.toFixed(2),
+      direction: "credit",
+      method: "Internal",
+      description: `Transfer from ${sender[0].accountNumber}`,
+      referenceId: `${referenceId}-credit`,
+      balanceAfter: updatedReceiverBalance.toFixed(2),
+      initiatedBy,
+      status: "Completed",
+    },
+  ]);
+
+  return {
+    success: true,
+    referenceId,
+  };
+}
