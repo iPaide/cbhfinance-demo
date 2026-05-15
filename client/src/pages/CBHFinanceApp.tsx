@@ -325,7 +325,7 @@ function useDemoSession(requiredRole?: "user" | "admin") {
   return { session, warning, logout, dismissWarning: () => setWarning(false) };
 }
 
-function PortalLayout({ children, title, role = "user", onNavigate }: { children: React.ReactNode; title: string; role?: "user" | "admin"; onNavigate?: (path: string) => void }) {
+function PortalLayout({ children, title, role = "user" }: { children: React.ReactNode; title: string; role?: "user" | "admin" }) {
   const { warning, logout, dismissWarning } = useDemoSession(role);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const nav: [string, string][] = role === "admin" ? [
@@ -340,7 +340,7 @@ function PortalLayout({ children, title, role = "user", onNavigate }: { children
         <div className="font-serif text-3xl font-semibold text-[#c9a84c]">CBHfinance</div>
         <div className="mt-2 text-xs uppercase tracking-[0.28em] text-white/50">{role === "admin" ? "Admin console" : "User portal"}</div>
         <nav className="mt-10 grid gap-2">
-          {nav.map(([href, label]) => <button key={href} onClick={() => onNavigate?.(href)} className="rounded-2xl px-4 py-3 text-sm font-semibold text-white/75 transition hover:bg-white/10 hover:text-white text-left w-full">{label}</button>)}
+          {nav.map(([href, label]) => <Link key={href} href={href} className="rounded-2xl px-4 py-3 text-sm font-semibold text-white/75 transition hover:bg-white/10 hover:text-white">{label}</Link>)}
         </nav>
         <button onClick={logout} className="absolute bottom-6 left-6 right-6 rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white/80 hover:bg-white/10">Sign out</button>
       </aside>
@@ -351,7 +351,7 @@ function PortalLayout({ children, title, role = "user", onNavigate }: { children
           <button onClick={() => setMobileNavOpen(false)} className="text-white/75 hover:text-white">✕</button>
         </div>
         <nav className="grid gap-2">
-          {nav.map(([href, label]) => <button key={href} onClick={() => { onNavigate?.(href); setMobileNavOpen(false); }} className="rounded-2xl px-4 py-3 text-sm font-semibold text-white/75 transition hover:bg-white/10 hover:text-white text-left w-full">{label}</button>)}
+          {nav.map(([href, label]) => <Link key={href} href={href} className="rounded-2xl px-4 py-3 text-sm font-semibold text-white/75 transition hover:bg-white/10 hover:text-white" onClick={() => setMobileNavOpen(false)}>{label}</Link>)}
         </nav>
         <button onClick={() => { logout(); setMobileNavOpen(false); }} className="mt-8 w-full rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white/80 hover:bg-white/10">Sign out</button>
       </aside>
@@ -372,30 +372,191 @@ function PortalLayout({ children, title, role = "user", onNavigate }: { children
 }
 
 function UserPortal() {
-  const [location, setLocation] = useLocation();
-  const tab = new URLSearchParams(location.split("?")[1] ?? "").get("tab") ?? "dashboard";
+  const [tab, setTab] = useState("dashboard");
   const dashboard = trpc.banking.dashboard.useQuery();
   const statements = trpc.banking.statements.useQuery();
-  const passwordNotice = trpc.banking.recordPasswordChange.useMutation();
-  const [dark, setDark] = useState(false);
-  const [twoFaEnabled, setTwoFaEnabled] = useState(true);
+
+  const navItems = [
+    ["Dashboard", "dashboard"],
+    ["Transactions", "transactions"],
+    ["Payments", "payments"],
+    ["Statements", "statements"],
+    ["Settings", "settings"],
+  ];
+
+  const quickActions = [
+    ["Transfer", "payments"],
+    ["Wire", "payments"],
+    ["Zelle", "payments"],
+    ["Bill Pay", "payments"],
+    ["Statements", "statements"],
+  ];
+
+  function logout() {
+    localStorage.removeItem("cbh_session");
+    window.location.href = "/";
+  }
 
   return (
-    <PortalLayout title="Emily Ann Johnson" role="user" onNavigate={setLocation}>
-      {tab === "dashboard" && (
-        <div className="grid gap-6">
-          <div className="rounded-[2rem] bg-[#0a1f44] p-8 text-white shadow-xl shadow-[#0a1f44]/20"><p className="text-white/60">Total net worth</p><div className="mt-2 font-sans text-5xl font-semibold tracking-tight text-[#c9a84c]">{dashboard.data ? money(dashboard.data.totalNetWorth) : "Loading"}</div><p className="mt-4 text-sm text-white/65">Last login: {dashboard.data?.customer.lastLoginAt ? new Date(dashboard.data.customer.lastLoginAt).toLocaleString() : "Loading"} · {dashboard.data?.customer.lastLoginLocation}</p></div>
-          <div className="grid gap-5 md:grid-cols-3">{dashboard.data?.accounts.map(account => <div key={account.id} className="rounded-[1.5rem] border border-[#0a1f44]/10 bg-white p-6 shadow-sm"><div className="flex items-center justify-between"><span className="rounded-full bg-[#f8f6f1] px-3 py-1 text-xs font-bold uppercase tracking-widest">{account.type}</span><span className="text-sm text-slate-500">{mask(account.number)}</span></div><div className="mt-6 font-sans text-3xl font-semibold">{money(account.balance)}</div><p className="mt-3 text-sm text-slate-500">{account.type === "Savings" ? `${account.apy}% APY displayed` : account.type === "IRA" ? `${account.ytdPerformance}% YTD performance` : "Day-to-day transaction access"}</p></div>)}</div>
-          <Panel title="Quick Actions"><div className="grid gap-4 md:grid-cols-5">{[["Transfer", "payments"], ["Wire", "payments"], ["Zelle", "payments"], ["Bill Pay", "payments"], ["Statements", "statements"]].map(([label, target]) => <button key={label} onClick={() => setLocation(`/portal?tab=${target}`)} className="rounded-2xl border border-[#0a1f44]/10 bg-[#f8f6f1] px-5 py-4 text-left font-semibold text-[#0a1f44] transition hover:border-[#c9a84c] hover:bg-white">{label}<ArrowRight className="mt-3 h-4 w-4 text-[#c9a84c]" /></button>)}</div></Panel>
-          <Panel title="Alerts"><div className="grid gap-3 md:grid-cols-3"><div className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-900"><AlertCircle className="mr-2 inline h-4 w-4" />Outgoing payment rails are blocked by policy.</div><div className="rounded-2xl bg-emerald-50 p-4 text-sm text-emerald-900"><ShieldCheck className="mr-2 inline h-4 w-4" />Email OTP 2FA is enabled.</div><div className="rounded-2xl bg-slate-100 p-4 text-sm text-slate-700"><Bell className="mr-2 inline h-4 w-4" />{dashboard.data?.unreadNotifications ?? 0} unread notifications.</div></div></Panel>
-          <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]"><Panel title="Recent Transactions"><TransactionTable rows={dashboard.data?.recentTransactions ?? []} /></Panel><Panel title="Notifications"><div className="grid gap-3">{dashboard.data?.notifications.slice(0, 6).map(n => <div key={n.id} className="rounded-2xl bg-[#f8f6f1] p-4 text-sm"><Bell className="mr-2 inline h-4 w-4 text-[#c9a84c]" />{n.message}</div>)}</div></Panel></div>
+    <div className="min-h-screen bg-[#f5f3ee] text-[#0a1f44]">
+      <aside className="fixed left-0 top-0 hidden h-screen w-72 border-r border-[#0a1f44]/10 bg-[#0a1f44] p-8 text-white lg:block">
+        <div className="font-serif text-3xl font-bold text-[#c9a84c]">CBHfinance</div>
+        <div className="mt-2 text-xs uppercase tracking-[0.35em] text-white/50">User Portal</div>
+
+        <nav className="mt-12 grid gap-2">
+          {navItems.map(([label, value]) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setTab(value)}
+              className={`rounded-2xl px-5 py-4 text-left font-semibold transition ${
+                tab === value ? "bg-white text-[#0a1f44]" : "text-white/75 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
+
+        <button
+          type="button"
+          onClick={logout}
+          className="absolute bottom-8 left-8 right-8 rounded-full border border-white/25 px-5 py-3 font-semibold text-white hover:bg-white/10"
+        >
+          Sign out
+        </button>
+      </aside>
+
+      <main className="lg:ml-72">
+        <header className="border-b border-[#0a1f44]/10 bg-white px-5 py-5 lg:px-10">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <div className="text-xs uppercase tracking-[0.35em] text-[#c9a84c]">CBHfinance</div>
+              <h1 className="font-serif text-3xl font-semibold">Emily Ann Johnson</h1>
+            </div>
+
+            <div className="flex flex-wrap gap-2 lg:hidden">
+              {navItems.map(([label, value]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setTab(value)}
+                  className={`rounded-full px-4 py-2 text-sm font-semibold ${
+                    tab === value ? "bg-[#0a1f44] text-white" : "border bg-white text-[#0a1f44]"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </header>
+
+        <div className="p-5 lg:p-10">
+          {tab === "dashboard" && (
+            <div className="grid gap-6">
+              <div className="rounded-[2rem] bg-[#0a1f44] p-8 text-white shadow-xl">
+                <p className="text-white/60">Total net worth</p>
+                <div className="mt-2 text-5xl font-semibold tracking-tight text-[#c9a84c]">
+                  {dashboard.data ? money(dashboard.data.totalNetWorth) : "Loading"}
+                </div>
+                <p className="mt-4 text-sm text-white/65">
+                  Last login:{" "}
+                  {dashboard.data?.customer.lastLoginAt
+                    ? new Date(dashboard.data.customer.lastLoginAt).toLocaleString()
+                    : "Loading"}{" "}
+                  · {dashboard.data?.customer.lastLoginLocation}
+                </p>
+              </div>
+
+              <div className="grid gap-5 md:grid-cols-3">
+                {dashboard.data?.accounts.map((account: any) => (
+                  <div key={account.id} className="rounded-[1.5rem] border bg-white p-6 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="rounded-full bg-[#f8f6f1] px-3 py-1 text-xs font-bold uppercase tracking-widest">
+                        {account.type}
+                      </span>
+                      <span className="text-sm text-slate-500">{mask(account.number)}</span>
+                    </div>
+                    <div className="mt-6 text-3xl font-semibold">{money(account.balance)}</div>
+                    <p className="mt-3 text-sm text-slate-500">
+                      {account.type === "Savings"
+                        ? `${account.apy}% APY displayed`
+                        : account.type === "IRA"
+                          ? `${account.ytdPerformance}% YTD performance`
+                          : "Day-to-day transaction access"}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <Panel title="Quick Actions">
+                <div className="grid gap-4 md:grid-cols-5">
+                  {quickActions.map(([label, target]) => (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={() => setTab(target)}
+                      className="rounded-2xl border border-[#0a1f44]/10 bg-[#f8f6f1] px-5 py-4 text-left font-semibold text-[#0a1f44] transition hover:border-[#c9a84c] hover:bg-white"
+                    >
+                      {label}
+                      <ArrowRight className="mt-3 h-4 w-4 text-[#c9a84c]" />
+                    </button>
+                  ))}
+                </div>
+              </Panel>
+
+              <Panel title="Alerts">
+                <div className="grid gap-3 md:grid-cols-3">
+                  <div className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">
+                    <AlertCircle className="mr-2 inline h-4 w-4" />
+                    Outgoing payment rails are blocked by policy.
+                  </div>
+                  <div className="rounded-2xl bg-emerald-50 p-4 text-sm text-emerald-900">
+                    <ShieldCheck className="mr-2 inline h-4 w-4" />
+                    Email OTP 2FA is enabled.
+                  </div>
+                  <div className="rounded-2xl bg-slate-100 p-4 text-sm text-slate-700">
+                    <Bell className="mr-2 inline h-4 w-4" />
+                    {dashboard.data?.unreadNotifications ?? 0} unread notifications.
+                  </div>
+                </div>
+              </Panel>
+
+              <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+                <Panel title="Recent Transactions">
+                  <TransactionTable rows={dashboard.data?.recentTransactions ?? []} />
+                </Panel>
+                <Panel title="Notifications">
+                  <div className="grid gap-3">
+                    {dashboard.data?.notifications.slice(0, 6).map((n: any) => (
+                      <div key={n.id} className="rounded-2xl bg-[#f8f6f1] p-4 text-sm">
+                        <Bell className="mr-2 inline h-4 w-4 text-[#c9a84c]" />
+                        {n.message}
+                      </div>
+                    ))}
+                  </div>
+                </Panel>
+              </div>
+            </div>
+          )}
+
+          {tab === "transactions" && <TransactionHistory />}
+          {tab === "payments" && <Payments />}
+          {tab === "statements" && <Statements rows={statements.data ?? []} />}
+          {tab === "settings" && (
+            <Panel title="Profile & Settings">
+              <div className="grid gap-5 md:grid-cols-2">
+                <Setting label="Full name" value="Emily Ann Johnson" />
+                <Setting label="Email" value="emily.johnson@cbhfinance.online" />
+                <Setting label="Phone" value="+1 (415) 555-0198" />
+                <Setting label="Mailing address" value="2128 Pacific Heights Avenue, San Francisco, CA 94115" />
+              </div>
+            </Panel>
+          )}
         </div>
-      )}
-      {tab === "transactions" && <TransactionHistory />}
-      {tab === "payments" && <Payments />}
-      {tab === "statements" && <Statements rows={statements.data ?? []} />}
-      {tab === "settings" && <Panel title="Profile & Settings"><div className="grid gap-5 md:grid-cols-2"><Setting label="Full name" value="Emily Ann Johnson" /><Setting label="Email" value="emily.johnson@cbhfinance.online" /><Setting label="Phone" value="+1 (415) 555-0198" /><Setting label="Mailing address" value="2128 Pacific Heights Avenue, San Francisco, CA 94115" /></div><div className="mt-6 grid gap-4 md:grid-cols-2"><div className="rounded-2xl bg-[#f8f6f1] p-5"><div className="text-xs font-bold uppercase tracking-widest text-slate-500">Email OTP 2FA</div><button onClick={() => setTwoFaEnabled(!twoFaEnabled)} className="mt-3 rounded-full bg-[#0a1f44] px-5 py-3 font-semibold text-white">{twoFaEnabled ? "Enabled" : "Disabled"}</button><p className="mt-2 text-sm text-slate-600">Visible 2FA toggle state for security settings.</p></div><div className="rounded-2xl bg-[#f8f6f1] p-5"><div className="text-xs font-bold uppercase tracking-widest text-slate-500">Password Security</div><button onClick={() => passwordNotice.mutate()} className="mt-3 rounded-full border border-[#0a1f44]/20 px-5 py-3 font-semibold">Record password change notification</button></div></div><div className="mt-6 flex flex-wrap gap-4"><button onClick={() => setDark(!dark)} className="rounded-full bg-[#0a1f44] px-5 py-3 font-semibold text-white">{dark ? <Sun className="mr-2 inline h-4 w-4" /> : <Moon className="mr-2 inline h-4 w-4" />}Toggle dark mode state</button><button className="rounded-full border border-[#0a1f44]/20 px-5 py-3 font-semibold"><Download className="mr-2 inline h-4 w-4" />Download account summary</button><label className="rounded-full border border-[#0a1f44]/20 px-5 py-3 font-semibold"><input type="file" className="hidden" />KYC upload placeholder</label></div></Panel>}
-    </PortalLayout>
+      </main>
+    </div>
   );
 }
 
@@ -420,28 +581,12 @@ function TransactionHistory() {
 
 function Payments() {
   const utils = trpc.useUtils();
-  const block = trpc.banking.blockPayment.useMutation({
-    onSuccess: async () => {
-      console.log("Block payment successful, invalidating queries...");
-      await utils.banking.dashboard.invalidate();
-      await utils.banking.accounts.invalidate();
-      await utils.banking.transactions.invalidate();
-      console.log("Queries invalidated");
-    },
-    onError: (error) => {
-      console.error("Block payment error:", error);
-    },
-  });
+  const block = trpc.banking.blockPayment.useMutation();
   const transfer = trpc.banking.transfer.useMutation({
     onSuccess: async () => {
-      console.log("Transfer successful, invalidating queries...");
       await utils.banking.dashboard.invalidate();
       await utils.banking.accounts.invalidate();
       await utils.banking.transactions.invalidate();
-      console.log("Queries invalidated");
-    },
-    onError: (error) => {
-      console.error("Transfer error:", error);
     },
   });
   const accounts = trpc.banking.accounts.useQuery();
@@ -467,16 +612,9 @@ function Payments() {
           memo: "Internal transfer",
         });
         setSuccess(true);
-        // Auto-close after 3 seconds
-        setTimeout(() => {
-          setActiveForm(null);
-          setSuccess(false);
-          setFormData({ recipient: "", amount: "", memo: "" });
-        }, 3000);
       } else {
         await block.mutateAsync({ paymentType, amount: Number(formData.amount) || 100, memo: formData.memo || "Payment request" });
         setBlocked(true);
-        setSuccess(true);
       }
     } catch (err: any) {
       setBlocked(true);
@@ -704,7 +842,7 @@ function LegalPage({ type }: { type: "terms" | "privacy" | "contact" }) {
                 <li>Admin panel with user management and audit controls</li>
                 <li>Session timeout and security warnings</li>
               </ul>
-              <h2 className="font-serif text-2xl font-semibold text-[#0a1f44]">System Limitations</h2>
+              <h2 className="font-serif text-2xl font-semibold text-[#0a1f44]">Demo Limitations</h2>
               <p>This is a demonstration environment. All transactions are simulated, and no real financial operations occur. User payments are intentionally blocked through security controls.</p>
             </div>
           </div>

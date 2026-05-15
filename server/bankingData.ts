@@ -375,63 +375,117 @@ export function blockOutgoingPayment() {
   return { blocked: true as const, message: PAYMENT_BLOCK_MESSAGE };
 }
 
-export function transferBetweenAccounts(input: { fromAccountId: string; toAccountId: string; amount: number; memo?: string }) {
+export function transferBetweenAccounts(input: {
+  fromAccountId: string;
+  toAccountId: string;
+  amount: number;
+  memo?: string;
+}) {
   const fromAccount = accounts.find(row => row.id === input.fromAccountId);
   const toAccount = accounts.find(row => row.id === input.toAccountId);
-  
+
   if (!fromAccount) throw new Error("Source account not found.");
   if (!toAccount) throw new Error("Destination account not found.");
-  if (fromAccount.userId !== toAccount.userId) throw new Error("Can only transfer between your own accounts.");
-  if (input.amount <= 0) throw new Error("Amount must be greater than zero.");
-  if (input.amount > fromAccount.balance) throw new Error("Insufficient funds for transfer.");
-  
-  fromAccount.balance = Number((fromAccount.balance - input.amount).toFixed(2));
-  toAccount.balance = Number((toAccount.balance + input.amount).toFixed(2));
+  if (fromAccount.id === toAccount.id) {
+    throw new Error("Source and destination accounts must be different.");
+  }
+
+  if (fromAccount.userId !== toAccount.userId) {
+    throw new Error("Can only transfer between your own accounts.");
+  }
+
+  if (!Number.isFinite(input.amount) || input.amount <= 0) {
+    throw new Error("Amount must be greater than zero.");
+  }
+
+  if (input.amount > fromAccount.balance) {
+    throw new Error("Insufficient funds for transfer.");
+  }
+
+  const allowedTypes: AccountType[] = ["Checking", "Savings"];
+
+  if (
+    !allowedTypes.includes(fromAccount.type) ||
+    !allowedTypes.includes(toAccount.type)
+  ) {
+    throw new Error(
+      "Transfers are only allowed between Checking and Savings accounts."
+    );
+  }
+
+  const referenceId = ref("INT", transactions.length + 1);
+  const now = new Date().toISOString();
+  const memo = input.memo?.trim() || "Internal transfer";
+
+  fromAccount.balance = Number(
+    (fromAccount.balance - input.amount).toFixed(2)
+  );
+
+  toAccount.balance = Number(
+    (toAccount.balance + input.amount).toFixed(2)
+  );
+
   finalBalances[fromAccount.type] = fromAccount.balance;
   finalBalances[toAccount.type] = toAccount.balance;
-  
+
   const debitTxn: Transaction = {
     id: `txn_${Date.now()}_debit`,
     accountId: fromAccount.id,
     accountType: fromAccount.type,
-    createdAt: new Date().toISOString(),
-    description: `Internal Transfer to ${toAccount.type} - ${input.memo || "Transfer"}`,
+    createdAt: now,
+    description: `Internal Transfer to ${toAccount.type} — ${memo}`,
     method: "Internal",
-    referenceId: ref("INT", transactions.length + 1),
+    referenceId,
     direction: "debit",
     amount: Number(input.amount.toFixed(2)),
     balanceAfter: fromAccount.balance,
     status: "Completed",
     initiatedBy: "user",
   };
-  
+
   const creditTxn: Transaction = {
     id: `txn_${Date.now()}_credit`,
     accountId: toAccount.id,
     accountType: toAccount.type,
-    createdAt: new Date().toISOString(),
-    description: `Internal Transfer from ${fromAccount.type} - ${input.memo || "Transfer"}`,
+    createdAt: now,
+    description: `Internal Transfer from ${fromAccount.type} — ${memo}`,
     method: "Internal",
-    referenceId: ref("INT", transactions.length + 2),
+    referenceId,
     direction: "credit",
     amount: Number(input.amount.toFixed(2)),
     balanceAfter: toAccount.balance,
     status: "Completed",
     initiatedBy: "user",
   };
-  
+
   transactions = [creditTxn, debitTxn, ...transactions];
-  
-  notifications = [{
-    id: `not_${Date.now()}`,
-    userId: fromAccount.userId,
-    message: `Transfer of $${input.amount.toFixed(2)} from ${fromAccount.type} to ${toAccount.type} completed.`,
-    type: "system",
-    read: false,
-    createdAt: new Date().toISOString(),
-  }, ...notifications];
-  
-  return { success: true as const, debitTransaction: debitTxn, creditTransaction: creditTxn };
+
+  notifications = [
+    {
+      id: `not_${Date.now()}`,
+      userId: fromAccount.userId,
+      message: `Transfer of $${input.amount.toFixed(
+        2
+      )} from ${fromAccount.type} to ${toAccount.type} completed.`,
+      type: "system",
+      read: false,
+      createdAt: now,
+    },
+    ...notifications,
+  ];
+
+  return {
+    success: true as const,
+    referenceId,
+    amount: Number(input.amount.toFixed(2)),
+    memo,
+    fromAccountId: fromAccount.id,
+    toAccountId: toAccount.id,
+    fromBalanceAfter: fromAccount.balance,
+    toBalanceAfter: toAccount.balance,
+    debitTransaction: debitTxn,
+    creditTransaction: creditTxn,
+  };
 }
 
 export function adminAdjustBalance(input: { action: "Credit" | "Debit"; accountId: string; amount: number; description: string; adminId?: string; ipAddress?: string }) {
