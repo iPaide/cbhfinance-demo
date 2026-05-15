@@ -393,13 +393,13 @@ function UserPortal() {
     {
       icon: "⇄",
       label: "Transfer",
-      desc: "Move money between accounts",
+      desc: "Move money between CBHfinance accounts",
       target: "payments",
     },
     {
-      icon: "🏛",
+      icon: "SW",
       label: "Wire",
-      desc: "Send a domestic or international wire",
+      desc: "Domestic and international wire requests",
       target: "payments",
     },
     {
@@ -410,21 +410,21 @@ function UserPortal() {
       brand: true,
     },
     {
-      icon: "▣",
+      icon: "$",
       label: "Bill Pay",
-      desc: "Pay bills and manage payees",
+      desc: "Manage payees and scheduled bills",
       target: "payments",
     },
     {
-      icon: "▤",
+      icon: "PDF",
       label: "Statements",
-      desc: "View and download statements",
+      desc: "Download monthly account statements",
       target: "statements",
     },
     {
-      icon: "☷",
+      icon: "TX",
       label: "Transactions",
-      desc: "View account activity",
+      desc: "Search, filter, and export activity",
       target: "transactions",
     },
   ];
@@ -598,9 +598,15 @@ function UserPortal() {
                             ? `${account.apy}% APY`
                             : account.type === "IRA"
                               ? `${account.ytdPerformance}% YTD return`
-                              : "Day-to-day access"}
+                              : "Primary spending"}
                         </span>
-                        <span className="text-xl text-slate-400">⋮</span>
+                        <button
+                          type="button"
+                          onClick={() => setTab("transactions")}
+                          className="text-xs font-semibold text-[#003d8f] hover:underline"
+                        >
+                          Details
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -618,8 +624,10 @@ function UserPortal() {
                       className="group rounded-2xl border border-slate-200 bg-white p-5 text-left transition hover:-translate-y-0.5 hover:border-[#d6ad42] hover:shadow-md"
                     >
                       <div
-                        className={`mb-4 flex h-10 items-center text-3xl font-black ${
-                          action.brand ? "text-[#6d22ff]" : "text-[#071f46]"
+                        className={`mb-5 flex h-12 w-12 items-center justify-center rounded-2xl text-sm font-black shadow-sm ${
+                          action.brand
+                            ? "bg-[#6d22ff]/10 text-[#6d22ff]"
+                            : "bg-[#071f46]/5 text-[#071f46]"
                         }`}
                       >
                         {action.icon}
