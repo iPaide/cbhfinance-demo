@@ -377,19 +377,56 @@ function UserPortal() {
   const statements = trpc.banking.statements.useQuery();
 
   const navItems = [
-    ["Dashboard", "dashboard"],
-    ["Transactions", "transactions"],
-    ["Payments", "payments"],
-    ["Statements", "statements"],
-    ["Settings", "settings"],
+    ["⌂", "Dashboard", "dashboard"],
+    ["▣", "Accounts", "dashboard"],
+    ["⇄", "Transfers", "payments"],
+    ["▤", "Bill Pay", "payments"],
+    ["Z", "Zelle®", "payments"],
+    ["□", "Statements", "statements"],
+    ["☷", "Transactions", "transactions"],
+    ["◴", "Notifications", "dashboard"],
+    ["⚙", "Settings", "settings"],
+    ["?", "Support", "settings"],
   ];
 
   const quickActions = [
-    ["Transfer", "payments"],
-    ["Wire", "payments"],
-    ["Zelle", "payments"],
-    ["Bill Pay", "payments"],
-    ["Statements", "statements"],
+    {
+      icon: "⇄",
+      label: "Transfer",
+      desc: "Move money between accounts",
+      target: "payments",
+    },
+    {
+      icon: "🏛",
+      label: "Wire",
+      desc: "Send a domestic or international wire",
+      target: "payments",
+    },
+    {
+      icon: "Zelle®",
+      label: "Zelle",
+      desc: "Send money with Zelle®",
+      target: "payments",
+      brand: true,
+    },
+    {
+      icon: "▣",
+      label: "Bill Pay",
+      desc: "Pay bills and manage payees",
+      target: "payments",
+    },
+    {
+      icon: "▤",
+      label: "Statements",
+      desc: "View and download statements",
+      target: "statements",
+    },
+    {
+      icon: "☷",
+      label: "Transactions",
+      desc: "View account activity",
+      target: "transactions",
+    },
   ];
 
   function logout() {
@@ -397,23 +434,48 @@ function UserPortal() {
     window.location.href = "/";
   }
 
-  return (
-    <div className="min-h-screen bg-[#f5f3ee] text-[#0a1f44]">
-      <aside className="fixed left-0 top-0 hidden h-screen w-72 border-r border-[#0a1f44]/10 bg-[#0a1f44] p-8 text-white lg:block">
-        <div className="font-serif text-3xl font-bold text-[#c9a84c]">CBHfinance</div>
-        <div className="mt-2 text-xs uppercase tracking-[0.35em] text-white/50">User Portal</div>
+  const accounts = dashboard.data?.accounts ?? [];
+  const recentTransactions = dashboard.data?.recentTransactions ?? [];
+  const checking = accounts.find((account: any) => account.type === "Checking");
+  const savings = accounts.find((account: any) => account.type === "Savings");
+  const ira = accounts.find((account: any) => account.type === "IRA");
+  const displayAccounts = [
+    checking,
+    savings,
+    ira,
+  ].filter(Boolean);
 
-        <nav className="mt-12 grid gap-2">
-          {navItems.map(([label, value]) => (
+  return (
+    <div className="min-h-screen bg-[#f7f8fb] text-[#071f46]">
+      <aside className="fixed left-0 top-0 hidden h-screen w-72 bg-gradient-to-b from-[#071f46] via-[#06244f] to-[#03142d] p-6 text-white shadow-2xl lg:block">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 text-2xl text-[#d6ad42]">
+            ♜
+          </div>
+          <div>
+            <div className="font-serif text-3xl font-bold leading-none text-white">
+              CBHfinance
+            </div>
+            <div className="mt-1 text-[10px] uppercase tracking-[0.35em] text-white/45">
+              Online Banking
+            </div>
+          </div>
+        </div>
+
+        <nav className="mt-10 grid gap-2">
+          {navItems.map(([icon, label, value]) => (
             <button
-              key={value}
+              key={`${label}-${value}`}
               type="button"
               onClick={() => setTab(value)}
-              className={`rounded-2xl px-5 py-4 text-left font-semibold transition ${
-                tab === value ? "bg-white text-[#0a1f44]" : "text-white/75 hover:bg-white/10 hover:text-white"
+              className={`flex items-center gap-4 rounded-xl px-5 py-3.5 text-left font-semibold transition ${
+                tab === value
+                  ? "bg-[#d6ad42] text-white shadow-lg shadow-black/20"
+                  : "text-white/80 hover:bg-white/10 hover:text-white"
               }`}
             >
-              {label}
+              <span className="flex h-6 w-6 items-center justify-center text-lg">{icon}</span>
+              <span>{label}</span>
             </button>
           ))}
         </nav>
@@ -421,28 +483,55 @@ function UserPortal() {
         <button
           type="button"
           onClick={logout}
-          className="absolute bottom-8 left-8 right-8 rounded-full border border-white/25 px-5 py-3 font-semibold text-white hover:bg-white/10"
+          className="absolute bottom-7 left-8 right-8 rounded-2xl border border-white/25 px-5 py-3 font-semibold text-white transition hover:bg-white/10"
         >
-          Sign out
+          ⇥ Sign out
         </button>
       </aside>
 
       <main className="lg:ml-72">
-        <header className="border-b border-[#0a1f44]/10 bg-white px-5 py-5 lg:px-10">
-          <div className="flex flex-wrap items-center justify-between gap-4">
+        <header className="bg-white px-5 py-6 shadow-sm lg:px-10">
+          <div className="flex flex-wrap items-center justify-between gap-5">
             <div>
-              <div className="text-xs uppercase tracking-[0.35em] text-[#c9a84c]">CBHfinance</div>
-              <h1 className="font-serif text-3xl font-semibold">Emily Ann Johnson</h1>
+              <h1 className="font-serif text-3xl font-semibold text-[#071f46]">
+                Good morning, Emily
+              </h1>
+              <p className="mt-1 text-sm text-slate-500">
+                Last login:{" "}
+                {dashboard.data?.customer.lastLoginAt
+                  ? new Date(dashboard.data.customer.lastLoginAt).toLocaleString()
+                  : "Loading"}{" "}
+                · {dashboard.data?.customer.lastLoginLocation ?? "San Francisco, CA"}
+              </p>
             </div>
 
-            <div className="flex flex-wrap gap-2 lg:hidden">
-              {navItems.map(([label, value]) => (
+            <div className="flex items-center gap-4">
+              <button type="button" className="relative rounded-full p-2 text-[#071f46] hover:bg-slate-100">
+                ♧
+                <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-[#d6ad42]" />
+              </button>
+              <button type="button" className="rounded-full p-2 text-[#071f46] hover:bg-slate-100">
+                ✉
+              </button>
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#071f46] text-sm font-bold text-white">
+                  EJ
+                </div>
+                <div className="hidden sm:block">
+                  <div className="text-sm font-semibold">Emily Johnson</div>
+                  <div className="text-xs text-slate-500">Personal Banking</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex w-full flex-wrap gap-2 lg:hidden">
+              {navItems.slice(0, 5).map(([icon, label, value]) => (
                 <button
-                  key={value}
+                  key={`${label}-${value}-mobile`}
                   type="button"
                   onClick={() => setTab(value)}
                   className={`rounded-full px-4 py-2 text-sm font-semibold ${
-                    tab === value ? "bg-[#0a1f44] text-white" : "border bg-white text-[#0a1f44]"
+                    tab === value ? "bg-[#071f46] text-white" : "border bg-white text-[#071f46]"
                   }`}
                 >
                   {label}
@@ -455,88 +544,184 @@ function UserPortal() {
         <div className="p-5 lg:p-10">
           {tab === "dashboard" && (
             <div className="grid gap-6">
-              <div className="rounded-[2rem] bg-[#0a1f44] p-8 text-white shadow-xl">
-                <p className="text-white/60">Total net worth</p>
-                <div className="mt-2 text-5xl font-semibold tracking-tight text-[#c9a84c]">
-                  {dashboard.data ? money(dashboard.data.totalNetWorth) : "Loading"}
-                </div>
-                <p className="mt-4 text-sm text-white/65">
-                  Last login:{" "}
-                  {dashboard.data?.customer.lastLoginAt
-                    ? new Date(dashboard.data.customer.lastLoginAt).toLocaleString()
-                    : "Loading"}{" "}
-                  · {dashboard.data?.customer.lastLoginLocation}
-                </p>
-              </div>
-
-              <div className="grid gap-5 md:grid-cols-3">
-                {dashboard.data?.accounts.map((account: any) => (
-                  <div key={account.id} className="rounded-[1.5rem] border bg-white p-6 shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <span className="rounded-full bg-[#f8f6f1] px-3 py-1 text-xs font-bold uppercase tracking-widest">
-                        {account.type}
-                      </span>
-                      <span className="text-sm text-slate-500">{mask(account.number)}</span>
-                    </div>
-                    <div className="mt-6 text-3xl font-semibold">{money(account.balance)}</div>
-                    <p className="mt-3 text-sm text-slate-500">
-                      {account.type === "Savings"
-                        ? `${account.apy}% APY displayed`
-                        : account.type === "IRA"
-                          ? `${account.ytdPerformance}% YTD performance`
-                          : "Day-to-day transaction access"}
-                    </p>
+              <div className="grid gap-5 xl:grid-cols-[1.45fr_2.55fr]">
+                <div className="relative overflow-hidden rounded-2xl bg-[#071f46] p-8 text-white shadow-xl">
+                  <div className="absolute right-8 top-14 h-24 w-44 rounded-full border border-[#d6ad42]/30" />
+                  <div className="absolute right-8 top-20 h-16 w-44 border-t-2 border-[#d6ad42]" />
+                  <div className="flex items-center gap-2 text-white/75">
+                    <span>Total Net Worth</span>
+                    <span className="flex h-4 w-4 items-center justify-center rounded-full border border-white/40 text-[10px]">
+                      i
+                    </span>
                   </div>
-                ))}
+                  <div className="mt-3 text-5xl font-bold tracking-tight text-[#d6ad42]">
+                    {dashboard.data ? money(dashboard.data.totalNetWorth) : "Loading"}
+                  </div>
+                  <div className="mt-9 flex items-center justify-between text-sm text-white/70">
+                    <span>As of today</span>
+                    <button
+                      type="button"
+                      className="rounded-full border border-white/25 px-5 py-2.5 font-semibold text-white transition hover:bg-white/10"
+                    >
+                      View trends⌄
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid gap-5 md:grid-cols-3">
+                  {displayAccounts.map((account: any) => (
+                    <div
+                      key={account.id}
+                      className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="font-semibold">{account.type}</div>
+                        <div className="text-sm text-slate-500">{mask(account.number)}</div>
+                      </div>
+                      <div className="mt-6 text-3xl font-bold tracking-tight">
+                        {money(account.balance)}
+                      </div>
+                      <p className="mt-3 text-sm text-slate-500">
+                        {account.type === "IRA" ? "Market value" : "Available balance"}
+                      </p>
+                      <div className="mt-6 flex items-center justify-between">
+                        <span
+                          className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                            account.type === "Savings"
+                              ? "bg-emerald-50 text-emerald-700"
+                              : account.type === "IRA"
+                                ? "bg-violet-50 text-violet-700"
+                                : "bg-blue-50 text-blue-700"
+                          }`}
+                        >
+                          {account.type === "Savings"
+                            ? `${account.apy}% APY`
+                            : account.type === "IRA"
+                              ? `${account.ytdPerformance}% YTD return`
+                              : "Day-to-day access"}
+                        </span>
+                        <span className="text-xl text-slate-400">⋮</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              <Panel title="Quick Actions">
-                <div className="grid gap-4 md:grid-cols-5">
-                  {quickActions.map(([label, target]) => (
+              <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <h2 className="font-serif text-2xl font-semibold">Quick Actions</h2>
+                <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+                  {quickActions.map((action) => (
                     <button
-                      key={label}
+                      key={action.label}
                       type="button"
-                      onClick={() => setTab(target)}
-                      className="rounded-2xl border border-[#0a1f44]/10 bg-[#f8f6f1] px-5 py-4 text-left font-semibold text-[#0a1f44] transition hover:border-[#c9a84c] hover:bg-white"
+                      onClick={() => setTab(action.target)}
+                      className="group rounded-2xl border border-slate-200 bg-white p-5 text-left transition hover:-translate-y-0.5 hover:border-[#d6ad42] hover:shadow-md"
                     >
-                      {label}
-                      <ArrowRight className="mt-3 h-4 w-4 text-[#c9a84c]" />
+                      <div
+                        className={`mb-4 flex h-10 items-center text-3xl font-black ${
+                          action.brand ? "text-[#6d22ff]" : "text-[#071f46]"
+                        }`}
+                      >
+                        {action.icon}
+                      </div>
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="font-bold">{action.label}</div>
+                        <ArrowRight className="h-4 w-4 text-[#071f46] transition group-hover:translate-x-1" />
+                      </div>
+                      <p className="mt-3 text-sm leading-5 text-slate-600">{action.desc}</p>
                     </button>
                   ))}
                 </div>
-              </Panel>
+              </section>
 
-              <Panel title="Alerts">
-                <div className="grid gap-3 md:grid-cols-3">
-                  <div className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">
-                    <AlertCircle className="mr-2 inline h-4 w-4" />
-                    Outgoing payment rails are blocked by policy.
+              <div className="grid gap-6 xl:grid-cols-[1.6fr_0.8fr]">
+                <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <div className="mb-4 flex items-center justify-between">
+                    <h2 className="font-serif text-2xl font-semibold">Recent Transactions</h2>
+                    <button
+                      type="button"
+                      onClick={() => setTab("transactions")}
+                      className="text-sm font-semibold text-[#003d8f] hover:underline"
+                    >
+                      View all transactions
+                    </button>
                   </div>
-                  <div className="rounded-2xl bg-emerald-50 p-4 text-sm text-emerald-900">
-                    <ShieldCheck className="mr-2 inline h-4 w-4" />
-                    Email OTP 2FA is enabled.
-                  </div>
-                  <div className="rounded-2xl bg-slate-100 p-4 text-sm text-slate-700">
-                    <Bell className="mr-2 inline h-4 w-4" />
-                    {dashboard.data?.unreadNotifications ?? 0} unread notifications.
-                  </div>
-                </div>
-              </Panel>
 
-              <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-                <Panel title="Recent Transactions">
-                  <TransactionTable rows={dashboard.data?.recentTransactions ?? []} />
-                </Panel>
-                <Panel title="Notifications">
-                  <div className="grid gap-3">
-                    {dashboard.data?.notifications.slice(0, 6).map((n: any) => (
-                      <div key={n.id} className="rounded-2xl bg-[#f8f6f1] p-4 text-sm">
-                        <Bell className="mr-2 inline h-4 w-4 text-[#c9a84c]" />
-                        {n.message}
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[760px] text-left text-sm">
+                      <thead className="border-b text-xs uppercase tracking-widest text-slate-500">
+                        <tr>
+                          <th className="py-3">Date</th>
+                          <th>Description</th>
+                          <th>Account</th>
+                          <th>Amount</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {recentTransactions.slice(0, 5).map((row: any) => (
+                          <tr key={row.id} className="border-b border-slate-100 last:border-0">
+                            <td className="py-4">{new Date(row.createdAt).toLocaleDateString()}</td>
+                            <td className="font-medium">{row.description}</td>
+                            <td>{row.accountType} {row.accountNumber ? mask(row.accountNumber) : ""}</td>
+                            <td className={row.direction === "credit" ? "font-semibold text-emerald-700" : "font-semibold text-[#071f46]"}>
+                              {row.direction === "credit" ? "+" : "-"}{money(row.amount)}
+                            </td>
+                            <td>
+                              <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                                {row.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setTab("transactions")}
+                    className="mt-5 w-full rounded-xl border border-slate-200 px-5 py-3 font-semibold text-[#003d8f] hover:bg-slate-50"
+                  >
+                    View all transactions →
+                  </button>
+                </section>
+
+                <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <h2 className="font-serif text-2xl font-semibold">Insights & Alerts</h2>
+                  <div className="mt-5 grid gap-3">
+                    <div className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <AlertCircle className="mr-2 inline h-4 w-4" />
+                          Outgoing payment rails are blocked by policy.
+                          <div className="mt-2 text-xs font-semibold underline">Learn more</div>
+                        </div>
+                        <ArrowRight className="h-4 w-4" />
                       </div>
-                    ))}
+                    </div>
+                    <div className="rounded-2xl bg-emerald-50 p-4 text-sm text-emerald-900">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <ShieldCheck className="mr-2 inline h-4 w-4" />
+                          Email OTP 2FA is enabled.
+                          <div className="mt-2 text-xs font-semibold underline">Manage 2FA</div>
+                        </div>
+                        <ArrowRight className="h-4 w-4" />
+                      </div>
+                    </div>
+                    <div className="rounded-2xl bg-blue-50 p-4 text-sm text-blue-900">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <Bell className="mr-2 inline h-4 w-4" />
+                          {dashboard.data?.unreadNotifications ?? 0} unread notifications.
+                          <div className="mt-2 text-xs font-semibold underline">View notifications</div>
+                        </div>
+                        <ArrowRight className="h-4 w-4" />
+                      </div>
+                    </div>
                   </div>
-                </Panel>
+                </section>
               </div>
             </div>
           )}
