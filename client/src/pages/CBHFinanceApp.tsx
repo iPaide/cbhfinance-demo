@@ -842,11 +842,11 @@ function PortalLayout({ children, title, role = "user" }: { children: React.Reac
 function normalizePortalTab(value: string | null | undefined) {
   const tab = String(value ?? "dashboard").toLowerCase();
 
-  if (tab === "contributions" || tab === "payments") return "payments";
-  if (tab === "activity" || tab === "transactions") return "transactions";
-  if (tab === "documents" || tab === "statements") return "statements";
-  if (tab === "beneficiaries" || tab === "profile" || tab === "security" || tab === "settings") return "settings";
-  if (tab === "accounts" || tab === "investments" || tab === "overview" || tab === "dashboard") return "dashboard";
+  if (tab === "contributions" || activeTab === "payments") return "payments";
+  if (tab === "activity" || activeTab === "transactions") return "transactions";
+  if (tab === "documents" || activeTab === "statements") return "statements";
+  if (tab === "beneficiaries" || tab === "profile" || tab === "security" || activeTab === "settings") return "settings";
+  if (tab === "accounts" || tab === "investments" || tab === "overview" || activeTab === "dashboard") return "dashboard";
 
   return "dashboard";
 }
@@ -859,6 +859,7 @@ function UserPortal() {
   const [profileNotice, setProfileNotice] = useState("");
   const dashboard = trpc.banking.dashboard.useQuery();
   const statements = trpc.banking.statements.useQuery();
+  const activeTab = normalizePortalTab(tab);
 
   useEffect(() => {
     const urlTab = normalizePortalTab(new URLSearchParams(location.split("?")[1] ?? "").get("tab"));
@@ -1100,15 +1101,15 @@ function UserPortal() {
               </button>
 
               <div className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-[#071f46]">
-                {tab === "dashboard"
+                {activeTab === "dashboard"
                   ? "Overview"
-                  : tab === "payments"
+                  : activeTab === "payments"
                     ? "Contributions"
-                    : tab === "transactions"
+                    : activeTab === "transactions"
                       ? "Activity"
-                      : tab === "statements"
+                      : activeTab === "statements"
                         ? "Statements"
-                        : tab === "settings"
+                        : activeTab === "settings"
                           ? "Profile & Security"
                           : "Overview"}
               </div>
@@ -1117,7 +1118,7 @@ function UserPortal() {
         </header>
 
         <div className="p-5 lg:p-10">
-          {tab === "dashboard" && (
+          {activeTab === "dashboard" && (
             <div className="grid gap-6">
               <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
                 <section className="overflow-hidden rounded-[2rem] bg-[#071f46] p-6 text-white shadow-xl sm:p-8">
@@ -1379,10 +1380,10 @@ function UserPortal() {
             </div>
           )}
 
-          {normalizePortalTab(tab) === "transactions" && <TransactionHistory />}
+          {activeTab === "transactions" && <TransactionHistory />}
           {tab === "requests" && <Requests />}
-          {normalizePortalTab(tab) === "statements" && <Statements rows={statements.data ?? []} />}
-          {normalizePortalTab(tab) === "settings" && (
+          {activeTab === "statements" && <Statements rows={statements.data ?? []} />}
+          {activeTab === "settings" && (
             <div className="grid gap-6">
               <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
                 <div className="flex flex-wrap items-start justify-between gap-5">
@@ -2831,7 +2832,7 @@ function AdminPanel() {
 
   return (
     <PortalLayout title="Retirement Operations Console" role="admin">
-      {tab === "dashboard" && (
+      {activeTab === "dashboard" && (
         <div className="grid gap-6">
           <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
             <div className="flex flex-wrap items-start justify-between gap-5">
@@ -3057,7 +3058,7 @@ function AdminPanel() {
         </Panel>
       )}
 
-      {tab === "transactions" && (
+      {activeTab === "transactions" && (
         <Panel title="Retirement Activity Management">
           <div className="mb-5 grid gap-3 md:grid-cols-5">
             <input
