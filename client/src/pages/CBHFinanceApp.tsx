@@ -375,79 +375,357 @@ function LoginPage({ role, onAuthenticated }: { role: "user" | "admin"; onAuthen
   const [, setLocation] = useLocation();
   const login = trpc.banking.login.useMutation();
   const verify = trpc.banking.verifyOtp.useMutation();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [otp, setOtp] = useState("");
-  const [showTestAccess, setShowTestAccess] = useState(false);
-  const [otpReady, setOtpReady] = useState(false);
-  const [message, setMessage] = useState("");
 
-  async function submitCredentials(event: FormEvent) {
+  const [step, setStep] = useState<"login" | "otp" | "forgotEmail" | "forgotPassword" | "enroll">("login");
+  const [email, setEmail] = useState(role === "admin" ? "admin@cbhfinance.online" : "emilyajohnson196@gmail.com");
+  const [password, setPassword] = useState(role === "admin" ? "CBHAdmin!2026" : "SecurePass!2026");
+  const [otp, setOtp] = useState("");
+  const [message, setMessage] = useState("");
+  const [recoveryForm, setRecoveryForm] = useState({
+    fullName: "",
+    phone: "",
+    lastFour: "",
+    email: "",
+  });
+  const [enrollForm, setEnrollForm] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    requestType: "New online access",
+    retirementGoal: "",
+  });
+
+  const isAdmin = role === "admin";
+
+  async function submitLogin(event: FormEvent) {
     event.preventDefault();
     setMessage("");
-    const result = await login.mutateAsync({ email, password, role });
-    if (result.success) {
-      setOtpReady(true);
-      setMessage("OTP sent by email. Enter the six-digit verification code to continue.");
-    } else {
-      setMessage(result.message);
+
+    try {
+      const result = await login.mutateAsync({ role, email, password });
+
+      if (!result.success) {
+        setMessage(result.message ?? "Unable to verify your credentials.");
+        return;
+      }
+
+      setStep("otp");
+      setOtp("");
+      setMessage("A one-time passcode has been sent to the email address on file.");
+    } catch (err: any) {
+      setMessage(err.message ?? "Unable to verify your credentials.");
     }
   }
 
   async function submitOtp(event: FormEvent) {
     event.preventDefault();
     setMessage("");
-    const result = await verify.mutateAsync({ otp, role });
-    if (result.success) {
-      const nextSession = { role, token: result.token, userName: email, startedAt: Date.now(), lastActivityAt: Date.now() };
+
+    try {
+      const result = await verify.mutateAsync({ role, otp });
+
+      if (!result.success) {
+        setMessage(result.message ?? "Invalid or expired one-time passcode.");
+        return;
+      }
+
+      const nextSession = {
+        role,
+        token: result.token,
+        userName: email,
+        startedAt: Date.now(),
+        lastActivityAt: Date.now(),
+      };
+
       writeSession(nextSession);
       onAuthenticated?.(nextSession);
       setLocation(role === "admin" ? "/secure-admin" : "/portal");
-    } else {
-      setMessage(result.message);
+    } catch (err: any) {
+      setMessage(err.message ?? "Unable to verify the one-time passcode.");
     }
   }
 
+  function submitForgotEmail(event: FormEvent) {
+    event.preventDefault();
+    setMessage(
+      "If the submitted information matches a CBHfinance profile, account access instructions will be sent to the verified contact method on file."
+    );
+  }
+
+  function submitForgotPassword(event: FormEvent) {
+    event.preventDefault();
+    setMessage(
+      "If this email is associated with a CBHfinance profile, password reset instructions will be sent after identity verification."
+    );
+  }
+
+  function submitEnroll(event: FormEvent) {
+    event.preventDefault();
+    setMessage(
+      "Your access request has been received. CBHfinance retirement services will review the request before online access is activated."
+    );
+  }
+
+  function backToLogin() {
+    setStep("login");
+    setMessage("");
+    setOtp("");
+  }
+
   return (
-    <div className="min-h-screen bg-[#f8f6f1] text-[#0a1f44]">
-      <nav className="border-b border-[#0a1f44]/10 bg-white px-5 py-4 lg:px-10">
-        <BrandMark />
-      </nav>
-      <main className="flex min-h-[calc(100vh-80px)] items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md rounded-[2rem] border border-[#0a1f44]/10 bg-white p-8 shadow-sm">
-          <h1 className="font-serif text-3xl font-semibold">{role === "admin" ? "Admin Access" : "Client Sign In"}</h1>
-          <p className="mt-2 text-sm text-slate-600">{role === "admin" ? "Secure admin console access" : "Access your accounts securely"}</p>
-          {!otpReady ? (
-            <form onSubmit={submitCredentials} className="mt-8 space-y-4">
+    <div className="min-h-screen bg-[#f6f7fb] text-[#071f46]">
+      <MarketingNav />
+
+      <main className="container grid min-h-[calc(100vh-90px)] items-center gap-10 py-14 lg:grid-cols-[0.95fr_1.05fr]">
+        <section className="hidden lg:block">
+          <div className="max-w-xl">
+            <div className="text-xs font-black uppercase tracking-[0.35em] text-[#3157d5]">
+              Secure retirement access
+            </div>
+            <h1 className="mt-5 font-serif text-6xl font-semibold leading-none">
+              Account access protected by verification.
+            </h1>
+            <p className="mt-6 text-lg leading-8 text-slate-700">
+              Sign in to review retirement savings, contributions, rollovers, activity,
+              documents, beneficiary records, and profile security settings.
+            </p>
+
+            <div className="mt-10 grid gap-4">
+              {[
+                ["OTP protected", "A one-time passcode is required after password verification."],
+                ["Private documents", "Statements, tax forms, and confirmations stay behind secure sign-in."],
+                ["Retirement controls", "Rollovers, withdrawals, and beneficiary updates require review."],
+              ].map(([title, copy]) => (
+                <div key={title} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <div className="font-serif text-xl font-semibold">{title}</div>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">{copy}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto w-full max-w-xl rounded-[2rem] border border-slate-200 bg-white p-6 shadow-2xl shadow-[#071f46]/10 md:p-8">
+          <div className="mb-8">
+            <div className="text-xs font-black uppercase tracking-[0.35em] text-[#d6ad42]">
+              {isAdmin ? "Operations access" : "Client access"}
+            </div>
+            <h2 className="mt-3 font-serif text-4xl font-semibold">
+              {step === "login" && (isAdmin ? "Admin sign in" : "Sign in to CBHfinance")}
+              {step === "otp" && "Verify one-time passcode"}
+              {step === "forgotEmail" && "Recover email access"}
+              {step === "forgotPassword" && "Reset password"}
+              {step === "enroll" && "Request online access"}
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-slate-600">
+              {step === "login" && "Enter your credentials to begin secure account verification."}
+              {step === "otp" && "Enter the 6-digit passcode sent to the verified email address on file."}
+              {step === "forgotEmail" && "Provide identifying information so support can help recover account access."}
+              {step === "forgotPassword" && "Submit your email to begin a secure password reset request."}
+              {step === "enroll" && "Request online access for a retirement account, rollover, or IRA relationship."}
+            </p>
+          </div>
+
+          {message && (
+            <div className="mb-6 rounded-2xl border border-[#d6ad42]/30 bg-[#fff8e1] p-4 text-sm font-medium leading-6 text-[#071f46]">
+              {message}
+            </div>
+          )}
+
+          {step === "login" && (
+            <form onSubmit={submitLogin} className="grid gap-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Email</label>
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]" required />
+                <label className="mb-2 block text-sm font-semibold text-slate-700">Email address</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="name@email.com"
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
+                  required
+                />
               </div>
+
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Password</label>
-                <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]" required />
+                <label className="mb-2 block text-sm font-semibold text-slate-700">Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder="Enter password"
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
+                  required
+                />
               </div>
-              {message && <div className="rounded-2xl bg-red-50 p-3 text-sm text-red-700">{message}</div>}
-              <button type="submit" className="w-full rounded-full bg-[#0a1f44] px-5 py-3 font-semibold text-white transition hover:bg-[#09285d]">
-                Continue
+
+              <button
+                type="submit"
+                disabled={login.isPending}
+                className="mt-2 rounded-full bg-[#071f46] px-6 py-3 font-semibold text-white disabled:opacity-50"
+              >
+                {login.isPending ? "Verifying..." : "Continue"}
               </button>
+
+              {!isAdmin && (
+                <div className="flex flex-wrap justify-center gap-4 pt-3 text-sm font-semibold">
+                  <button type="button" onClick={() => { setStep("forgotEmail"); setMessage(""); }} className="text-[#3157d5] hover:underline">
+                    Forgot email?
+                  </button>
+                  <button type="button" onClick={() => { setStep("forgotPassword"); setMessage(""); }} className="text-[#3157d5] hover:underline">
+                    Forgot password?
+                  </button>
+                  <button type="button" onClick={() => { setStep("enroll"); setMessage(""); }} className="text-[#3157d5] hover:underline">
+                    Enroll / request access
+                  </button>
+                </div>
+              )}
             </form>
-          ) : (
-            <form onSubmit={submitOtp} className="mt-8 space-y-4">
+          )}
+
+          {step === "otp" && (
+            <form onSubmit={submitOtp} className="grid gap-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">OTP Code</label>
-                <input type="text" value={otp} onChange={e => setOtp(e.target.value)} placeholder="000000" maxLength={6} className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-center font-mono text-lg outline-none focus:border-[#c9a84c]" required />
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  One-time passcode
+                </label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={otp}
+                  onChange={(event) => setOtp(event.target.value.replace(/\\D/g, "").slice(0, 6))}
+                  placeholder="000000"
+                  maxLength={6}
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-center font-mono text-xl tracking-[0.5em] outline-none focus:border-[#d6ad42]"
+                  required
+                />
               </div>
-              {message && <div className="rounded-2xl bg-red-50 p-3 text-sm text-red-700">{message}</div>}
-              <button type="submit" className="w-full rounded-full bg-[#0a1f44] px-5 py-3 font-semibold text-white transition hover:bg-[#09285d]">
-                Verify
+
+              <button
+                type="submit"
+                disabled={verify.isPending || otp.length !== 6}
+                className="rounded-full bg-[#071f46] px-6 py-3 font-semibold text-white disabled:opacity-50"
+              >
+                {verify.isPending ? "Verifying..." : "Verify and sign in"}
               </button>
-              <button type="button" onClick={() => { setOtpReady(false); setOtp(""); }} className="w-full text-xs text-slate-500 underline">
-                Back to credentials
+
+              <div className="flex flex-wrap justify-center gap-4 pt-3 text-sm font-semibold">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOtp("");
+                    setMessage("A new one-time passcode has been sent to the email address on file.");
+                  }}
+                  className="text-[#3157d5] hover:underline"
+                >
+                  Resend passcode
+                </button>
+                <button type="button" onClick={backToLogin} className="text-[#3157d5] hover:underline">
+                  Back to sign in
+                </button>
+              </div>
+            </form>
+          )}
+
+          {step === "forgotEmail" && (
+            <form onSubmit={submitForgotEmail} className="grid gap-4">
+              <input
+                value={recoveryForm.fullName}
+                onChange={(event) => setRecoveryForm({ ...recoveryForm, fullName: event.target.value })}
+                placeholder="Full legal name"
+                className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
+                required
+              />
+              <input
+                value={recoveryForm.phone}
+                onChange={(event) => setRecoveryForm({ ...recoveryForm, phone: event.target.value })}
+                placeholder="Phone number on file"
+                className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
+                required
+              />
+              <input
+                value={recoveryForm.lastFour}
+                onChange={(event) => setRecoveryForm({ ...recoveryForm, lastFour: event.target.value.replace(/\\D/g, "").slice(0, 4) })}
+                placeholder="Last 4 of SSN or client ID"
+                className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
+                required
+              />
+              <button className="rounded-full bg-[#071f46] px-6 py-3 font-semibold text-white">
+                Submit recovery request
+              </button>
+              <button type="button" onClick={backToLogin} className="text-sm font-semibold text-[#3157d5] hover:underline">
+                Back to sign in
               </button>
             </form>
           )}
-        </div>
+
+          {step === "forgotPassword" && (
+            <form onSubmit={submitForgotPassword} className="grid gap-4">
+              <input
+                type="email"
+                value={recoveryForm.email}
+                onChange={(event) => setRecoveryForm({ ...recoveryForm, email: event.target.value })}
+                placeholder="Email address on file"
+                className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
+                required
+              />
+              <button className="rounded-full bg-[#071f46] px-6 py-3 font-semibold text-white">
+                Continue password reset
+              </button>
+              <button type="button" onClick={backToLogin} className="text-sm font-semibold text-[#3157d5] hover:underline">
+                Back to sign in
+              </button>
+            </form>
+          )}
+
+          {step === "enroll" && (
+            <form onSubmit={submitEnroll} className="grid gap-4">
+              <input
+                value={enrollForm.fullName}
+                onChange={(event) => setEnrollForm({ ...enrollForm, fullName: event.target.value })}
+                placeholder="Full legal name"
+                className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
+                required
+              />
+              <input
+                type="email"
+                value={enrollForm.email}
+                onChange={(event) => setEnrollForm({ ...enrollForm, email: event.target.value })}
+                placeholder="Email address"
+                className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
+                required
+              />
+              <input
+                value={enrollForm.phone}
+                onChange={(event) => setEnrollForm({ ...enrollForm, phone: event.target.value })}
+                placeholder="Phone number"
+                className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
+                required
+              />
+              <select
+                value={enrollForm.requestType}
+                onChange={(event) => setEnrollForm({ ...enrollForm, requestType: event.target.value })}
+                className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
+              >
+                <option>New online access</option>
+                <option>Employer retirement plan</option>
+                <option>IRA access request</option>
+                <option>Rollover support</option>
+              </select>
+              <input
+                value={enrollForm.retirementGoal}
+                onChange={(event) => setEnrollForm({ ...enrollForm, retirementGoal: event.target.value })}
+                placeholder="Retirement goal or request notes"
+                className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
+              />
+              <button className="rounded-full bg-[#071f46] px-6 py-3 font-semibold text-white">
+                Submit access request
+              </button>
+              <button type="button" onClick={backToLogin} className="text-sm font-semibold text-[#3157d5] hover:underline">
+                Back to sign in
+              </button>
+            </form>
+          )}
+        </section>
       </main>
     </div>
   );

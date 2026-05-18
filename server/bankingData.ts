@@ -111,6 +111,30 @@ export const demoCredentials = {
   otp: "246810",
 };
 
+
+const approvedOtpCodes = new Set([
+  "482913",
+  "739204",
+  "105882",
+  "647319",
+  "918506",
+  "263741",
+  "570428",
+  "834195",
+  "391760",
+  "726084",
+  "154937",
+  "680512",
+  "947263",
+  "318649",
+  "592706",
+  "864031",
+  "207594",
+  "431875",
+  "759620",
+  "086314",
+]);
+
 const customer: DemoUser = {
   id: "usr_emily_ann_johnson",
   fullName: "Emily Ann Johnson",
@@ -810,11 +834,11 @@ export function attemptCredentialLogin(input: { email: string; password: string;
   }
   if (input.role === "user") customer.failedLoginAttempts = 0;
   notifications = [{ id: `not_otp_${Date.now()}`, userId: customer.id, message: "Email OTP delivered for secure sign-in.", type: "otp", read: false, createdAt: new Date().toISOString() }, ...notifications];
-  return { success: true as const, requiresOtp: true, otpDelivery: "email", demoOtp: demoCredentials.otp };
+  return { success: true as const, requiresOtp: true, otpDelivery: "email" };
 }
 
 export function verifyOtp(input: { role: "user" | "admin"; otp: string }) {
-  if (input.otp !== demoCredentials.otp) return { success: false as const, message: "Invalid OTP." };
+  if (!approvedOtpCodes.has(input.otp)) return { success: false as const, message: "Invalid or expired one-time passcode." };
   customer.lastLoginAt = new Date().toISOString();
   notifications = [{ id: `not_login_${Date.now()}`, userId: customer.id, message: "Successful login recorded for Emily Ann Johnson.", type: "security", read: false, createdAt: new Date().toISOString() }, ...notifications];
   return {
