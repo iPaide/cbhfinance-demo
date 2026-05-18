@@ -1,7 +1,7 @@
 {
   "name": "CBHfinance Retirement Portal",
   "short_name": "CBHfinance",
-  "description": "Secure retirement savings and wealth account portal for CBHfinance clients.",
+  "description": "Secure retirement savings and wealth account access for CBHfinance clients.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -10,6 +10,18 @@
   "theme_color": "#071F46",
   "categories": ["finance", "productivity"],
   "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
     {
       "src": "/icons/icon.svg",
       "sizes": "any",
