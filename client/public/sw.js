@@ -24,7 +24,6 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const request = event.request;
-
   if (request.method !== "GET") return;
 
   event.respondWith(
