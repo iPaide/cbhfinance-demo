@@ -353,6 +353,10 @@ function LandingPage() {
               <p className="mt-2 text-slate-600">
                 Sign in securely to access accounts, documents, contribution records, and profile settings.
               </p>
+              <p className="mt-3 max-w-2xl text-xs leading-5 text-slate-500">
+                Investment and retirement account information is available only after secure sign-in.
+                Certain contribution, rollover, transfer, withdrawal, and beneficiary requests require review before processing.
+              </p>
             </div>
             <div className="flex flex-wrap gap-3">
               <Link href="/login" className="rounded-full bg-[#071f46] px-6 py-3 font-semibold text-white">
@@ -524,6 +528,13 @@ function LoginPage({ role, onAuthenticated }: { role: "user" | "admin"; onAuthen
               {step === "forgotPassword" && "Submit your email to begin a secure password reset request."}
               {step === "enroll" && "Request online access for a retirement account, rollover, or IRA relationship."}
             </p>
+
+            {step === "login" && (
+              <div className="mt-5 rounded-2xl border border-[#d6ad42]/30 bg-[#fff8e1] p-4 text-sm leading-6 text-[#071f46]">
+                For your protection, CBHfinance requires password verification and a one-time
+                passcode before showing retirement account information.
+              </div>
+            )}
           </div>
 
           {message && (
@@ -1100,6 +1111,9 @@ function UserPortal() {
                       <p className="mt-4 max-w-xl text-sm leading-6 text-white/70">
                         Includes retirement savings, cash reserve, and investment account values
                         available through CBHfinance.
+                      </p>
+                      <p className="mt-3 text-xs font-semibold uppercase tracking-[0.25em] text-white/45">
+                        Updated today
                       </p>
                     </div>
 
