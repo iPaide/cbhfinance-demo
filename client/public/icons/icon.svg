@@ -1,0 +1,10 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="112" fill="#071F46"/>
+  <circle cx="256" cy="256" r="170" fill="#0B2D63"/>
+  <path d="M156 318V202C156 187.641 167.641 176 182 176H330C344.359 176 356 187.641 356 202V318" stroke="#D6AD42" stroke-width="24" stroke-linecap="round"/>
+  <path d="M196 318V240H236V318" stroke="#D6AD42" stroke-width="22" stroke-linecap="round"/>
+  <path d="M276 318V240H316V318" stroke="#D6AD42" stroke-width="22" stroke-linecap="round"/>
+  <path d="M144 338H368" stroke="#D6AD42" stroke-width="24" stroke-linecap="round"/>
+  <path d="M176 374H336" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round" opacity="0.9"/>
+  <text x="256" y="132" text-anchor="middle" font-family="Georgia, serif" font-size="56" font-weight="700" fill="#FFFFFF">CBH</text>
+</svg>
