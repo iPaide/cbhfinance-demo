@@ -832,6 +832,7 @@ function UserPortal() {
   const [location] = useLocation();
   const initialTab = new URLSearchParams(location.split("?")[1] ?? "").get("tab") ?? "dashboard";
   const [tab, setTab] = useState(initialTab);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileNotice, setProfileNotice] = useState("");
   const dashboard = trpc.banking.dashboard.useQuery();
   const statements = trpc.banking.statements.useQuery();
@@ -974,6 +975,63 @@ function UserPortal() {
         </button>
       </aside>
 
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <button
+            type="button"
+            aria-label="Close menu"
+            onClick={() => setMobileMenuOpen(false)}
+            className="absolute inset-0 bg-[#071f46]/45 backdrop-blur-sm"
+          />
+
+          <aside className="relative flex h-full w-[82vw] max-w-sm flex-col bg-[#071f46] p-6 text-white shadow-2xl">
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+              <div className="font-serif text-3xl font-bold leading-none text-white">
+                CBHfinance
+              </div>
+              <div className="mt-2 text-[10px] uppercase tracking-[0.35em] text-[#d6ad42]">
+                Retirement Portal
+              </div>
+            </div>
+
+            <nav className="mt-8 grid gap-2">
+              {[
+                ["Overview", "dashboard"],
+                ["Retirement Accounts", "dashboard"],
+                ["Investments", "dashboard"],
+                ["Contributions", "payments"],
+                ["Activity", "transactions"],
+                ["Documents", "statements"],
+                ["Profile & Security", "settings"],
+              ].map(([label, value]) => (
+                <button
+                  key={`${label}-${value}-drawer`}
+                  type="button"
+                  onClick={() => {
+                    setTab(value);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`rounded-2xl px-5 py-3.5 text-left text-sm font-semibold transition ${
+                    tab === value
+                      ? "bg-[#d6ad42] text-white shadow-lg shadow-black/20"
+                      : "text-white/75 hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </nav>
+
+            <div className="mt-auto rounded-3xl bg-white/5 p-5 text-sm text-white/75">
+              <div className="font-semibold text-white">Secure session</div>
+              <p className="mt-2 text-xs leading-5">
+                Your retirement account access is protected by secure session controls.
+              </p>
+            </div>
+          </aside>
+        </div>
+      )}
+
       <main className="lg:ml-72">
         <header className="w-full border-b border-slate-200 bg-white px-5 py-6 lg:px-10">
           <div className="flex flex-wrap items-center justify-between gap-5">
@@ -1002,27 +1060,28 @@ function UserPortal() {
               </div>
             </div>
 
-            <div className="flex w-full gap-2 overflow-x-auto pb-2 lg:hidden">
-              {[
-                ["Overview", "dashboard"],
-                ["Accounts", "dashboard"],
-                ["Investments", "dashboard"],
-                ["Contributions", "payments"],
-                ["Activity", "transactions"],
-                ["Documents", "statements"],
-                ["Profile & Security", "settings"],
-              ].map(([label, value]) => (
-                <button
-                  key={`${label}-${value}-mobile`}
-                  type="button"
-                  onClick={() => setTab(value)}
-                  className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold ${
-                    tab === value ? "bg-[#071f46] text-white" : "border bg-white text-[#071f46]"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
+            <div className="flex w-full items-center justify-between gap-3 lg:hidden">
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(true)}
+                className="rounded-full bg-[#071f46] px-5 py-2.5 text-sm font-semibold text-white shadow-sm"
+              >
+                Menu
+              </button>
+
+              <div className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-[#071f46]">
+                {tab === "dashboard"
+                  ? "Overview"
+                  : tab === "payments"
+                    ? "Contributions"
+                    : tab === "transactions"
+                      ? "Activity"
+                      : tab === "statements"
+                        ? "Documents"
+                        : tab === "settings"
+                          ? "Profile & Security"
+                          : "Overview"}
+              </div>
             </div>
           </div>
         </header>
