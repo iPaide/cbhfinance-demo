@@ -1021,13 +1021,23 @@ function TransactionHistory() {
             </p>
           </div>
 
-          <a
-            download="cbhfinance-retirement-activity.csv"
-            href={`data:text/csv;charset=utf-8,${encodeURIComponent(csv)}`}
+          <button
+            type="button"
+            onClick={() => {
+              const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = "cbhfinance-retirement-activity.csv";
+              document.body.appendChild(link);
+              link.click();
+              link.remove();
+              URL.revokeObjectURL(url);
+            }}
             className="rounded-full bg-[#d6ad42] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-black/10"
           >
             Export activity
-          </a>
+          </button>
         </div>
       </section>
 
