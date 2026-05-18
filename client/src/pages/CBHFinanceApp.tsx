@@ -839,12 +839,15 @@ function PortalLayout({ children, title, role = "user" }: { children: React.Reac
   );
 }
 
-function normalizePortalTab(value: string | null) {
-  if (value === "contributions" || value === "payments") return "payments";
-  if (value === "activity" || value === "transactions") return "transactions";
-  if (value === "documents" || value === "statements") return "statements";
-  if (value === "beneficiaries" || value === "profile" || value === "settings") return "settings";
-  if (value === "accounts" || value === "investments" || value === "overview" || value === "dashboard") return "dashboard";
+function normalizePortalTab(value: string | null | undefined) {
+  const tab = String(value ?? "dashboard").toLowerCase();
+
+  if (tab === "contributions" || tab === "payments") return "payments";
+  if (tab === "activity" || tab === "transactions") return "transactions";
+  if (tab === "documents" || tab === "statements") return "statements";
+  if (tab === "beneficiaries" || tab === "profile" || tab === "security" || tab === "settings") return "settings";
+  if (tab === "accounts" || tab === "investments" || tab === "overview" || tab === "dashboard") return "dashboard";
+
   return "dashboard";
 }
 
@@ -859,7 +862,7 @@ function UserPortal() {
 
   useEffect(() => {
     const urlTab = normalizePortalTab(new URLSearchParams(location.split("?")[1] ?? "").get("tab"));
-    setTab(urlTab);
+    setTab(normalizePortalTab(urlTab));
   }, [location]);
 
   const navItems = [
