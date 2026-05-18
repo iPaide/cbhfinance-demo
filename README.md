@@ -1,79 +1,165 @@
-# CBHfinance Banking Portal
+# CBHfinance — Retirement Savings & Wealth Portal
 
-CBHfinance is a full-stack retirement savings and wealth account portal that combines a public retirement-focused website, a protected client portal, and a back-office operations panel at `/secure-admin`. The application is branded with the CBHfinance palette of navy `#0a1f44`, gold `#c9a84c`, off-white `#f8f6f1`, Playfair Display headings, and DM Sans body text.
+CBHfinance is a full-stack retirement savings and wealth account portal designed to feel like a polished digital retirement platform. It combines a public retirement-focused website, protected client login, OTP verification, retirement account dashboard, activity tracking, contribution and rollover workflows, document center, beneficiary/security profile tools, support case intake, admin operations console, and audit controls.
 
-## Important Scope
+## Live Experience
 
-This project is implemented as a controlled portfolio environment and is not connected to live custodial, brokerage, custodial transfer, ACH, wire, tax-reporting, or investment execution systems. External contribution, rollover, withdrawal, and restricted transfer actions are routed through review controls and display:
+- Public website: retirement-focused landing page
+- Client portal: `/portal`
+- Admin operations console: `/secure-admin`
+- Support/contact page: `/contact`
 
-> Unable to complete transaction. Please contact support.
+## Core Features
 
-Admin balance adjustments are recorded inside the controlled activity ledger and append-only audit log. Before any real financial use, this codebase would require formal security, legal, compliance, fraud, AML/KYC, privacy, resilience, custody, and regulatory review.
+### Public Retirement Website
 
-## Implemented Application Surfaces
+The landing page presents CBHfinance as a retirement savings and wealth account platform, with sections for retirement outlook, secure access, retirement services, document access, rollover support, and client support.
 
-| Area | Route | Implemented Capabilities |
-|---|---:|---|
-| Public marketing site | `/` | CBHfinance branded landing page, service positioning, security controls, Login CTA, footer navigation. |
-| User login | `/login` | Separate user credential page, OTP step, lockout simulation, session constants. |
-| User portal | `/portal` | Account cards, total net worth, recent transactions, quick actions, alerts, notifications, statements, settings. |
-| Admin panel | `/secure-admin` | Separate admin login, dashboard, user/account view, transaction table, admin credit/debit tool, immutable audit log. |
-| Terms | `/terms` | CBHfinance terms page. |
-| Privacy | `/privacy` | CBHfinance privacy page. |
-| Contact | `/contact` | Branded contact support support form. |
+### Secure Client Access
 
-## Seeded Customer
+The login flow includes:
 
-| Field | Value |
-|---|---:|
-| Customer | Emily Ann Johnson |
-| Checking balance | `$62,288.72` |
-| Savings balance | `$116,039.59` |
-| IRA balance | `$436,892.55` |
-| Total net worth | `$615,220.86` |
-| Transaction history | Starts January 2025 and runs through the current date. |
-| Statement history | Begins January 2025. |
+- Email/password verification
+- One-time passcode verification
+- Forgot email flow
+- Forgot password flow
+- Enroll / request access flow
+- Secure session handling
+- Timeout warning and automatic logout behavior
 
-## Credentials
+### Retirement Dashboard
 
-| Role | Route | Email | Password | OTP |
-|---|---|---|---|---:|
-| User | `/login` | `emilyajohnson196@gmail.com` | `9233W@de1313` | `246810` |
-| Admin | `/secure-admin` | `admin@cbhfinance.online` | `CBHAdmin!2026` | `246810` |
+The client dashboard includes:
 
-## Security and Banking Behaviors
+- Total retirement savings overview
+- Vested balance
+- YTD contributions
+- Investment profile
+- Retirement account cards
+- Allocation snapshot
+- Quick actions
+- Recent retirement activity
+- Guidance and alerts
 
-The application includes controlled authentication, OTP, timeout, lockout, and audit behavior for a portfolio-grade retirement portal experience. The constants are implemented and tested as follows.
+### Retirement Activity
 
-| Requirement | Implemented Value |
-|---|---:|
-| Session warning | Exactly 13 minutes of inactivity. |
-| Session hard timeout | Exactly 15 minutes of inactivity. |
-| Account lockout | Exactly 5 failed login attempts. |
-| Transaction pagination | Exactly 25 records per page. |
-| Admin route | Exactly `/secure-admin`. |
-| Audit log | Append-only interface; no edit or delete procedure is exposed. |
+The activity area includes:
 
-## Development Commands
+- Contribution records
+- Employer match records
+- Dividend reinvestments
+- Cash reserve interest
+- Rollover review activity
+- Internal transfers
+- Plan administration fees
+- Search, filters, pagination, and CSV export
+- Mobile-friendly activity cards
 
-```bash
-pnpm test
-pnpm check
-pnpm build
-pnpm dev
-```
+### Contributions & Transfers
 
-## Validation Status
+The portal supports realistic retirement request workflows:
 
-The implementation was validated with unit tests, TypeScript checking, and a production build.
+- One-time contribution request
+- Recurring contribution request
+- Internal account transfer
+- Rollover request
+- Withdrawal review
+- Contribution limits guidance
 
-```text
-Test Files: 2 passed
-Tests: 8 passed
-TypeScript: passed
-Production build: passed
-```
+Certain requests are routed through review messaging to reflect realistic retirement-service controls.
 
-## Architecture Notes
+### Statements & Documents
 
-The project uses the scaffolded React, Express, tRPC, Drizzle, and database stack. Banking data is held in deterministic server-side state for immediate execution and testability, while schema tables are defined for customers, accounts, transactions, statements, notifications, and immutable admin logs. The generated database migration has been applied to the managed project database.
+The document center includes:
+
+- Monthly retirement account statements
+- Tax forms
+- Contribution confirmations
+- Rollover documents
+- Plan notices
+- Secure disclosures
+- Downloadable statement records
+
+### Profile, Beneficiaries & Security
+
+The profile area includes:
+
+- Personal information
+- Contact information
+- Beneficiary status
+- Trusted contact controls
+- Delivery preferences
+- Security center
+- Last login information
+- Profile review actions
+
+### Admin Operations Console
+
+The admin console is designed as a retirement operations workspace, including:
+
+- Client profile review
+- Account review adjustments
+- Retirement activity management
+- Support case review
+- Request controls
+- Immutable audit log
+- CSV export
+- Client status controls
+
+## Design Direction
+
+CBHfinance uses a premium retirement/wealth visual system:
+
+- Navy and gold brand palette
+- Serif headings for a private-client feel
+- Clean card-based layouts
+- Mobile side-menu navigation
+- Mobile-friendly activity cards
+- Retirement-oriented copy and workflows
+
+## Technology Stack
+
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- tRPC
+- Node.js
+- Render deployment
+- GitHub version control
+
+## Security and Review Notes
+
+This project is implemented as a controlled portfolio environment. It is not connected to live custodial, brokerage, tax-reporting, investment execution, ACH, wire, or payment systems.
+
+Before any real financial use, this codebase would require formal review for:
+
+- Security
+- Legal compliance
+- Custody and brokerage requirements
+- Privacy
+- Fraud prevention
+- AML/KYC
+- Resilience
+- Regulatory obligations
+- Data retention
+- Real notification delivery
+- Real identity verification
+
+## Project Goal
+
+The goal of CBHfinance is to demonstrate a professional, realistic, end-to-end retirement savings portal experience that includes both client-facing and operations-facing workflows.
+
+It is designed to show:
+
+- Product thinking
+- Secure account experience design
+- Retirement-platform UX
+- Full-stack implementation
+- Admin/operations tooling
+- Mobile responsiveness
+- Realistic financial workflow modeling
+
+## Status
+
+CBHfinance is live, mobile-responsive, and actively polished for presentation.
