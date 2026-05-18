@@ -473,7 +473,7 @@ function LoginPage({ role, onAuthenticated }: { role: "user" | "admin"; onAuthen
   }
 
   return (
-    <div className="min-h-screen bg-[#f6f7fb] text-[#071f46]">
+    <div className="min-h-screen overflow-x-hidden bg-[#f6f7fb] text-[#071f46]">
       <MarketingNav />
 
       <main className="container grid min-h-[calc(100vh-90px)] items-center gap-10 py-14 lg:grid-cols-[0.95fr_1.05fr]">
@@ -920,7 +920,7 @@ function UserPortal() {
     .reduce((sum: number, row: any) => sum + Number(row.amount ?? 0), 0);
 
   return (
-    <div className="min-h-screen bg-[#f6f7fb] text-[#071f46]">
+    <div className="min-h-screen overflow-x-hidden bg-[#f6f7fb] text-[#071f46]">
       <aside className="fixed left-0 top-0 hidden h-screen w-72 bg-[#071f46] p-6 text-white shadow-2xl lg:block">
         <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
           <div className="font-serif text-3xl font-bold leading-none text-white">
@@ -968,7 +968,7 @@ function UserPortal() {
       </aside>
 
       <main className="lg:ml-72">
-        <header className="border-b border-slate-200 bg-white px-5 py-6 lg:px-10">
+        <header className="w-full border-b border-slate-200 bg-white px-5 py-6 lg:px-10">
           <div className="flex flex-wrap items-center justify-between gap-5">
             <div>
               <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
@@ -1016,11 +1016,11 @@ function UserPortal() {
           {tab === "dashboard" && (
             <div className="grid gap-6">
               <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-                <section className="overflow-hidden rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
+                <section className="overflow-hidden rounded-[2rem] bg-[#071f46] p-6 text-white shadow-xl sm:p-8">
                   <div className="flex flex-wrap items-start justify-between gap-5">
                     <div>
                       <p className="text-white/60">Total retirement savings</p>
-                      <div className="mt-3 text-5xl font-bold tracking-tight text-[#d6ad42]">
+                      <div className="mt-3 text-4xl font-bold tracking-tight text-[#d6ad42] sm:text-5xl">
                         {dashboard.data ? money(totalRetirementSavings) : "Loading"}
                       </div>
                       <p className="mt-4 max-w-xl text-sm leading-6 text-white/70">
@@ -1151,7 +1151,7 @@ function UserPortal() {
                       key={action.label}
                       type="button"
                       onClick={() => setTab(action.target)}
-                      className="group rounded-2xl border border-slate-200 bg-white p-5 text-left transition hover:-translate-y-0.5 hover:border-[#d6ad42] hover:shadow-md"
+                      className="group rounded-2xl border border-slate-200 bg-white p-4 text-left transition hover:-translate-y-0.5 hover:border-[#d6ad42] hover:shadow-md sm:p-5"
                     >
                       <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#071f46]/5 text-sm font-black text-[#071f46]">
                         {action.icon}
@@ -1179,7 +1179,40 @@ function UserPortal() {
                     </button>
                   </div>
 
-                  <div className="overflow-x-auto">
+                  <div className="grid gap-3 md:hidden">
+                    {recentTransactions.slice(0, 5).map((row: any) => (
+                      <div key={row.id} className="rounded-2xl border border-slate-200 bg-[#fbfcfe] p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <div className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+                              {formatSafeDate(row.createdAt)}
+                            </div>
+                            <div className="mt-2 font-semibold text-[#071f46]">
+                              {retirementActivityLabel(row)}
+                            </div>
+                            <div className="mt-1 text-xs text-slate-500">
+                              {retirementAccountName(row.accountType)}
+                            </div>
+                          </div>
+                          <div
+                            className={`text-right font-semibold ${
+                              row.direction === "credit" ? "text-emerald-700" : "text-[#071f46]"
+                            }`}
+                          >
+                            {row.direction === "credit" ? "+" : "-"}
+                            {money(row.amount)}
+                          </div>
+                        </div>
+                        <div className="mt-3">
+                          <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                            {row.status}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="hidden overflow-x-auto md:block">
                     <table className="w-full min-w-[720px] text-left text-sm">
                       <thead className="border-b text-xs uppercase tracking-widest text-slate-500">
                         <tr>
@@ -1193,9 +1226,9 @@ function UserPortal() {
                       <tbody>
                         {recentTransactions.slice(0, 6).map((row: any) => (
                           <tr key={row.id} className="border-b border-slate-100 last:border-0">
-                            <td className="py-4">{new Date(row.createdAt).toLocaleDateString()}</td>
-                            <td className="font-medium">{row.description}</td>
-                            <td>{row.accountType}</td>
+                            <td className="py-4">{formatSafeDate(row.createdAt)}</td>
+                            <td className="font-medium">{retirementActivityLabel(row)}</td>
+                            <td>{retirementAccountName(row.accountType)}</td>
                             <td
                               className={
                                 row.direction === "credit"
