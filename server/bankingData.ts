@@ -229,7 +229,7 @@ function makeSeedTransactions(): Transaction[] {
         method: "ACH",
         refPrefix: "CONTRIB",
         direction: "credit",
-        amount: 1250.0,
+        amount: 6850.0,
         status: "Completed",
         initiatedBy: "system",
       });
@@ -244,7 +244,7 @@ function makeSeedTransactions(): Transaction[] {
         method: "ACH",
         refPrefix: "MATCH",
         direction: "credit",
-        amount: 625.0,
+        amount: 3425.0,
         status: "Completed",
         initiatedBy: "system",
       });
@@ -259,7 +259,7 @@ function makeSeedTransactions(): Transaction[] {
         method: "Investment",
         refPrefix: "INVBUY",
         direction: "debit",
-        amount: 850.0 + month * 12,
+        amount: 14250.0 + month * 185,
         status: "Completed",
         initiatedBy: "system",
       });
@@ -274,7 +274,7 @@ function makeSeedTransactions(): Transaction[] {
         method: "Interest",
         refPrefix: "INTCR",
         direction: "credit",
-        amount: 145.25 + month,
+        amount: 1285.42 + month * 18,
         status: "Completed",
         initiatedBy: "system",
       });
@@ -289,7 +289,7 @@ function makeSeedTransactions(): Transaction[] {
         method: "Internal",
         refPrefix: "ALLOC",
         direction: "debit",
-        amount: 500.0,
+        amount: 7500.0,
         status: "Completed",
         initiatedBy: "system",
       });
@@ -302,7 +302,7 @@ function makeSeedTransactions(): Transaction[] {
         method: "Internal",
         refPrefix: "ALLOC",
         direction: "credit",
-        amount: 500.0,
+        amount: 7500.0,
         status: "Completed",
         initiatedBy: "system",
       });
@@ -317,7 +317,7 @@ function makeSeedTransactions(): Transaction[] {
         method: "Investment",
         refPrefix: "DIV",
         direction: "credit",
-        amount: 980.5 + month * 22,
+        amount: 18750.5 + month * 420,
         status: "Completed",
         initiatedBy: "system",
       });
@@ -332,7 +332,7 @@ function makeSeedTransactions(): Transaction[] {
         method: "Admin",
         refPrefix: "FEE",
         direction: "debit",
-        amount: 18.75,
+        amount: 125.00,
         status: "Completed",
         initiatedBy: "system",
       });
@@ -347,7 +347,7 @@ function makeSeedTransactions(): Transaction[] {
         method: "Wire",
         refPrefix: "ROLLOVER",
         direction: "credit",
-        amount: 3500.0 + month * 100,
+        amount: 75000.0 + month * 1250,
         status: "Completed",
         initiatedBy: "system",
       });
@@ -362,7 +362,7 @@ function makeSeedTransactions(): Transaction[] {
         method: "Investment",
         refPrefix: "REBAL",
         direction: "credit",
-        amount: 425.0 + month * 9,
+        amount: 9500.0 + month * 210,
         status: "Completed",
         initiatedBy: "system",
       });
