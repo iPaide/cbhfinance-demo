@@ -1002,13 +1002,21 @@ function UserPortal() {
               </div>
             </div>
 
-            <div className="flex w-full flex-wrap gap-2 lg:hidden">
-              {navItems.slice(0, 5).map(([label, value]) => (
+            <div className="flex w-full gap-2 overflow-x-auto pb-2 lg:hidden">
+              {[
+                ["Overview", "dashboard"],
+                ["Accounts", "dashboard"],
+                ["Investments", "dashboard"],
+                ["Contributions", "payments"],
+                ["Activity", "transactions"],
+                ["Documents", "statements"],
+                ["Profile & Security", "settings"],
+              ].map(([label, value]) => (
                 <button
                   key={`${label}-${value}-mobile`}
                   type="button"
                   onClick={() => setTab(value)}
-                  className={`rounded-full px-4 py-2 text-sm font-semibold ${
+                  className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold ${
                     tab === value ? "bg-[#071f46] text-white" : "border bg-white text-[#071f46]"
                   }`}
                 >
@@ -1611,83 +1619,156 @@ function retirementAccountName(accountType: string) {
 
 function TransactionTable({ rows }: { rows: any[] }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[860px] text-left text-sm">
-          <thead className="bg-[#f8fafc] text-xs uppercase tracking-widest text-slate-500">
-            <tr>
-              <th className="px-5 py-4">Date</th>
-              <th className="px-5 py-4">Activity</th>
-              <th className="px-5 py-4">Type</th>
-              <th className="px-5 py-4">Account</th>
-              <th className="px-5 py-4 text-right">Amount</th>
-              <th className="px-5 py-4 text-right">Balance</th>
-              <th className="px-5 py-4">Status</th>
-            </tr>
-          </thead>
+    <div>
+      <div className="grid gap-3 md:hidden">
+        {rows.map((row) => {
+          const activity = retirementActivityLabel(row);
+          const type = retirementActivityType(row);
+          const isCredit = row.direction === "credit";
 
-          <tbody>
-            {rows.map((row) => {
-              const activity = retirementActivityLabel(row);
-              const type = retirementActivityType(row);
-              const isCredit = row.direction === "credit";
-
-              return (
-                <tr key={row.id} className="border-t border-slate-100 hover:bg-[#fbfcfe]">
-                  <td className="px-5 py-4 font-medium text-slate-700">
+          return (
+            <div key={row.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <div className="text-xs font-semibold uppercase tracking-widest text-slate-400">
                     {formatSafeDate(row.createdAt)}
-                  </td>
-                  <td className="px-5 py-4">
-                    <div className="font-semibold text-[#071f46]">{activity}</div>
-                    <div className="mt-1 text-xs text-slate-500">
-                      Ref {row.referenceId} · {row.method}
-                    </div>
-                  </td>
-                  <td className="px-5 py-4">
-                    <span className="rounded-full bg-[#071f46]/5 px-3 py-1 text-xs font-semibold text-[#071f46]">
-                      {type}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4 text-slate-600">
+                  </div>
+                  <div className="mt-2 font-semibold text-[#071f46]">{activity}</div>
+                  <div className="mt-1 text-xs leading-5 text-slate-500">
                     {retirementAccountName(row.accountType)}
-                  </td>
-                  <td
-                    className={`px-5 py-4 text-right font-semibold ${
-                      isCredit ? "text-emerald-700" : "text-[#071f46]"
-                    }`}
-                  >
-                    {isCredit ? "+" : "-"}
-                    {money(row.amount)}
-                  </td>
-                  <td className="px-5 py-4 text-right font-medium text-slate-700">
-                    {money(row.balanceAfter)}
-                  </td>
-                  <td className="px-5 py-4">
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                        row.status === "Completed"
-                          ? "bg-emerald-50 text-emerald-700"
-                          : row.status === "Pending"
-                            ? "bg-amber-50 text-amber-700"
-                            : "bg-slate-100 text-slate-600"
+                  </div>
+                </div>
+
+                <div
+                  className={`shrink-0 text-right font-semibold ${
+                    isCredit ? "text-emerald-700" : "text-[#071f46]"
+                  }`}
+                >
+                  {isCredit ? "+" : "-"}
+                  {money(row.amount)}
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-[#071f46]/5 px-3 py-1 text-xs font-semibold text-[#071f46]">
+                  {type}
+                </span>
+                <span
+                  className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                    row.status === "Completed"
+                      ? "bg-emerald-50 text-emerald-700"
+                      : row.status === "Pending"
+                        ? "bg-amber-50 text-amber-700"
+                        : "bg-slate-100 text-slate-600"
+                  }`}
+                >
+                  {row.status}
+                </span>
+              </div>
+
+              <div className="mt-4 grid gap-2 rounded-2xl bg-[#f6f7fb] p-3 text-xs text-slate-600">
+                <div className="flex justify-between gap-3">
+                  <span>Reference</span>
+                  <span className="font-medium text-[#071f46]">{row.referenceId}</span>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <span>Method</span>
+                  <span className="font-medium text-[#071f46]">{row.method}</span>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <span>Balance after</span>
+                  <span className="font-medium text-[#071f46]">{money(row.balanceAfter)}</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+
+        {!rows.length && (
+          <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">
+            No retirement activity matched your filters.
+          </div>
+        )}
+      </div>
+
+      <div className="hidden overflow-hidden rounded-2xl border border-slate-200 bg-white md:block">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[860px] text-left text-sm">
+            <thead className="bg-[#f8fafc] text-xs uppercase tracking-widest text-slate-500">
+              <tr>
+                <th className="px-5 py-4">Date</th>
+                <th className="px-5 py-4">Activity</th>
+                <th className="px-5 py-4">Type</th>
+                <th className="px-5 py-4">Account</th>
+                <th className="px-5 py-4 text-right">Amount</th>
+                <th className="px-5 py-4 text-right">Balance</th>
+                <th className="px-5 py-4">Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {rows.map((row) => {
+                const activity = retirementActivityLabel(row);
+                const type = retirementActivityType(row);
+                const isCredit = row.direction === "credit";
+
+                return (
+                  <tr key={row.id} className="border-t border-slate-100 hover:bg-[#fbfcfe]">
+                    <td className="px-5 py-4 font-medium text-slate-700">
+                      {formatSafeDate(row.createdAt)}
+                    </td>
+                    <td className="px-5 py-4">
+                      <div className="font-semibold text-[#071f46]">{activity}</div>
+                      <div className="mt-1 text-xs text-slate-500">
+                        Ref {row.referenceId} · {row.method}
+                      </div>
+                    </td>
+                    <td className="px-5 py-4">
+                      <span className="rounded-full bg-[#071f46]/5 px-3 py-1 text-xs font-semibold text-[#071f46]">
+                        {type}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4 text-slate-600">
+                      {retirementAccountName(row.accountType)}
+                    </td>
+                    <td
+                      className={`px-5 py-4 text-right font-semibold ${
+                        isCredit ? "text-emerald-700" : "text-[#071f46]"
                       }`}
                     >
-                      {row.status}
-                    </span>
+                      {isCredit ? "+" : "-"}
+                      {money(row.amount)}
+                    </td>
+                    <td className="px-5 py-4 text-right font-medium text-slate-700">
+                      {money(row.balanceAfter)}
+                    </td>
+                    <td className="px-5 py-4">
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                          row.status === "Completed"
+                            ? "bg-emerald-50 text-emerald-700"
+                            : row.status === "Pending"
+                              ? "bg-amber-50 text-amber-700"
+                              : "bg-slate-100 text-slate-600"
+                        }`}
+                      >
+                        {row.status}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+
+              {!rows.length && (
+                <tr>
+                  <td colSpan={7} className="px-5 py-10 text-center text-sm text-slate-500">
+                    No retirement activity matched your filters.
                   </td>
                 </tr>
-              );
-            })}
-
-            {!rows.length && (
-              <tr>
-                <td colSpan={7} className="px-5 py-10 text-center text-sm text-slate-500">
-                  No retirement activity matched your filters.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
