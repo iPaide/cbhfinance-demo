@@ -8,7 +8,7 @@ This project is implemented as a controlled portfolio environment and is not con
 
 > Unable to complete transaction. Please contact support.
 
-Admin balance adjustments are recorded inside the controlled activity ledger and append-only audit log. Before any real financial use, this codebase would require formal security, legal, compliance, banking, fraud, AML/KYC, privacy, resilience, and regulatory review.
+Admin balance adjustments are recorded inside the controlled activity ledger and append-only audit log. Before any real financial use, this codebase would require formal security, legal, compliance, fraud, AML/KYC, privacy, resilience, custody, and regulatory review.
 
 ## Implemented Application Surfaces
 

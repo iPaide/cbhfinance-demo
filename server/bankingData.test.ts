@@ -15,14 +15,14 @@ import {
   getStatements,
   getSupportCases,
   getTransactions,
-  resetDemoStateForTests,
+  resetPortalStateForTests,
   updateSupportCaseStatus,
 } from "./bankingData";
 
-describe("CBHfinance banking data", () => {
-  beforeEach(() => resetDemoStateForTests());
+describe("CBHfinance retirement account data", () => {
+  beforeEach(() => resetPortalStateForTests());
 
-  it("uses the exact seeded account balances and net worth", () => {
+  it("uses the configured retirement account balances and net worth", () => {
     const accounts = getAccounts();
     expect(accounts.find(account => account.type === "Checking")?.balance).toBe(62288.72);
     expect(accounts.find(account => account.type === "Savings")?.balance).toBe(116039.59);
@@ -30,7 +30,7 @@ describe("CBHfinance banking data", () => {
     expect(getDashboardSummary().totalNetWorth).toBe(615220.86);
   });
 
-  it("blocks outgoing payments with the required exact modal message and without ledger mutation", () => {
+  it("routes restricted retirement requests through review messaging without ledger mutation", () => {
     const before = getTransactions({ page: 1 }).total;
     const result = blockOutgoingPayment();
     const after = getTransactions({ page: 1 }).total;
@@ -81,7 +81,7 @@ describe("CBHfinance banking data", () => {
     expect(reviewed.status).toBe("In Review");
   });
 
-  it("returns branded PDF data URLs for statements instead of placeholder paths", () => {
+  it("returns branded PDF data URLs for retirement statements", () => {
     const statement = getStatements()[0];
     expect(statement.fileUrl).toMatch(/^data:application\/pdf;base64,/);
     const decoded = Buffer.from(statement.fileUrl.split(",")[1], "base64").toString("binary");

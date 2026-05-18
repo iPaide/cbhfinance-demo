@@ -6,7 +6,7 @@ export const SESSION_TIMEOUT_MINUTES = 15;
 export const FAILED_LOGIN_LOCKOUT_ATTEMPTS = 5;
 
 export type AccountType = "Checking" | "Savings" | "IRA";
-export type RequestMethod = "ACH" | "Wire" | "Zelle" | "Bill Pay" | "Internal" | "Interest" | "Investment" | "Admin";
+export type RequestMethod = "ACH" | "Wire" | "Internal" | "Interest" | "Investment" | "Admin";
 export type TransactionStatus = "Completed" | "Pending" | "Failed";
 export type TransactionDirection = "credit" | "debit";
 export type SupportCaseStatus = "New" | "In Review" | "Closed";

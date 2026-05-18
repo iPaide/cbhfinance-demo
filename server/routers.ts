@@ -95,7 +95,7 @@ export const appRouter = router({
       .query(({ input }) => getTransactions(input)),
     blockPayment: publicProcedure
       .input(z.object({
-        requestType: z.enum(["Transfer", "Wire", "ACH",  "Bill Pay"]),
+        requestType: z.enum(["Contribution", "Rollover", "Transfer", "Withdrawal Review"]),
         amount: z.number().positive(),
         memo: z.string().optional(),
       }))
