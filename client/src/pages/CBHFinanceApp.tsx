@@ -785,16 +785,207 @@ function UserPortal() {
           {tab === "payments" && <Payments />}
           {tab === "statements" && <Statements rows={statements.data ?? []} />}
           {tab === "settings" && (
-            <Panel title="Profile, Beneficiaries & Security">
-              <div className="grid gap-5 md:grid-cols-2">
-                <Setting label="Full name" value="Emily Ann Johnson" />
-                <Setting label="Email" value="emily.johnson@cbhfinance.online" />
-                <Setting label="Phone" value="+1 (415) 555-0198" />
-                <Setting label="Mailing address" value="2128 Pacific Heights Avenue, San Francisco, CA 94115" />
-                <Setting label="Primary beneficiary" value="Not displayed in portal preview" />
-                <Setting label="Security" value="Email OTP verification active" />
+            <div className="grid gap-6">
+              <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
+                <div className="flex flex-wrap items-start justify-between gap-5">
+                  <div>
+                    <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
+                      Profile, Beneficiaries & Security
+                    </div>
+                    <h2 className="mt-2 font-serif text-4xl font-semibold">
+                      Manage your retirement profile
+                    </h2>
+                    <p className="mt-3 max-w-3xl text-sm leading-6 text-white/70">
+                      Review personal information, beneficiary records, trusted contact details,
+                      document delivery preferences, and account security settings.
+                    </p>
+                  </div>
+
+                  <div className="rounded-3xl border border-white/15 bg-white/5 p-5 text-sm">
+                    <div className="text-white/55">Security status</div>
+                    <div className="mt-2 text-2xl font-semibold">Protected</div>
+                    <p className="mt-2 max-w-xs text-xs leading-5 text-white/60">
+                      Email OTP verification and secure session monitoring are active.
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+                <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                  <div className="mb-5 flex items-center justify-between">
+                    <h3 className="font-serif text-2xl font-semibold">Personal information</h3>
+                    <button
+                      type="button"
+                      className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
+                    >
+                      Request update
+                    </button>
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Setting label="Full name" value="Emily Ann Johnson" />
+                    <Setting label="Email" value="emily.johnson@cbhfinance.online" />
+                    <Setting label="Phone" value="+1 (415) 555-0198" />
+                    <Setting label="Member since" value="March 2019" />
+                    <Setting
+                      label="Mailing address"
+                      value="2128 Pacific Heights Avenue, San Francisco, CA 94115"
+                    />
+                    <Setting label="Document delivery" value="Electronic delivery enabled" />
+                  </div>
+                </section>
+
+                <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                  <div className="mb-5 flex items-center justify-between">
+                    <h3 className="font-serif text-2xl font-semibold">Security center</h3>
+                    <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                      Active
+                    </span>
+                  </div>
+
+                  <div className="grid gap-4">
+                    <div className="rounded-2xl bg-[#f6f7fb] p-5">
+                      <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                        Two-factor authentication
+                      </div>
+                      <div className="mt-2 font-semibold text-[#071f46]">Email OTP enabled</div>
+                      <p className="mt-2 text-sm leading-6 text-slate-600">
+                        A one-time passcode is required for secure sign-in and sensitive requests.
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl bg-[#f6f7fb] p-5">
+                      <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                        Last login
+                      </div>
+                      <div className="mt-2 font-semibold text-[#071f46]">
+                        {dashboard.data?.customer.lastLoginAt
+                          ? new Date(dashboard.data.customer.lastLoginAt).toLocaleString()
+                          : "Loading"}
+                      </div>
+                      <p className="mt-2 text-sm leading-6 text-slate-600">
+                        {dashboard.data?.customer.lastLoginLocation ?? "San Francisco, CA"}
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl bg-[#f6f7fb] p-5">
+                      <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                        Session protection
+                      </div>
+                      <div className="mt-2 font-semibold text-[#071f46]">
+                        Inactivity timeout enabled
+                      </div>
+                      <p className="mt-2 text-sm leading-6 text-slate-600">
+                        Online sessions are monitored and protected by automatic timeout controls.
+                      </p>
+                    </div>
+                  </div>
+                </section>
               </div>
-            </Panel>
+
+              <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <h3 className="font-serif text-2xl font-semibold">Beneficiaries</h3>
+                    <p className="mt-2 text-sm text-slate-600">
+                      Beneficiary records are protected. Changes require verification and review.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="rounded-full bg-[#071f46] px-5 py-3 text-sm font-semibold text-white hover:bg-[#0b2d63]"
+                  >
+                    Request beneficiary update
+                  </button>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-2xl border border-slate-200 bg-[#fbfcfe] p-5">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="text-xs font-bold uppercase tracking-widest text-[#d6ad42]">
+                          Primary beneficiary
+                        </div>
+                        <div className="mt-2 font-serif text-2xl font-semibold text-[#071f46]">
+                          On file
+                        </div>
+                      </div>
+                      <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                        Verified
+                      </span>
+                    </div>
+                    <p className="mt-4 text-sm leading-6 text-slate-600">
+                      Details are hidden for privacy. Beneficiary information can be reviewed after
+                      identity verification.
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-slate-200 bg-[#fbfcfe] p-5">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="text-xs font-bold uppercase tracking-widest text-[#d6ad42]">
+                          Contingent beneficiary
+                        </div>
+                        <div className="mt-2 font-serif text-2xl font-semibold text-[#071f46]">
+                          On file
+                        </div>
+                      </div>
+                      <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                        Review available
+                      </span>
+                    </div>
+                    <p className="mt-4 text-sm leading-6 text-slate-600">
+                      Contingent beneficiary records are maintained securely for retirement account
+                      continuity.
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              <div className="grid gap-6 lg:grid-cols-3">
+                <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                  <h3 className="font-serif text-xl font-semibold">Trusted contact</h3>
+                  <p className="mt-3 text-sm leading-6 text-slate-600">
+                    A trusted contact can help CBHfinance reach someone you authorize if account
+                    security concerns arise.
+                  </p>
+                  <button
+                    type="button"
+                    className="mt-5 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
+                  >
+                    Add or update
+                  </button>
+                </section>
+
+                <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                  <h3 className="font-serif text-xl font-semibold">Delivery preferences</h3>
+                  <p className="mt-3 text-sm leading-6 text-slate-600">
+                    Statements, tax forms, confirmations, and notices are currently delivered
+                    electronically.
+                  </p>
+                  <button
+                    type="button"
+                    className="mt-5 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
+                  >
+                    Manage delivery
+                  </button>
+                </section>
+
+                <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                  <h3 className="font-serif text-xl font-semibold">Account review</h3>
+                  <p className="mt-3 text-sm leading-6 text-slate-600">
+                    Review your profile, beneficiary records, and security settings regularly.
+                  </p>
+                  <button
+                    type="button"
+                    className="mt-5 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
+                  >
+                    Start review
+                  </button>
+                </section>
+              </div>
+            </div>
           )}
         </div>
       </main>
