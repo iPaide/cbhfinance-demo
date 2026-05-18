@@ -377,54 +377,51 @@ function UserPortal() {
   const statements = trpc.banking.statements.useQuery();
 
   const navItems = [
-    ["⌂", "Dashboard", "dashboard"],
-    ["▣", "Accounts", "dashboard"],
-    ["⇄", "Transfers", "payments"],
-    ["▤", "Bill Pay", "payments"],
-    ["Z", "Zelle®", "payments"],
-    ["□", "Statements", "statements"],
-    ["☷", "Transactions", "transactions"],
-    ["◴", "Notifications", "dashboard"],
-    ["⚙", "Settings", "settings"],
-    ["?", "Support", "settings"],
+    ["Overview", "dashboard"],
+    ["Retirement Accounts", "dashboard"],
+    ["Investments", "dashboard"],
+    ["Contributions", "payments"],
+    ["Activity", "transactions"],
+    ["Statements", "statements"],
+    ["Beneficiaries", "settings"],
+    ["Profile & Security", "settings"],
   ];
 
   const quickActions = [
     {
-      icon: "⇄",
-      label: "Transfer",
-      desc: "Move money between CBHfinance accounts",
+      icon: "CON",
+      label: "Make Contribution",
+      desc: "Schedule a one-time or recurring retirement contribution.",
       target: "payments",
     },
     {
-      icon: "SW",
-      label: "Wire",
-      desc: "Domestic and international wire requests",
+      icon: "ROL",
+      label: "Start Rollover",
+      desc: "Begin a rollover request from another retirement provider.",
       target: "payments",
     },
     {
-      icon: "Zelle®",
-      label: "Zelle",
-      desc: "Send money with Zelle®",
-      target: "payments",
-      brand: true,
+      icon: "INV",
+      label: "Change Investments",
+      desc: "Review allocations and adjust future contribution elections.",
+      target: "settings",
     },
     {
-      icon: "$",
-      label: "Bill Pay",
-      desc: "Manage payees and scheduled bills",
-      target: "payments",
+      icon: "BEN",
+      label: "Update Beneficiaries",
+      desc: "Review beneficiary information for your retirement account.",
+      target: "settings",
     },
     {
       icon: "PDF",
-      label: "Statements",
-      desc: "Download monthly account statements",
+      label: "View Statements",
+      desc: "Download monthly and annual account documents.",
       target: "statements",
     },
     {
-      icon: "TX",
-      label: "Transactions",
-      desc: "Search, filter, and export activity",
+      icon: "ACT",
+      label: "Account Activity",
+      desc: "Search contributions, dividends, fees, and transfers.",
       target: "transactions",
     },
   ];
@@ -436,65 +433,91 @@ function UserPortal() {
 
   const accounts = dashboard.data?.accounts ?? [];
   const recentTransactions = dashboard.data?.recentTransactions ?? [];
-  const checking = accounts.find((account: any) => account.type === "Checking");
-  const savings = accounts.find((account: any) => account.type === "Savings");
-  const ira = accounts.find((account: any) => account.type === "IRA");
-  const displayAccounts = [
-    checking,
-    savings,
-    ira,
-  ].filter(Boolean);
+  const totalRetirementSavings = dashboard.data?.totalNetWorth ?? 0;
+
+  const retirementAccounts = accounts.map((account: any) => {
+    const displayName =
+      account.type === "Checking"
+        ? "Traditional Retirement Savings"
+        : account.type === "Savings"
+          ? "High-Yield Cash Reserve"
+          : account.type === "IRA"
+            ? "Individual Retirement Account"
+            : `${account.type} Account`;
+
+    const accountNote =
+      account.type === "Savings"
+        ? `${account.apy}% APY cash reserve`
+        : account.type === "IRA"
+          ? `${account.ytdPerformance}% YTD investment performance`
+          : "Core retirement contribution account";
+
+    return { ...account, displayName, accountNote };
+  });
+
+  const estimatedVestedBalance = totalRetirementSavings * 0.92;
+  const estimatedYtdContributions = recentTransactions
+    .filter((row: any) => row.direction === "credit")
+    .slice(0, 8)
+    .reduce((sum: number, row: any) => sum + Number(row.amount ?? 0), 0);
 
   return (
-    <div className="min-h-screen bg-[#f7f8fb] text-[#071f46]">
-      <aside className="fixed left-0 top-0 hidden h-screen w-72 bg-gradient-to-b from-[#071f46] via-[#06244f] to-[#03142d] p-6 text-white shadow-2xl lg:block">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 text-2xl text-[#d6ad42]">
-            ♜
+    <div className="min-h-screen bg-[#f6f7fb] text-[#071f46]">
+      <aside className="fixed left-0 top-0 hidden h-screen w-72 bg-[#071f46] p-6 text-white shadow-2xl lg:block">
+        <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+          <div className="font-serif text-3xl font-bold leading-none text-white">
+            CBHfinance
           </div>
-          <div>
-            <div className="font-serif text-3xl font-bold leading-none text-white">
-              CBHfinance
-            </div>
-            <div className="mt-1 text-[10px] uppercase tracking-[0.35em] text-white/45">
-              Online Banking
-            </div>
+          <div className="mt-2 text-[10px] uppercase tracking-[0.35em] text-[#d6ad42]">
+            Retirement Portal
           </div>
         </div>
 
-        <nav className="mt-10 grid gap-2">
-          {navItems.map(([icon, label, value]) => (
+        <nav className="mt-8 grid gap-2">
+          {navItems.map(([label, value]) => (
             <button
               key={`${label}-${value}`}
               type="button"
               onClick={() => setTab(value)}
-              className={`flex items-center gap-4 rounded-xl px-5 py-3.5 text-left font-semibold transition ${
+              className={`rounded-2xl px-5 py-3.5 text-left text-sm font-semibold transition ${
                 tab === value
                   ? "bg-[#d6ad42] text-white shadow-lg shadow-black/20"
-                  : "text-white/80 hover:bg-white/10 hover:text-white"
+                  : "text-white/75 hover:bg-white/10 hover:text-white"
               }`}
             >
-              <span className="flex h-6 w-6 items-center justify-center text-lg">{icon}</span>
-              <span>{label}</span>
+              {label}
             </button>
           ))}
         </nav>
+
+        <div className="absolute bottom-24 left-6 right-6 rounded-3xl bg-white/5 p-5 text-sm text-white/75">
+          <div className="font-semibold text-white">Retirement readiness</div>
+          <div className="mt-3 h-2 rounded-full bg-white/10">
+            <div className="h-2 w-[72%] rounded-full bg-[#d6ad42]" />
+          </div>
+          <p className="mt-3 text-xs leading-5">
+            Your projected savings profile is on track based on current account activity.
+          </p>
+        </div>
 
         <button
           type="button"
           onClick={logout}
           className="absolute bottom-7 left-8 right-8 rounded-2xl border border-white/25 px-5 py-3 font-semibold text-white transition hover:bg-white/10"
         >
-          ⇥ Sign out
+          Sign out
         </button>
       </aside>
 
       <main className="lg:ml-72">
-        <header className="bg-white px-5 py-6 shadow-sm lg:px-10">
+        <header className="border-b border-slate-200 bg-white px-5 py-6 lg:px-10">
           <div className="flex flex-wrap items-center justify-between gap-5">
             <div>
-              <h1 className="font-serif text-3xl font-semibold text-[#071f46]">
-                Good morning, Emily
+              <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
+                Retirement Savings
+              </div>
+              <h1 className="mt-1 font-serif text-3xl font-semibold text-[#071f46]">
+                Emily Ann Johnson
               </h1>
               <p className="mt-1 text-sm text-slate-500">
                 Last login:{" "}
@@ -505,27 +528,17 @@ function UserPortal() {
               </p>
             </div>
 
-            <div className="flex items-center gap-4">
-              <button type="button" className="relative rounded-full p-2 text-[#071f46] hover:bg-slate-100">
-                ♧
-                <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-[#d6ad42]" />
-              </button>
-              <button type="button" className="rounded-full p-2 text-[#071f46] hover:bg-slate-100">
-                ✉
-              </button>
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#071f46] text-sm font-bold text-white">
-                  EJ
-                </div>
-                <div className="hidden sm:block">
-                  <div className="text-sm font-semibold">Emily Johnson</div>
-                  <div className="text-xs text-slate-500">Personal Banking</div>
-                </div>
+            <div className="flex items-center gap-3">
+              <div className="hidden rounded-2xl bg-[#f6f7fb] px-5 py-3 text-sm font-semibold text-[#071f46] sm:block">
+                Secure session active
+              </div>
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#071f46] text-sm font-bold text-white">
+                EJ
               </div>
             </div>
 
             <div className="flex w-full flex-wrap gap-2 lg:hidden">
-              {navItems.slice(0, 5).map(([icon, label, value]) => (
+              {navItems.slice(0, 5).map(([label, value]) => (
                 <button
                   key={`${label}-${value}-mobile`}
                   type="button"
@@ -544,78 +557,137 @@ function UserPortal() {
         <div className="p-5 lg:p-10">
           {tab === "dashboard" && (
             <div className="grid gap-6">
-              <div className="grid gap-5 xl:grid-cols-[1.45fr_2.55fr]">
-                <div className="relative overflow-hidden rounded-2xl bg-[#071f46] p-8 text-white shadow-xl">
-                  <div className="absolute right-8 top-14 h-24 w-44 rounded-full border border-[#d6ad42]/30" />
-                  <div className="absolute right-8 top-20 h-16 w-44 border-t-2 border-[#d6ad42]" />
-                  <div className="flex items-center gap-2 text-white/75">
-                    <span>Total Net Worth</span>
-                    <span className="flex h-4 w-4 items-center justify-center rounded-full border border-white/40 text-[10px]">
-                      i
-                    </span>
+              <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+                <section className="overflow-hidden rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
+                  <div className="flex flex-wrap items-start justify-between gap-5">
+                    <div>
+                      <p className="text-white/60">Total retirement savings</p>
+                      <div className="mt-3 text-5xl font-bold tracking-tight text-[#d6ad42]">
+                        {dashboard.data ? money(totalRetirementSavings) : "Loading"}
+                      </div>
+                      <p className="mt-4 max-w-xl text-sm leading-6 text-white/70">
+                        Includes retirement savings, cash reserve, and investment account values
+                        available through CBHfinance.
+                      </p>
+                    </div>
+
+                    <div className="rounded-3xl border border-white/15 bg-white/5 p-5 text-sm">
+                      <div className="text-white/55">Projected status</div>
+                      <div className="mt-2 text-2xl font-semibold text-white">On track</div>
+                      <div className="mt-4 h-2 w-48 rounded-full bg-white/10">
+                        <div className="h-2 w-[72%] rounded-full bg-[#d6ad42]" />
+                      </div>
+                    </div>
                   </div>
-                  <div className="mt-3 text-5xl font-bold tracking-tight text-[#d6ad42]">
-                    {dashboard.data ? money(dashboard.data.totalNetWorth) : "Loading"}
+
+                  <div className="mt-8 grid gap-4 md:grid-cols-3">
+                    <div className="rounded-2xl bg-white/8 p-5">
+                      <div className="text-xs uppercase tracking-widest text-white/45">
+                        Vested balance
+                      </div>
+                      <div className="mt-2 text-2xl font-semibold">
+                        {money(estimatedVestedBalance)}
+                      </div>
+                    </div>
+                    <div className="rounded-2xl bg-white/8 p-5">
+                      <div className="text-xs uppercase tracking-widest text-white/45">
+                        YTD contributions
+                      </div>
+                      <div className="mt-2 text-2xl font-semibold">
+                        {money(estimatedYtdContributions)}
+                      </div>
+                    </div>
+                    <div className="rounded-2xl bg-white/8 p-5">
+                      <div className="text-xs uppercase tracking-widest text-white/45">
+                        Investment profile
+                      </div>
+                      <div className="mt-2 text-2xl font-semibold">Balanced</div>
+                    </div>
                   </div>
-                  <div className="mt-9 flex items-center justify-between text-sm text-white/70">
-                    <span>As of today</span>
+                </section>
+
+                <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <h2 className="font-serif text-2xl font-semibold">Allocation snapshot</h2>
                     <button
                       type="button"
-                      className="rounded-full border border-white/25 px-5 py-2.5 font-semibold text-white transition hover:bg-white/10"
+                      onClick={() => setTab("settings")}
+                      className="text-sm font-semibold text-[#003d8f] hover:underline"
                     >
-                      View trends⌄
+                      Review elections
                     </button>
                   </div>
+
+                  <div className="mt-6 grid gap-4">
+                    {[
+                      ["Target date strategy", "48%"],
+                      ["US equity index", "24%"],
+                      ["Bond income fund", "18%"],
+                      ["Cash reserve", "10%"],
+                    ].map(([label, percent]) => (
+                      <div key={label}>
+                        <div className="mb-2 flex justify-between text-sm">
+                          <span className="font-medium">{label}</span>
+                          <span className="text-slate-500">{percent}</span>
+                        </div>
+                        <div className="h-2 rounded-full bg-slate-100">
+                          <div
+                            className="h-2 rounded-full bg-[#d6ad42]"
+                            style={{ width: percent }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </div>
+
+              <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <h2 className="font-serif text-2xl font-semibold">Retirement accounts</h2>
+                  <button
+                    type="button"
+                    onClick={() => setTab("transactions")}
+                    className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#003d8f] hover:bg-slate-50"
+                  >
+                    View activity
+                  </button>
                 </div>
 
-                <div className="grid gap-5 md:grid-cols-3">
-                  {displayAccounts.map((account: any) => (
+                <div className="mt-5 grid gap-5 md:grid-cols-3">
+                  {retirementAccounts.map((account: any) => (
                     <div
                       key={account.id}
-                      className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+                      className="rounded-2xl border border-slate-200 bg-[#fbfcfe] p-6"
                     >
                       <div className="flex items-start justify-between gap-3">
-                        <div className="font-semibold">{account.type}</div>
-                        <div className="text-sm text-slate-500">{mask(account.number)}</div>
+                        <div>
+                          <div className="font-semibold">{account.displayName}</div>
+                          <div className="mt-1 text-sm text-slate-500">{mask(account.number)}</div>
+                        </div>
+                        <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-500">
+                          {account.type}
+                        </span>
                       </div>
                       <div className="mt-6 text-3xl font-bold tracking-tight">
                         {money(account.balance)}
                       </div>
-                      <p className="mt-3 text-sm text-slate-500">
-                        {account.type === "IRA" ? "Market value" : "Available balance"}
-                      </p>
-                      <div className="mt-6 flex items-center justify-between">
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                            account.type === "Savings"
-                              ? "bg-emerald-50 text-emerald-700"
-                              : account.type === "IRA"
-                                ? "bg-violet-50 text-violet-700"
-                                : "bg-blue-50 text-blue-700"
-                          }`}
-                        >
-                          {account.type === "Savings"
-                            ? `${account.apy}% APY`
-                            : account.type === "IRA"
-                              ? `${account.ytdPerformance}% YTD return`
-                              : "Primary spending"}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setTab("transactions")}
-                          className="text-xs font-semibold text-[#003d8f] hover:underline"
-                        >
-                          Details
-                        </button>
-                      </div>
+                      <p className="mt-3 text-sm text-slate-500">{account.accountNote}</p>
+                      <button
+                        type="button"
+                        onClick={() => setTab("transactions")}
+                        className="mt-6 text-sm font-semibold text-[#003d8f] hover:underline"
+                      >
+                        View account details →
+                      </button>
                     </div>
                   ))}
                 </div>
-              </div>
+              </section>
 
-              <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <h2 className="font-serif text-2xl font-semibold">Quick Actions</h2>
-                <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+              <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 className="font-serif text-2xl font-semibold">What would you like to do?</h2>
+                <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                   {quickActions.map((action) => (
                     <button
                       key={action.label}
@@ -623,13 +695,7 @@ function UserPortal() {
                       onClick={() => setTab(action.target)}
                       className="group rounded-2xl border border-slate-200 bg-white p-5 text-left transition hover:-translate-y-0.5 hover:border-[#d6ad42] hover:shadow-md"
                     >
-                      <div
-                        className={`mb-5 flex h-12 w-12 items-center justify-center rounded-2xl text-sm font-black shadow-sm ${
-                          action.brand
-                            ? "bg-[#6d22ff]/10 text-[#6d22ff]"
-                            : "bg-[#071f46]/5 text-[#071f46]"
-                        }`}
-                      >
+                      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#071f46]/5 text-sm font-black text-[#071f46]">
                         {action.icon}
                       </div>
                       <div className="flex items-center justify-between gap-3">
@@ -642,38 +708,45 @@ function UserPortal() {
                 </div>
               </section>
 
-              <div className="grid gap-6 xl:grid-cols-[1.6fr_0.8fr]">
-                <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="grid gap-6 xl:grid-cols-[1.55fr_0.85fr]">
+                <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
                   <div className="mb-4 flex items-center justify-between">
-                    <h2 className="font-serif text-2xl font-semibold">Recent Transactions</h2>
+                    <h2 className="font-serif text-2xl font-semibold">Recent retirement activity</h2>
                     <button
                       type="button"
                       onClick={() => setTab("transactions")}
                       className="text-sm font-semibold text-[#003d8f] hover:underline"
                     >
-                      View all transactions
+                      View all
                     </button>
                   </div>
 
                   <div className="overflow-x-auto">
-                    <table className="w-full min-w-[760px] text-left text-sm">
+                    <table className="w-full min-w-[720px] text-left text-sm">
                       <thead className="border-b text-xs uppercase tracking-widest text-slate-500">
                         <tr>
                           <th className="py-3">Date</th>
-                          <th>Description</th>
+                          <th>Activity</th>
                           <th>Account</th>
                           <th>Amount</th>
                           <th>Status</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {recentTransactions.slice(0, 5).map((row: any) => (
+                        {recentTransactions.slice(0, 6).map((row: any) => (
                           <tr key={row.id} className="border-b border-slate-100 last:border-0">
                             <td className="py-4">{new Date(row.createdAt).toLocaleDateString()}</td>
                             <td className="font-medium">{row.description}</td>
-                            <td>{row.accountType} {row.accountNumber ? mask(row.accountNumber) : ""}</td>
-                            <td className={row.direction === "credit" ? "font-semibold text-emerald-700" : "font-semibold text-[#071f46]"}>
-                              {row.direction === "credit" ? "+" : "-"}{money(row.amount)}
+                            <td>{row.accountType}</td>
+                            <td
+                              className={
+                                row.direction === "credit"
+                                  ? "font-semibold text-emerald-700"
+                                  : "font-semibold text-[#071f46]"
+                              }
+                            >
+                              {row.direction === "credit" ? "+" : "-"}
+                              {money(row.amount)}
                             </td>
                             <td>
                               <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
@@ -685,48 +758,22 @@ function UserPortal() {
                       </tbody>
                     </table>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setTab("transactions")}
-                    className="mt-5 w-full rounded-xl border border-slate-200 px-5 py-3 font-semibold text-[#003d8f] hover:bg-slate-50"
-                  >
-                    View all transactions →
-                  </button>
                 </section>
 
-                <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                  <h2 className="font-serif text-2xl font-semibold">Insights & Alerts</h2>
+                <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                  <h2 className="font-serif text-2xl font-semibold">Guidance & alerts</h2>
                   <div className="mt-5 grid gap-3">
-                    <div className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <AlertCircle className="mr-2 inline h-4 w-4" />
-                          Outgoing payment rails are blocked by policy.
-                          <div className="mt-2 text-xs font-semibold underline">Learn more</div>
-                        </div>
-                        <ArrowRight className="h-4 w-4" />
-                      </div>
-                    </div>
                     <div className="rounded-2xl bg-emerald-50 p-4 text-sm text-emerald-900">
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <ShieldCheck className="mr-2 inline h-4 w-4" />
-                          Email OTP 2FA is enabled.
-                          <div className="mt-2 text-xs font-semibold underline">Manage 2FA</div>
-                        </div>
-                        <ArrowRight className="h-4 w-4" />
-                      </div>
+                      <ShieldCheck className="mr-2 inline h-4 w-4" />
+                      Your secure email OTP protection is active.
                     </div>
                     <div className="rounded-2xl bg-blue-50 p-4 text-sm text-blue-900">
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <Bell className="mr-2 inline h-4 w-4" />
-                          {dashboard.data?.unreadNotifications ?? 0} unread notifications.
-                          <div className="mt-2 text-xs font-semibold underline">View notifications</div>
-                        </div>
-                        <ArrowRight className="h-4 w-4" />
-                      </div>
+                      <Bell className="mr-2 inline h-4 w-4" />
+                      {dashboard.data?.unreadNotifications ?? 0} unread account notifications.
+                    </div>
+                    <div className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">
+                      <AlertCircle className="mr-2 inline h-4 w-4" />
+                      Withdrawal and rollover requests require review before processing.
                     </div>
                   </div>
                 </section>
@@ -738,12 +785,14 @@ function UserPortal() {
           {tab === "payments" && <Payments />}
           {tab === "statements" && <Statements rows={statements.data ?? []} />}
           {tab === "settings" && (
-            <Panel title="Profile & Settings">
+            <Panel title="Profile, Beneficiaries & Security">
               <div className="grid gap-5 md:grid-cols-2">
                 <Setting label="Full name" value="Emily Ann Johnson" />
                 <Setting label="Email" value="emily.johnson@cbhfinance.online" />
                 <Setting label="Phone" value="+1 (415) 555-0198" />
                 <Setting label="Mailing address" value="2128 Pacific Heights Avenue, San Francisco, CA 94115" />
+                <Setting label="Primary beneficiary" value="Not displayed in portal preview" />
+                <Setting label="Security" value="Email OTP verification active" />
               </div>
             </Panel>
           )}
