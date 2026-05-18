@@ -134,9 +134,9 @@ const admin: AdminUser = {
 };
 
 const accounts: Account[] = [
-  { id: "acc_checking", userId: customer.id, type: "Checking", number: "CHK-483100", balance: 62288.72, openedAt: "2019-03-12", status: "Active" },
-  { id: "acc_savings", userId: customer.id, type: "Savings", number: "SAV-720400", balance: 116039.59, openedAt: "2019-03-12", status: "Active", apy: 3.85 },
-  { id: "acc_ira", userId: customer.id, type: "IRA", number: "IRA-931700", balance: 436892.55, openedAt: "2019-03-12", status: "Active", ytdPerformance: 7.42 },
+  { id: "acc_checking", userId: customer.id, type: "Checking", number: "CHK-483100", balance: 1428940.22, openedAt: "2019-03-12", status: "Active" },
+  { id: "acc_savings", userId: customer.id, type: "Savings", number: "SAV-720400", balance: 426815.66, openedAt: "2019-03-12", status: "Active", apy: 3.85 },
+  { id: "acc_ira", userId: customer.id, type: "IRA", number: "IRA-931700", balance: 1998957.00, openedAt: "2019-03-12", status: "Active", ytdPerformance: 7.42 },
 ];
 
 const finalBalances: Record<AccountType, number> = {
