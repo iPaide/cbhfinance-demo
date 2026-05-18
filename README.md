@@ -1,14 +1,14 @@
 # CBHfinance Banking Portal
 
-CBHfinance is a full-stack demo banking web application that combines a public marketing site, a seeded user banking portal, and a back-office admin panel at `/secure-admin`. The application is branded with the CBHfinance palette of navy `#0a1f44`, gold `#c9a84c`, off-white `#f8f6f1`, Playfair Display headings, and DM Sans body text.
+CBHfinance is a full-stack retirement savings and wealth account portal that combines a public retirement-focused website, a protected client portal, and a back-office operations panel at `/secure-admin`. The application is branded with the CBHfinance palette of navy `#0a1f44`, gold `#c9a84c`, off-white `#f8f6f1`, Playfair Display headings, and DM Sans body text.
 
 ## Important Scope
 
-This project is intentionally implemented as a controlled demo. It is not connected to a real bank, payment network, card processor, ACH rail, Zelle network, wire service, or investment custodian. All outgoing user payment actions are silently blocked and display exactly:
+This project is implemented as a controlled portfolio environment and is not connected to live custodial, brokerage, payment, ACH, wire, tax-reporting, or investment execution systems. All outgoing user payment actions are silently blocked and display exactly:
 
 > Unable to complete transaction. Please contact support.
 
-Admin balance adjustments are recorded inside the demo ledger and append-only audit log. Before any real financial use, this codebase would require formal security, legal, compliance, banking, fraud, AML/KYC, privacy, resilience, and regulatory review.
+Admin balance adjustments are recorded inside the controlled activity ledger and append-only audit log. Before any real financial use, this codebase would require formal security, legal, compliance, banking, fraud, AML/KYC, privacy, resilience, and regulatory review.
 
 ## Implemented Application Surfaces
 
@@ -20,7 +20,7 @@ Admin balance adjustments are recorded inside the demo ledger and append-only au
 | Admin panel | `/secure-admin` | Separate admin login, dashboard, user/account view, transaction table, admin credit/debit tool, immutable audit log. |
 | Terms | `/terms` | CBHfinance terms page. |
 | Privacy | `/privacy` | CBHfinance privacy page. |
-| Contact | `/contact` | Branded contact support placeholder form. |
+| Contact | `/contact` | Branded contact support support form. |
 
 ## Seeded Customer
 
