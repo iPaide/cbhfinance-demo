@@ -47,7 +47,7 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
       {!compact && (
         <span className="leading-none">
           <span className="font-serif text-2xl font-semibold tracking-tight text-[#0a1f44]">CBHfinance</span>
-          <span className="block text-xs uppercase tracking-[0.32em] text-slate-500">Online Banking</span>
+          <span className="block text-xs uppercase tracking-[0.32em] text-slate-500">Retirement Portal</span>
         </span>
       )}
     </Link>
@@ -91,12 +91,12 @@ function Footer() {
       <div className="container grid gap-8 md:grid-cols-4">
         <div>
           <BrandMark compact />
-          <p className="mt-4 text-sm">Secure banking platform for modern financial operations.</p>
+          <p className="mt-4 text-sm">Secure retirement savings and wealth account access.</p>
         </div>
         {([
-          ["Product", ["Services", "Security", "Statements"]],
-          ["Company", ["About", "Contact", "Careers"]],
-          ["Legal", ["Terms", "Privacy", "Compliance"]],
+          ["Platform", ["Retirement Services", "Security", "Documents"]],
+          ["Client Support", ["About", "Contact", "Guidance"]],
+          ["Resources", ["Terms", "Privacy", "Disclosures"]],
         ] as const).map(([category, items]) => (
           <div key={category}>
             <h3 className="font-semibold text-[#0a1f44]">{category}</h3>
@@ -126,11 +126,11 @@ function LandingPage() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(201,168,76,0.24),transparent_32%),linear-gradient(135deg,rgba(10,31,68,0.08),transparent_45%)]" />
           <div className="container relative grid min-h-[680px] items-center gap-12 py-20 lg:grid-cols-[1.1fr_0.9fr]">
             <div>
-              <p className="mb-5 inline-flex rounded-full border border-[#c9a84c]/50 bg-white/70 px-4 py-2 text-xs font-bold uppercase tracking-[0.3em] text-[#0a1f44]">Secure banking platform</p>
-              <h1 className="font-serif text-5xl font-semibold leading-[1.04] tracking-tight md:text-7xl">Private banking clarity for modern financial operations.</h1>
-              <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-700">CBHfinance combines a polished public presence, protected customer access, realistic transaction visibility, statement access, and disciplined account-service controls in one cohesive application.</p>
+              <p className="mb-5 inline-flex rounded-full border border-[#c9a84c]/50 bg-white/70 px-4 py-2 text-xs font-bold uppercase tracking-[0.3em] text-[#0a1f44]">Retirement savings platform</p>
+              <h1 className="font-serif text-5xl font-semibold leading-[1.04] tracking-tight md:text-7xl">Retirement savings clarity for long-term wealth planning.</h1>
+              <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-700">CBHfinance provides secure retirement account access, contribution tracking, investment activity visibility, statements, tax documents, beneficiary records, and protected client-service workflows.</p>
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-                <a href="#services" className="inline-flex items-center justify-center rounded-full bg-[#0a1f44] px-7 py-4 font-semibold text-white shadow-xl shadow-[#0a1f44]/20 transition hover:bg-[#09285d]">Explore Services <ArrowRight className="ml-2 h-4 w-4" /></a>
+                <a href="#services" className="inline-flex items-center justify-center rounded-full bg-[#0a1f44] px-7 py-4 font-semibold text-white shadow-xl shadow-[#0a1f44]/20 transition hover:bg-[#09285d]">Explore Retirement Services <ArrowRight className="ml-2 h-4 w-4" /></a>
                 <Link href="/contact" className="inline-flex items-center justify-center rounded-full border border-[#0a1f44]/20 bg-white/70 px-7 py-4 font-semibold text-[#0a1f44] transition hover:border-[#c9a84c]">Contact Support</Link>
               </div>
               <p className="mt-5 text-sm text-slate-600">Secure client access is available through the sign-in area after identity verification.</p>
@@ -140,16 +140,16 @@ function LandingPage() {
                 <div className="flex items-start justify-between gap-6">
                   <div>
                     <p className="text-sm uppercase tracking-[0.28em] text-white/60">Client privacy first</p>
-                    <h2 className="mt-3 font-serif text-4xl font-semibold leading-tight">Account details stay behind secure sign-in.</h2>
-                    <p className="mt-4 text-sm leading-6 text-white/70">Balances, account numbers, statements, and transaction history are only presented after client authentication and OTP verification.</p>
+                    <h2 className="mt-3 font-serif text-4xl font-semibold leading-tight">Retirement details stay behind secure sign-in.</h2>
+                    <p className="mt-4 text-sm leading-6 text-white/70">Retirement balances, contribution records, statements, tax documents, beneficiary information, and account activity are only presented after secure authentication.</p>
                   </div>
                   <ShieldCheck className="h-10 w-10 shrink-0 text-[#c9a84c]" />
                 </div>
                 <div className="mt-8 grid gap-3">
                   {[
-                    ["Protected dashboard", "Sensitive account data is not shown on public pages."],
+                    ["Protected retirement dashboard", "Sensitive retirement account data is not shown on public pages."],
                     ["Verified access", "Client sign-in uses password and OTP verification controls."],
-                    ["Controlled payments", "Payment requests are routed through support safeguards."],
+                    ["Controlled retirement requests", "Contribution, rollover, transfer, and withdrawal requests are routed through retirement-service safeguards."],
                   ].map(([title, copy]) => (
                     <div key={title} className="rounded-2xl border border-white/10 bg-white/10 p-4">
                       <div className="flex items-center gap-3 text-[#c9a84c]"><Lock className="h-4 w-4" /><span className="font-semibold">{title}</span></div>
@@ -167,20 +167,20 @@ function LandingPage() {
           </div>
         </section>
         <section id="services" className="container py-20">
-          <div className="max-w-3xl"><h2 className="font-serif text-4xl font-semibold">A complete CBHfinance application surface.</h2><p className="mt-4 text-slate-700">The implementation includes the public website, protected client access, transaction ledger, statements, in-app notifications, and secure operational controls.</p></div>
+          <div className="max-w-3xl"><h2 className="font-serif text-4xl font-semibold">A secure retirement platform experience.</h2><p className="mt-4 text-slate-700">The platform includes protected retirement account access, contribution and rollover workflows, activity history, statements, tax forms, beneficiary records, notifications, and security controls.</p></div>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {["Account visibility", "Secure payment review", "Ledger governance"].map((title, index) => (
+            {["Retirement account visibility", "Contribution & rollover review", "Retirement activity controls"].map((title, index) => (
               <div key={title} className="rounded-[1.5rem] border border-[#0a1f44]/10 bg-white p-6 shadow-sm">
                 <div className="mb-8 grid h-12 w-12 place-items-center rounded-2xl bg-[#0a1f44] text-[#c9a84c]">{index === 0 ? <Eye /> : index === 1 ? <Lock /> : <Building2 />}</div>
                 <h3 className="font-serif text-2xl font-semibold">{title}</h3>
-                <p className="mt-3 text-sm leading-6 text-slate-600">{index === 0 ? "Client accounts show balances, recent transactions, monthly statements, and filtered transaction history through a protected experience." : index === 1 ? "Transfer, Wire, ACH, Zelle, and Bill Pay requests are routed through controlled support messaging and do not alter balances from the public interface." : "Operational ledger tools use reason capture, overdraft prevention, and immutable audit entries for controlled account maintenance."}</p>
+                <p className="mt-3 text-sm leading-6 text-slate-600">{index === 0 ? "Client retirement accounts show balances, investment activity, contributions, monthly statements, and filtered account history through a protected experience." : index === 1 ? "Contributions, rollovers, withdrawals, and internal transfer requests are routed through retirement-service controls and review workflows." : "Operational controls support account review, contribution records, transfer tracking, plan documents, and immutable audit visibility."}</p>
               </div>
             ))}
           </div>
         </section>
         <section id="security" className="bg-white py-20">
           <div className="container grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-            <div><p className="text-sm font-bold uppercase tracking-[0.3em] text-[#c9a84c]">Security controls</p><h2 className="mt-4 font-serif text-4xl font-semibold">Credential, OTP, timeout, lockout, and audit controls support a more disciplined digital banking experience.</h2></div>
+            <div><p className="text-sm font-bold uppercase tracking-[0.3em] text-[#c9a84c]">Security controls</p><h2 className="mt-4 font-serif text-4xl font-semibold">Credential, OTP, timeout, lockout, and audit controls support a more disciplined digital retirement account experience.</h2></div>
             <div className="grid gap-4 md:grid-cols-2">
               {["Separated access controls", "Email OTP verification simulation", "Warning at exactly 13 minutes", "Timeout at exactly 15 minutes", "Lockout after exactly 5 failed attempts", "Immutable audit log"].map(item => <div key={item} className="flex items-center gap-3 rounded-2xl bg-[#f8f6f1] p-4"><CheckCircle2 className="h-5 w-5 text-[#c9a84c]" /><span className="font-medium">{item}</span></div>)}
             </div>
