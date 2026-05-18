@@ -839,9 +839,18 @@ function PortalLayout({ children, title, role = "user" }: { children: React.Reac
   );
 }
 
+function normalizePortalTab(value: string | null) {
+  if (value === "contributions" || value === "payments") return "payments";
+  if (value === "activity" || value === "transactions") return "transactions";
+  if (value === "documents" || value === "statements") return "statements";
+  if (value === "beneficiaries" || value === "profile" || value === "settings") return "settings";
+  if (value === "accounts" || value === "investments" || value === "overview" || value === "dashboard") return "dashboard";
+  return "dashboard";
+}
+
 function UserPortal() {
   const [location] = useLocation();
-  const initialTab = new URLSearchParams(location.split("?")[1] ?? "").get("tab") ?? "dashboard";
+  const initialTab = normalizePortalTab(new URLSearchParams(location.split("?")[1] ?? "").get("tab"));
   const [tab, setTab] = useState(initialTab);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileNotice, setProfileNotice] = useState("");
@@ -849,7 +858,7 @@ function UserPortal() {
   const statements = trpc.banking.statements.useQuery();
 
   useEffect(() => {
-    const urlTab = new URLSearchParams(location.split("?")[1] ?? "").get("tab") ?? "dashboard";
+    const urlTab = normalizePortalTab(new URLSearchParams(location.split("?")[1] ?? "").get("tab"));
     setTab(urlTab);
   }, [location]);
 
@@ -955,7 +964,7 @@ function UserPortal() {
             <button
               key={`${label}-${value}`}
               type="button"
-              onClick={() => setTab(value)}
+              onClick={() => setTab(normalizePortalTab(value))}
               className={`rounded-2xl px-5 py-3.5 text-left text-sm font-semibold transition ${
                 tab === value
                   ? "bg-[#d6ad42] text-white shadow-lg shadow-black/20"
@@ -1012,14 +1021,15 @@ function UserPortal() {
                 ["Investments", "dashboard"],
                 ["Contributions", "payments"],
                 ["Activity", "transactions"],
-                ["Documents", "statements"],
+                ["Statements", "statements"],
+                ["Beneficiaries", "settings"],
                 ["Profile & Security", "settings"],
               ].map(([label, value]) => (
                 <button
                   key={`${label}-${value}-drawer`}
                   type="button"
                   onClick={() => {
-                    setTab(value);
+                    setTab(normalizePortalTab(value));
                     setMobileMenuOpen(false);
                   }}
                   className={`rounded-2xl px-5 py-3.5 text-left text-sm font-semibold transition ${
@@ -1088,7 +1098,7 @@ function UserPortal() {
                     : tab === "transactions"
                       ? "Activity"
                       : tab === "statements"
-                        ? "Documents"
+                        ? "Statements"
                         : tab === "settings"
                           ? "Profile & Security"
                           : "Overview"}
@@ -1360,10 +1370,10 @@ function UserPortal() {
             </div>
           )}
 
-          {tab === "transactions" && <TransactionHistory />}
+          {normalizePortalTab(tab) === "transactions" && <TransactionHistory />}
           {tab === "requests" && <Requests />}
-          {tab === "statements" && <Statements rows={statements.data ?? []} />}
-          {tab === "settings" && (
+          {normalizePortalTab(tab) === "statements" && <Statements rows={statements.data ?? []} />}
+          {normalizePortalTab(tab) === "settings" && (
             <div className="grid gap-6">
               <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
                 <div className="flex flex-wrap items-start justify-between gap-5">
