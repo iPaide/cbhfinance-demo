@@ -1517,7 +1517,287 @@ function Payments() {
 }
 
 function Statements({ rows }: { rows: any[] }) {
-  return <Panel title="Monthly Statements"><p className="mb-5 text-slate-600">Monthly branded PDF statements are generated for each seeded account from January 2025 onward. Each link downloads a statement with account details, period totals, and transaction preview lines.</p><div className="grid gap-3 md:grid-cols-3">{rows.slice(0, 36).map(row => <a key={row.id} download={`CBHfinance-${row.accountType}-${row.period}.pdf`} href={row.fileUrl} className="flex items-center gap-3 rounded-2xl bg-[#f8f6f1] p-4 font-semibold"><FileText className="h-5 w-5 text-[#c9a84c]" />{row.accountType} · {row.period}</a>)}</div></Panel>;
+  const [documentType, setDocumentType] = useState("All");
+
+  const documentGroups = [
+    {
+      type: "Statements",
+      title: "Account Statements",
+      desc: "Monthly retirement account statements and balance summaries.",
+      count: rows.length,
+    },
+    {
+      type: "Tax Forms",
+      title: "Tax Forms",
+      desc: "Annual tax documents including contribution and distribution records.",
+      count: 4,
+    },
+    {
+      type: "Confirmations",
+      title: "Contribution Confirmations",
+      desc: "Records for contributions, transfers, and rollover review requests.",
+      count: 9,
+    },
+    {
+      type: "Plan Notices",
+      title: "Plan Notices",
+      desc: "Disclosures, fee notices, and plan communication documents.",
+      count: 6,
+    },
+  ];
+
+  const supplementalDocs = [
+    {
+      id: "tax-2025-5498",
+      type: "Tax Forms",
+      title: "2025 Form 5498 IRA Contribution Information",
+      date: "Jan 31, 2026",
+      status: "Available",
+    },
+    {
+      id: "tax-2025-1099r",
+      type: "Tax Forms",
+      title: "2025 Form 1099-R Distribution Information",
+      date: "Jan 31, 2026",
+      status: "Not issued",
+    },
+    {
+      id: "confirm-rollover",
+      type: "Confirmations",
+      title: "Rollover Request Confirmation",
+      date: "May 12, 2026",
+      status: "Available",
+    },
+    {
+      id: "confirm-contribution",
+      type: "Confirmations",
+      title: "Contribution Election Confirmation",
+      date: "May 1, 2026",
+      status: "Available",
+    },
+    {
+      id: "notice-fee",
+      type: "Plan Notices",
+      title: "Annual Plan Fee Disclosure",
+      date: "Apr 15, 2026",
+      status: "Available",
+    },
+    {
+      id: "notice-beneficiary",
+      type: "Plan Notices",
+      title: "Beneficiary Review Reminder",
+      date: "Mar 28, 2026",
+      status: "Available",
+    },
+  ];
+
+  const monthlyDocs = rows.slice(0, 36).map((row: any) => ({
+    id: row.id,
+    type: "Statements",
+    title: `${retirementAccountName(row.accountType)} Statement`,
+    accountType: row.accountType,
+    period: row.period,
+    date: row.generatedAt ? formatSafeDate(row.generatedAt) : row.period,
+    status: "Available",
+    fileUrl: row.fileUrl,
+    fileName: `CBHfinance-${row.accountType}-${row.period}.pdf`,
+  }));
+
+  const allDocuments = [...monthlyDocs, ...supplementalDocs];
+
+  const filteredDocuments =
+    documentType === "All"
+      ? allDocuments
+      : allDocuments.filter((document: any) => document.type === documentType);
+
+  return (
+    <div className="grid gap-6">
+      <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
+        <div className="flex flex-wrap items-start justify-between gap-5">
+          <div>
+            <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
+              Statements & Documents
+            </div>
+            <h2 className="mt-2 font-serif text-4xl font-semibold">
+              Retirement document center
+            </h2>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-white/70">
+              Access retirement account statements, tax forms, contribution confirmations,
+              rollover records, plan notices, and secure disclosures.
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-white/15 bg-white/5 p-5 text-sm">
+            <div className="text-white/55">Document delivery</div>
+            <div className="mt-2 text-2xl font-semibold">Electronic</div>
+            <p className="mt-2 max-w-xs text-xs leading-5 text-white/60">
+              New documents are posted to your secure portal when available.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {documentGroups.map((group) => (
+          <button
+            key={group.type}
+            type="button"
+            onClick={() => setDocumentType(group.type)}
+            className={`rounded-2xl border bg-white p-6 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#d6ad42] hover:shadow-md ${
+              documentType === group.type ? "border-[#d6ad42]" : "border-slate-200"
+            }`}
+          >
+            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#071f46]/5 text-sm font-black text-[#071f46]">
+              {group.type === "Statements"
+                ? "PDF"
+                : group.type === "Tax Forms"
+                  ? "TAX"
+                  : group.type === "Confirmations"
+                    ? "CNF"
+                    : "DOC"}
+            </div>
+            <div className="font-serif text-xl font-semibold text-[#071f46]">{group.title}</div>
+            <p className="mt-3 text-sm leading-6 text-slate-600">{group.desc}</p>
+            <div className="mt-5 text-xs font-bold uppercase tracking-widest text-slate-400">
+              {group.count} documents
+            </div>
+          </button>
+        ))}
+      </section>
+
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h3 className="font-serif text-2xl font-semibold">Available documents</h3>
+            <p className="mt-2 text-sm text-slate-600">
+              Filter by document category or download records directly from the portal.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {["All", "Statements", "Tax Forms", "Confirmations", "Plan Notices"].map((type) => (
+              <button
+                key={type}
+                type="button"
+                onClick={() => setDocumentType(type)}
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                  documentType === type
+                    ? "bg-[#071f46] text-white"
+                    : "border border-slate-200 bg-white text-[#071f46] hover:bg-slate-50"
+                }`}
+              >
+                {type}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="overflow-hidden rounded-2xl border border-slate-200">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[820px] text-left text-sm">
+              <thead className="bg-[#f8fafc] text-xs uppercase tracking-widest text-slate-500">
+                <tr>
+                  <th className="px-5 py-4">Document</th>
+                  <th className="px-5 py-4">Category</th>
+                  <th className="px-5 py-4">Period / Date</th>
+                  <th className="px-5 py-4">Status</th>
+                  <th className="px-5 py-4 text-right">Action</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {filteredDocuments.map((document: any) => (
+                  <tr key={document.id} className="border-t border-slate-100 hover:bg-[#fbfcfe]">
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#071f46]/5">
+                          <FileText className="h-5 w-5 text-[#d6ad42]" />
+                        </div>
+                        <div>
+                          <div className="font-semibold text-[#071f46]">{document.title}</div>
+                          <div className="mt-1 text-xs text-slate-500">
+                            {document.accountType ? retirementAccountName(document.accountType) : "CBHfinance record"}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-5 py-4">
+                      <span className="rounded-full bg-[#071f46]/5 px-3 py-1 text-xs font-semibold text-[#071f46]">
+                        {document.type}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4 text-slate-600">
+                      {document.period ?? document.date}
+                    </td>
+                    <td className="px-5 py-4">
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                          document.status === "Available"
+                            ? "bg-emerald-50 text-emerald-700"
+                            : "bg-amber-50 text-amber-700"
+                        }`}
+                      >
+                        {document.status}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4 text-right">
+                      {document.fileUrl ? (
+                        <a
+                          download={document.fileName}
+                          href={document.fileUrl}
+                          className="rounded-full bg-[#071f46] px-4 py-2 text-xs font-semibold text-white hover:bg-[#0b2d63]"
+                        >
+                          Download
+                        </a>
+                      ) : (
+                        <button
+                          type="button"
+                          className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-[#071f46] hover:bg-slate-50"
+                        >
+                          View details
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+
+                {!filteredDocuments.length && (
+                  <tr>
+                    <td colSpan={5} className="px-5 py-10 text-center text-sm text-slate-500">
+                      No documents matched this category.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-3">
+        <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+          <h3 className="font-serif text-xl font-semibold">Tax form timing</h3>
+          <p className="mt-3 text-sm leading-6 text-slate-600">
+            Tax documents are posted when available based on account activity and reporting requirements.
+          </p>
+        </div>
+
+        <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+          <h3 className="font-serif text-xl font-semibold">Secure delivery</h3>
+          <p className="mt-3 text-sm leading-6 text-slate-600">
+            Electronic statements and notices are delivered through your protected CBHfinance portal.
+          </p>
+        </div>
+
+        <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+          <h3 className="font-serif text-xl font-semibold">Record retention</h3>
+          <p className="mt-3 text-sm leading-6 text-slate-600">
+            Keep copies of statements, confirmations, and tax forms with your retirement records.
+          </p>
+        </div>
+      </section>
+    </div>
+  );
 }
 
 function AdminPanel() {
