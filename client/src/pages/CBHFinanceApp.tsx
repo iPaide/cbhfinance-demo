@@ -829,10 +829,17 @@ function PortalLayout({ children, title, role = "user" }: { children: React.Reac
 }
 
 function UserPortal() {
-  const [tab, setTab] = useState("dashboard");
+  const [location] = useLocation();
+  const initialTab = new URLSearchParams(location.split("?")[1] ?? "").get("tab") ?? "dashboard";
+  const [tab, setTab] = useState(initialTab);
   const [profileNotice, setProfileNotice] = useState("");
   const dashboard = trpc.banking.dashboard.useQuery();
   const statements = trpc.banking.statements.useQuery();
+
+  useEffect(() => {
+    const urlTab = new URLSearchParams(location.split("?")[1] ?? "").get("tab") ?? "dashboard";
+    setTab(urlTab);
+  }, [location]);
 
   const navItems = [
     ["Overview", "dashboard"],
