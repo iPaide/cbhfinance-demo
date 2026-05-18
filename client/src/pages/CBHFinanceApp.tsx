@@ -1127,109 +1127,273 @@ function Payments() {
       await utils.banking.transactions.invalidate();
     },
   });
+
   const accounts = trpc.banking.accounts.useQuery();
   const [activeForm, setActiveForm] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ recipient: "", amount: "", memo: "" });
+  const [formData, setFormData] = useState({ fromAccount: "", toAccount: "", amount: "", memo: "" });
   const [submitting, setSubmitting] = useState(false);
-  const [blocked, setBlocked] = useState(false);
+  const [reviewNotice, setReviewNotice] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  async function submitPayment(type: string) {
+  const contributionActions = [
+    {
+      name: "One-Time Contribution",
+      desc: "Add funds to your retirement savings profile.",
+      icon: "CON",
+      type: "review",
+    },
+    {
+      name: "Recurring Contribution",
+      desc: "Set up a scheduled retirement contribution.",
+      icon: "REC",
+      type: "review",
+    },
+    {
+      name: "Internal Transfer",
+      desc: "Move funds between eligible CBHfinance accounts.",
+      icon: "TRN",
+      type: "transfer",
+    },
+    {
+      name: "Rollover Request",
+      desc: "Start a rollover from another retirement provider.",
+      icon: "ROL",
+      type: "review",
+    },
+    {
+      name: "Withdrawal Review",
+      desc: "Request a distribution or withdrawal review.",
+      icon: "WDR",
+      type: "review",
+    },
+    {
+      name: "Contribution Limits",
+      desc: "Review annual limits and account guidance.",
+      icon: "LIM",
+      type: "info",
+    },
+  ];
+
+  const accountLabel = (account: any) => {
+    const name =
+      account.type === "Checking"
+        ? "Traditional Retirement Savings"
+        : account.type === "Savings"
+          ? "High-Yield Cash Reserve"
+          : account.type === "IRA"
+            ? "Individual Retirement Account"
+            : account.type;
+
+    return `${name} · ${account.number} · ${money(account.balance)}`;
+  };
+
+  function resetForm(actionName?: string) {
+    setActiveForm(actionName ?? null);
+    setFormData({ fromAccount: "", toAccount: "", amount: "", memo: "" });
+    setReviewNotice(null);
+    setSuccess(false);
+  }
+
+  async function submitContributionAction(e: FormEvent) {
+    e.preventDefault();
+
+    if (!activeForm) return;
+
     setSubmitting(true);
+    setReviewNotice(null);
+    setSuccess(false);
+
     try {
-      const paymentType = type as "Transfer" | "Wire" | "ACH" | "Zelle" | "Bill Pay";
-      
-      if (paymentType === "Transfer") {
-        if (!formData.recipient || !formData.memo) {
-          throw new Error("Please select both source and destination accounts");
+      if (activeForm === "Internal Transfer") {
+        if (!formData.fromAccount || !formData.toAccount) {
+          throw new Error("Please select both source and destination accounts.");
         }
+
+        if (formData.fromAccount === formData.toAccount) {
+          throw new Error("Source and destination accounts must be different.");
+        }
+
         await transfer.mutateAsync({
-          fromAccountId: formData.recipient,
-          toAccountId: formData.memo,
+          fromAccountId: formData.fromAccount,
+          toAccountId: formData.toAccount,
           amount: Number(formData.amount) || 100,
-          memo: "Internal transfer",
+          memo: formData.memo || "Retirement account transfer",
         });
+
         setSuccess(true);
-      } else {
-        await block.mutateAsync({ paymentType, amount: Number(formData.amount) || 100, memo: formData.memo || "Payment request" });
-        setBlocked(true);
+        return;
       }
+
+      if (activeForm === "Contribution Limits") {
+        setReviewNotice(
+          "Contribution limits are displayed for planning guidance. Final eligibility depends on account type, age, tax year, income, and plan rules."
+        );
+        return;
+      }
+
+      await block.mutateAsync({
+        paymentType: "ACH",
+        amount: Number(formData.amount) || 100,
+        memo: formData.memo || `${activeForm} submitted for review`,
+      });
+
+      setReviewNotice(
+        `${activeForm} has been captured for review. Retirement contributions, rollovers, and distributions require plan-level verification before processing.`
+      );
     } catch (err: any) {
-      setBlocked(true);
+      setReviewNotice(err?.message || "This request could not be completed online. Please contact support.");
     } finally {
       setSubmitting(false);
     }
   }
 
-  const paymentTypes = [
-    { name: "Transfer", desc: "Between your accounts" },
-    { name: "Wire", desc: "Domestic wire transfer" },
-    { name: "ACH", desc: "ACH transfer" },
-    { name: "Zelle", desc: "Send via Zelle" },
-    { name: "Bill Pay", desc: "Pay bills" },
-  ];
-
   return (
-    <Panel title="Outgoing Payments">
-      <p className="mb-6 text-slate-600">All outgoing user-initiated payment workflows are intentionally blocked. Submit a request below to see the security control in action.</p>
-      <div className="grid gap-4 md:grid-cols-5">
-        {paymentTypes.map(({ name, desc }) => (
+    <div className="grid gap-6">
+      <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
+        <div className="flex flex-wrap items-start justify-between gap-5">
+          <div>
+            <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
+              Contributions & Transfers
+            </div>
+            <h2 className="mt-2 font-serif text-4xl font-semibold">
+              Manage retirement money movement
+            </h2>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-white/70">
+              Submit contribution, transfer, rollover, and withdrawal review requests.
+              Internal transfers between eligible CBHfinance accounts may process immediately;
+              other retirement requests require review before completion.
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-white/15 bg-white/5 p-5 text-sm">
+            <div className="text-white/55">Online request status</div>
+            <div className="mt-2 text-2xl font-semibold">Review required</div>
+            <p className="mt-2 max-w-xs text-xs leading-5 text-white/60">
+              Rollovers, withdrawals, and new external contributions are reviewed for plan compliance.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {contributionActions.map((action) => (
           <button
-            key={name}
-            onClick={() => { setActiveForm(name); setFormData({ recipient: "", amount: "", memo: "" }); setBlocked(false); }}
-            className="rounded-2xl border border-[#0a1f44]/10 bg-white px-5 py-5 text-left font-semibold text-[#0a1f44] transition hover:border-[#c9a84c] hover:bg-[#f8f6f1]"
+            key={action.name}
+            type="button"
+            onClick={() => resetForm(action.name)}
+            className={`rounded-2xl border bg-white p-6 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#d6ad42] hover:shadow-md ${
+              activeForm === action.name ? "border-[#d6ad42]" : "border-slate-200"
+            }`}
           >
-            {name}
-            <p className="mt-2 text-xs text-slate-500 font-normal">{desc}</p>
+            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#071f46]/5 text-sm font-black text-[#071f46]">
+              {action.icon}
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="font-serif text-xl font-semibold text-[#071f46]">{action.name}</h3>
+              <ArrowRight className="h-4 w-4 text-[#071f46]" />
+            </div>
+            <p className="mt-3 text-sm leading-6 text-slate-600">{action.desc}</p>
           </button>
         ))}
-      </div>
-      {activeForm && (
-        <div className="mt-8 rounded-2xl bg-[#f8f6f1] p-6">
-          <h3 className="mb-4 font-serif text-xl font-semibold">{activeForm} Request</h3>
-          {!blocked ? (
-            <form onSubmit={(e) => { e.preventDefault(); submitPayment(activeForm); }} className="grid gap-4">
-              {activeForm === "Transfer" ? (
+      </section>
+
+      <div className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
+        <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h3 className="font-serif text-2xl font-semibold">
+                {activeForm ?? "Select a request type"}
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                {activeForm
+                  ? "Complete the details below. Some requests are submitted for review instead of immediate processing."
+                  : "Choose one of the retirement actions above to begin."}
+              </p>
+            </div>
+            {activeForm && (
+              <button
+                type="button"
+                onClick={() => resetForm()}
+                className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+
+          {activeForm ? (
+            <form onSubmit={submitContributionAction} className="grid gap-4">
+              {activeForm === "Internal Transfer" ? (
                 <>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">From Account</label>
+                    <label className="mb-2 block text-sm font-semibold text-slate-700">
+                      From account
+                    </label>
                     <select
-                      value={formData.recipient}
-                      onChange={(e) => setFormData({ ...formData, recipient: e.target.value, memo: "" })}
-                      className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]"
+                      value={formData.fromAccount}
+                      onChange={(e) =>
+                        setFormData({ ...formData, fromAccount: e.target.value, toAccount: "" })
+                      }
+                      className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
                       required
                     >
                       <option value="">Select source account</option>
-                      {accounts.data?.map(acc => <option key={acc.id} value={acc.id}>{acc.type} ({acc.number}) - {money(acc.balance)}</option>)}
+                      {accounts.data?.map((account: any) => (
+                        <option key={account.id} value={account.id}>
+                          {accountLabel(account)}
+                        </option>
+                      ))}
                     </select>
                   </div>
+
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">To Account</label>
+                    <label className="mb-2 block text-sm font-semibold text-slate-700">
+                      To account
+                    </label>
                     <select
-                      value={formData.memo}
-                      onChange={(e) => setFormData({ ...formData, memo: e.target.value })}
-                      className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]"
+                      value={formData.toAccount}
+                      onChange={(e) => setFormData({ ...formData, toAccount: e.target.value })}
+                      className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
                       required
                     >
                       <option value="">Select destination account</option>
-                      {accounts.data?.filter(acc => acc.id !== formData.recipient).map(acc => <option key={acc.id} value={acc.id}>{acc.type} ({acc.number}) - {money(acc.balance)}</option>)}
+                      {accounts.data
+                        ?.filter((account: any) => account.id !== formData.fromAccount)
+                        .map((account: any) => (
+                          <option key={account.id} value={account.id}>
+                            {accountLabel(account)}
+                          </option>
+                        ))}
                     </select>
                   </div>
                 </>
               ) : (
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Recipient / Destination</label>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Destination / request details
+                  </label>
                   <input
                     type="text"
-                    placeholder={activeForm === "Zelle" ? "Email or phone" : "Account or routing info"}
-                    value={formData.recipient}
-                    onChange={(e) => setFormData({ ...formData, recipient: e.target.value })}
-                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]"
+                    placeholder={
+                      activeForm === "Rollover Request"
+                        ? "Current provider or plan name"
+                        : activeForm === "Withdrawal Review"
+                          ? "Reason for distribution review"
+                          : activeForm === "Recurring Contribution"
+                            ? "Contribution schedule, e.g. monthly"
+                            : "Contribution or request details"
+                    }
+                    value={formData.fromAccount}
+                    onChange={(e) => setFormData({ ...formData, fromAccount: e.target.value })}
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
                   />
                 </div>
               )}
+
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Amount</label>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  Amount
+                </label>
                 <input
                   type="number"
                   placeholder="0.00"
@@ -1237,60 +1401,118 @@ function Payments() {
                   step="0.01"
                   value={formData.amount}
                   onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]"
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
                 />
               </div>
+
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Memo (optional)</label>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  Memo / notes
+                </label>
                 <input
                   type="text"
-                  placeholder="Payment description"
+                  placeholder="Optional note for retirement services"
                   value={formData.memo}
                   onChange={(e) => setFormData({ ...formData, memo: e.target.value })}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]"
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
                 />
               </div>
-              <div className="flex gap-3 pt-2">
+
+              <div className="flex flex-wrap gap-3 pt-2">
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 rounded-full bg-[#0a1f44] px-5 py-3 font-semibold text-white transition disabled:opacity-50"
+                  className="rounded-full bg-[#071f46] px-7 py-3 font-semibold text-white transition disabled:opacity-50"
                 >
-                  {submitting ? "Processing..." : "Submit Request"}
+                  {submitting
+                    ? "Processing..."
+                    : activeForm === "Internal Transfer"
+                      ? "Submit transfer"
+                      : "Submit for review"}
                 </button>
+
                 <button
                   type="button"
-                  onClick={() => setActiveForm(null)}
-                  className="rounded-full border border-[#0a1f44]/20 px-5 py-3 font-semibold transition hover:bg-white"
+                  onClick={() => resetForm()}
+                  className="rounded-full border border-slate-200 px-7 py-3 font-semibold text-[#071f46] hover:bg-slate-50"
                 >
                   Cancel
                 </button>
               </div>
             </form>
-          ) : success ? (
-            <div className="rounded-2xl bg-white p-6 text-center">
-              <div className="mx-auto h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center">
-                <span className="text-emerald-600 text-xl">✓</span>
-              </div>
-              <h4 className="mt-4 font-serif text-xl font-semibold">Transfer Completed Successfully</h4>
-              <p className="mt-2 text-sm text-slate-600">Your transfer of ${Number(formData.amount || 0).toFixed(2)} has been processed and your accounts have been updated.</p>
-            </div>
           ) : (
-            <div className="rounded-2xl bg-white p-6 text-center">
-              <AlertCircle className="mx-auto h-12 w-12 text-[#c9a84c]" />
-              <h4 className="mt-4 font-serif text-xl font-semibold">Unable to complete transaction. Please contact support.</h4>
-              <p className="mt-2 text-sm text-slate-600">Your {activeForm.toLowerCase()} request has been reviewed by our security controls and cannot be processed through the online portal.</p>
-              <button
-                onClick={() => { setActiveForm(null); setBlocked(false); }}
-                className="mt-6 rounded-full bg-[#0a1f44] px-8 py-3 font-semibold text-white"
-              >
-                Try Another Payment
-              </button>
+            <div className="rounded-2xl bg-[#f6f7fb] p-6 text-sm text-slate-600">
+              Select a contribution, rollover, transfer, or review option above.
             </div>
           )}
-        </div>
-      )}
-    </Panel>
+
+          {success && (
+            <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-emerald-900">
+              <div className="font-serif text-xl font-semibold">Transfer completed</div>
+              <p className="mt-2 text-sm leading-6">
+                Your internal transfer of {money(Number(formData.amount || 0))} has been processed,
+                and your account balances have been updated.
+              </p>
+            </div>
+          )}
+
+          {reviewNotice && (
+            <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-900">
+              <AlertCircle className="mr-2 inline h-4 w-4" />
+              <span className="text-sm leading-6">{reviewNotice}</span>
+            </div>
+          )}
+        </section>
+
+        <aside className="grid gap-6">
+          <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 className="font-serif text-2xl font-semibold">Contribution guidance</h3>
+            <div className="mt-5 grid gap-4 text-sm text-slate-600">
+              <div className="rounded-2xl bg-[#f6f7fb] p-4">
+                <div className="font-semibold text-[#071f46]">Annual limits</div>
+                <p className="mt-2 leading-6">
+                  Contribution eligibility can vary by account type, tax year, age, income,
+                  and plan rules.
+                </p>
+              </div>
+              <div className="rounded-2xl bg-[#f6f7fb] p-4">
+                <div className="font-semibold text-[#071f46]">Rollovers</div>
+                <p className="mt-2 leading-6">
+                  Rollover requests require provider verification before assets are accepted.
+                </p>
+              </div>
+              <div className="rounded-2xl bg-[#f6f7fb] p-4">
+                <div className="font-semibold text-[#071f46]">Withdrawals</div>
+                <p className="mt-2 leading-6">
+                  Withdrawals and distributions may require review, documentation, and tax reporting.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 className="font-serif text-2xl font-semibold">Eligible accounts</h3>
+            <div className="mt-5 grid gap-3">
+              {accounts.data?.map((account: any) => (
+                <div key={account.id} className="rounded-2xl bg-[#f6f7fb] p-4">
+                  <div className="font-semibold text-[#071f46]">
+                    {account.type === "Checking"
+                      ? "Traditional Retirement Savings"
+                      : account.type === "Savings"
+                        ? "High-Yield Cash Reserve"
+                        : account.type === "IRA"
+                          ? "Individual Retirement Account"
+                          : account.type}
+                  </div>
+                  <div className="mt-1 text-sm text-slate-500">{account.number}</div>
+                  <div className="mt-2 font-semibold">{money(account.balance)}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
   );
 }
 
