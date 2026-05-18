@@ -160,75 +160,222 @@ function ref(prefix: string, index: number) {
   return `${prefix}-${String(index).padStart(6, "0")}`;
 }
 
-function makeSeedTransactions() {
-  const now = new Date();
-  const months = monthRange(2024, 0, now);
-  const entries: Omit<Transaction, "balanceAfter">[] = [];
+function makeSeedTransactions(): Transaction[] {
+  const entries: Transaction[] = [];
   let i = 1;
-  for (const { year, month } of months) {
-    const mm = String(month).padStart(2, "0");
-    const daysInMonth = new Date(year, month, 0).getDate();
-    
-    // Generate ~25 transactions per month for 5+ pages (125+ records)
-    for (let day = 1; day <= daysInMonth; day += 2) {
-      const dd = String(day).padStart(2, "0");
-      const hour = 8 + (day % 16);
-      const minute = (day * 7) % 60;
-      
-      // Payroll deposits (twice monthly)
-      if (day === 1 || day === 15) {
-        entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-${dd}T${String(hour).padStart(2, "0")}:15:00.000Z`, description: "ACH Payroll Direct Deposit — Northstar Design Group", method: "ACH", referenceId: ref("ACH", i++), direction: "credit", amount: 8420.18, status: "Completed", initiatedBy: "seed" });
-      }
-      
-      // Rent payment
-      if (day === 3) {
-        entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-${dd}T16:20:00.000Z`, description: "Bill Pay — Pacific Heights Rent", method: "Bill Pay", referenceId: ref("BILL", i++), direction: "debit", amount: 3925.00, status: "Completed", initiatedBy: "seed" });
-      }
-      
-      // Groceries and shopping
-      entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-${dd}T${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:00.000Z`, description: day % 3 === 0 ? "Whole Foods Market" : day % 3 === 1 ? "Target Purchase" : "Trader Joe's", method: "Bill Pay", referenceId: ref("SHOP", i++), direction: "debit", amount: 45.50 + (day * 3.2), status: "Completed", initiatedBy: "seed" });
-      
-      // Utilities and subscriptions
-      if (day % 7 === 0) {
-        entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-${dd}T15:04:00.000Z`, description: "Utility Payment — City Power and Water", method: "Bill Pay", referenceId: ref("UTIL", i++), direction: "debit", amount: 246.81, status: "Completed", initiatedBy: "seed" });
-      }
-      
-      // Transfers to savings
-      if (day % 9 === 0) {
-        entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-${dd}T20:12:00.000Z`, description: "Internal Transfer to Savings", method: "Internal", referenceId: ref("INT", i++), direction: "debit", amount: 1800.00, status: "Completed", initiatedBy: "seed" });
-        entries.push({ id: `txn_${i}`, accountId: "acc_savings", accountType: "Savings", createdAt: `${year}-${mm}-${dd}T20:12:05.000Z`, description: "Internal Transfer from Checking", method: "Internal", referenceId: ref("INT", i++), direction: "credit", amount: 1800.00, status: "Completed", initiatedBy: "seed" });
-      }
-      
-      // Wire transfers
-      if (day % 11 === 0) {
-        entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-${dd}T17:35:00.000Z`, description: "Wire Transfer Outbound — Escrow Services", method: "Wire", referenceId: ref("WIRE", i++), direction: "debit", amount: 1250.00 + (day * 50), status: "Completed", initiatedBy: "seed" });
-      }
-      
-      // Zelle transfers
-      if (day % 13 === 0) {
-        entries.push({ id: `txn_${i}`, accountId: "acc_checking", accountType: "Checking", createdAt: `${year}-${mm}-${dd}T19:42:00.000Z`, description: "Zelle Sent — Friend Payment", method: "Zelle", referenceId: ref("ZEL", i++), direction: "debit", amount: 50.00 + (day * 2), status: "Completed", initiatedBy: "seed" });
-      }
-    }
-    
-    // Monthly interest and investment credits
-    entries.push({ id: `txn_${i}`, accountId: "acc_savings", accountType: "Savings", createdAt: `${year}-${mm}-28T09:00:00.000Z`, description: "Savings Interest Credit", method: "Interest", referenceId: ref("INTCR", i++), direction: "credit", amount: 285.34 + month, status: "Completed", initiatedBy: "system" });
-    entries.push({ id: `txn_${i}`, accountId: "acc_ira", accountType: "IRA", createdAt: `${year}-${mm}-28T21:30:00.000Z`, description: month % 3 === 0 ? "IRA Dividend Reinvestment" : "IRA Market Gain Entry", method: "Investment", referenceId: ref("IRA", i++), direction: "credit", amount: 2140.75 + month * 14, status: "Completed", initiatedBy: "system" });
+
+  const today = new Date();
+  const start = new Date(Date.UTC(today.getUTCFullYear() - 1, today.getUTCMonth(), 1));
+  const end = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+
+  const ref = (prefix: string, n: number) =>
+    `${prefix}-${String(n).padStart(8, "0")}`;
+
+  const accountBalances: Record<string, number> = {
+    acc_checking: accounts.find((a) => a.id === "acc_checking")?.balance ?? 0,
+    acc_savings: accounts.find((a) => a.id === "acc_savings")?.balance ?? 0,
+    acc_ira: accounts.find((a) => a.id === "acc_ira")?.balance ?? 0,
+  };
+
+  function pushTxn(input: Omit<Transaction, "id" | "referenceId" | "balanceAfter" | "initiatedBy"> & {
+    refPrefix: string;
+    initiatedBy?: string;
+  }) {
+    const signedAmount = input.direction === "credit" ? input.amount : -input.amount;
+    accountBalances[input.accountId] = Number((accountBalances[input.accountId] + signedAmount).toFixed(2));
+
+    entries.push({
+      id: `txn_${i}`,
+      accountId: input.accountId,
+      accountType: input.accountType,
+      createdAt: input.createdAt,
+      description: input.description,
+      method: input.method,
+      referenceId: ref(input.refPrefix, i),
+      direction: input.direction,
+      amount: input.amount,
+      balanceAfter: Math.max(accountBalances[input.accountId], 0),
+      status: input.status,
+      initiatedBy: input.initiatedBy ?? "system",
+    });
+
+    i += 1;
   }
 
-  const grouped: Record<AccountType, Omit<Transaction, "balanceAfter">[]> = { Checking: [], Savings: [], IRA: [] };
-  entries.forEach(entry => grouped[entry.accountType].push(entry));
-  const completed: Transaction[] = [];
-  for (const type of Object.keys(grouped) as AccountType[]) {
-    const accountEntries = grouped[type].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-    const net = accountEntries.reduce((sum, entry) => sum + (entry.direction === "credit" ? entry.amount : -entry.amount), 0);
-    let running = Number((finalBalances[type] - net).toFixed(2));
-    for (const entry of accountEntries) {
-      running = Number((running + (entry.direction === "credit" ? entry.amount : -entry.amount)).toFixed(2));
-      completed.push({ ...entry, balanceAfter: running });
+  const cursor = new Date(start);
+
+  while (cursor <= end) {
+    const year = cursor.getUTCFullYear();
+    const month = cursor.getUTCMonth();
+    const mm = String(month + 1).padStart(2, "0");
+    const lastDay = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+
+    const validDay = (day: number) => {
+      const d = new Date(Date.UTC(year, month, Math.min(day, lastDay), 12, 0, 0));
+      return d <= end;
+    };
+
+    const iso = (day: number, hour = 12, minute = 0) => {
+      const safeDay = Math.min(day, lastDay);
+      return new Date(Date.UTC(year, month, safeDay, hour, minute, 0)).toISOString();
+    };
+
+    if (validDay(1)) {
+      pushTxn({
+        accountId: "acc_checking",
+        accountType: "Checking",
+        createdAt: iso(1, 9, 15),
+        description: "Employee Retirement Contribution",
+        method: "ACH",
+        refPrefix: "CONTRIB",
+        direction: "credit",
+        amount: 1250.0,
+        status: "Completed",
+        initiatedBy: "system",
+      });
     }
+
+    if (validDay(3)) {
+      pushTxn({
+        accountId: "acc_checking",
+        accountType: "Checking",
+        createdAt: iso(3, 10, 30),
+        description: "Employer Matching Contribution",
+        method: "ACH",
+        refPrefix: "MATCH",
+        direction: "credit",
+        amount: 625.0,
+        status: "Completed",
+        initiatedBy: "system",
+      });
+    }
+
+    if (validDay(5)) {
+      pushTxn({
+        accountId: "acc_ira",
+        accountType: "IRA",
+        createdAt: iso(5, 13, 0),
+        description: "Target Date Fund Purchase",
+        method: "Investment",
+        refPrefix: "INVBUY",
+        direction: "debit",
+        amount: 850.0 + month * 12,
+        status: "Completed",
+        initiatedBy: "system",
+      });
+    }
+
+    if (validDay(8)) {
+      pushTxn({
+        accountId: "acc_savings",
+        accountType: "Savings",
+        createdAt: iso(8, 8, 45),
+        description: "Cash Reserve Interest Credit",
+        method: "Interest",
+        refPrefix: "INTCR",
+        direction: "credit",
+        amount: 145.25 + month,
+        status: "Completed",
+        initiatedBy: "system",
+      });
+    }
+
+    if (validDay(12)) {
+      pushTxn({
+        accountId: "acc_checking",
+        accountType: "Checking",
+        createdAt: iso(12, 15, 20),
+        description: "Retirement Savings Transfer to Cash Reserve",
+        method: "Internal",
+        refPrefix: "ALLOC",
+        direction: "debit",
+        amount: 500.0,
+        status: "Completed",
+        initiatedBy: "system",
+      });
+
+      pushTxn({
+        accountId: "acc_savings",
+        accountType: "Savings",
+        createdAt: iso(12, 15, 21),
+        description: "Transfer In from Retirement Savings",
+        method: "Internal",
+        refPrefix: "ALLOC",
+        direction: "credit",
+        amount: 500.0,
+        status: "Completed",
+        initiatedBy: "system",
+      });
+    }
+
+    if (validDay(18)) {
+      pushTxn({
+        accountId: "acc_ira",
+        accountType: "IRA",
+        createdAt: iso(18, 16, 10),
+        description: month % 2 === 0 ? "Dividend Reinvestment" : "Portfolio Growth Adjustment",
+        method: "Investment",
+        refPrefix: "DIV",
+        direction: "credit",
+        amount: 980.5 + month * 22,
+        status: "Completed",
+        initiatedBy: "system",
+      });
+    }
+
+    if (validDay(22)) {
+      pushTxn({
+        accountId: "acc_checking",
+        accountType: "Checking",
+        createdAt: iso(22, 11, 35),
+        description: "Plan Administration Fee",
+        method: "Admin",
+        refPrefix: "FEE",
+        direction: "debit",
+        amount: 18.75,
+        status: "Completed",
+        initiatedBy: "system",
+      });
+    }
+
+    if (validDay(25) && month % 3 === 0) {
+      pushTxn({
+        accountId: "acc_ira",
+        accountType: "IRA",
+        createdAt: iso(25, 14, 5),
+        description: "Rollover Contribution Review",
+        method: "Wire",
+        refPrefix: "ROLLOVER",
+        direction: "credit",
+        amount: 3500.0 + month * 100,
+        status: "Completed",
+        initiatedBy: "system",
+      });
+    }
+
+    if (validDay(27) && month % 4 === 0) {
+      pushTxn({
+        accountId: "acc_ira",
+        accountType: "IRA",
+        createdAt: iso(27, 10, 10),
+        description: "Investment Allocation Rebalance",
+        method: "Investment",
+        refPrefix: "REBAL",
+        direction: "credit",
+        amount: 425.0 + month * 9,
+        status: "Completed",
+        initiatedBy: "system",
+      });
+    }
+
+    cursor.setUTCMonth(cursor.getUTCMonth() + 1);
   }
-  const sorted = completed.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  console.log(`[Banking] Generated ${sorted.length} seeded transactions`);
+
+  const sorted = entries
+    .filter((entry) => new Date(entry.createdAt) <= today)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+  console.log(`[Banking] Generated ${sorted.length} retirement activity records`);
   return sorted;
 }
 
