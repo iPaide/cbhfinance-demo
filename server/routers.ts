@@ -32,12 +32,12 @@ import { transferFunds, getAccountsByUser, getTransactionsByAccount } from "./db
 
 const roleSchema = z.enum(["user", "admin"]);
 const accountTypeSchema = z.enum(["All", "Checking", "Savings", "IRA"]);
-const methodSchema = z.enum(["All", "ACH", "Wire", "Zelle", "Bill Pay", "Internal", "Interest", "Investment", "Admin"]);
+const methodSchema = z.enum(["All", "ACH", "Wire", "Internal", "Interest", "Investment", "Admin"]);
 const statusSchema = z.enum(["All", "Completed", "Pending", "Failed"]);
 const supportCaseStatusSchema = z.enum(["New", "In Review", "Closed"]);
 
 function requireAdminToken(token?: string) {
-  if (token !== "cbh-admin-demo-token") {
+  if (token !== "cbh-admin-ops-token") {
     throw new TRPCError({ code: "FORBIDDEN", message: "Admin access requires the secure admin session." });
   }
 }
@@ -95,7 +95,7 @@ export const appRouter = router({
       .query(({ input }) => getTransactions(input)),
     blockPayment: publicProcedure
       .input(z.object({
-        paymentType: z.enum(["Transfer", "Wire", "ACH", "Zelle", "Bill Pay"]),
+        requestType: z.enum(["Transfer", "Wire", "ACH",  "Bill Pay"]),
         amount: z.number().positive(),
         memo: z.string().optional(),
       }))

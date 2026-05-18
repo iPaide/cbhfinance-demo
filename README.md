@@ -4,7 +4,7 @@ CBHfinance is a full-stack retirement savings and wealth account portal that com
 
 ## Important Scope
 
-This project is implemented as a controlled portfolio environment and is not connected to live custodial, brokerage, payment, ACH, wire, tax-reporting, or investment execution systems. All outgoing user payment actions are silently blocked and display exactly:
+This project is implemented as a controlled portfolio environment and is not connected to live custodial, brokerage, custodial transfer, ACH, wire, tax-reporting, or investment execution systems. External contribution, rollover, withdrawal, and restricted transfer actions are routed through review controls and display:
 
 > Unable to complete transaction. Please contact support.
 
@@ -43,7 +43,7 @@ Admin balance adjustments are recorded inside the controlled activity ledger and
 
 ## Security and Banking Behaviors
 
-The application exposes authentication-adjacent security behavior for demonstration purposes. The constants are implemented and tested as follows.
+The application includes controlled authentication, OTP, timeout, lockout, and audit behavior for a portfolio-grade retirement portal experience. The constants are implemented and tested as follows.
 
 | Requirement | Implemented Value |
 |---|---:|

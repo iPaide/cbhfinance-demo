@@ -3,7 +3,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 
-type DemoSession = {
+type PortalSession = {
   role: "user" | "admin";
   token: string;
   userName: string;
@@ -11,7 +11,7 @@ type DemoSession = {
   lastActivityAt: number;
 };
 
-const SESSION_KEY = "cbhfinance-demo-session";
+const SESSION_KEY = "cbhfinance-portal-session";
 const navy = "#0a1f44";
 const gold = "#c9a84c";
 const offWhite = "#f8f6f1";
@@ -24,7 +24,7 @@ function mask(accountNumber: string) {
   return `•••• ${accountNumber.slice(-4)}`;
 }
 
-function readSession(): DemoSession | null {
+function readSession(): PortalSession | null {
   try {
     const raw = localStorage.getItem(SESSION_KEY);
     return raw ? JSON.parse(raw) : null;
@@ -33,7 +33,7 @@ function readSession(): DemoSession | null {
   }
 }
 
-function writeSession(session: DemoSession | null) {
+function writeSession(session: PortalSession | null) {
   if (!session) localStorage.removeItem(SESSION_KEY);
   else localStorage.setItem(SESSION_KEY, JSON.stringify(session));
 }
@@ -371,7 +371,7 @@ function LandingPage() {
   );
 }
 
-function LoginPage({ role, onAuthenticated }: { role: "user" | "admin"; onAuthenticated?: (session: DemoSession) => void }) {
+function LoginPage({ role, onAuthenticated }: { role: "user" | "admin"; onAuthenticated?: (session: PortalSession) => void }) {
   const [, setLocation] = useLocation();
   const login = trpc.banking.login.useMutation();
   const verify = trpc.banking.verifyOtp.useMutation();
@@ -731,10 +731,10 @@ function LoginPage({ role, onAuthenticated }: { role: "user" | "admin"; onAuthen
   );
 }
 
-function useDemoSession(requiredRole?: "user" | "admin") {
+function usePortalSession(requiredRole?: "user" | "admin") {
   const [, setLocation] = useLocation();
   const policy = trpc.banking.securityPolicy.useQuery();
-  const [session, setSession] = useState<DemoSession | null>(() => readSession());
+  const [session, setSession] = useState<PortalSession | null>(() => readSession());
   const [warning, setWarning] = useState(false);
 
   useEffect(() => {
@@ -783,7 +783,7 @@ function useDemoSession(requiredRole?: "user" | "admin") {
 }
 
 function PortalLayout({ children, title, role = "user" }: { children: React.ReactNode; title: string; role?: "user" | "admin" }) {
-  const { warning, logout, dismissWarning } = useDemoSession(role);
+  const { warning, logout, dismissWarning } = usePortalSession(role);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const nav: [string, string][] = role === "admin" ? [
     ["/secure-admin", "Console"], ["/secure-admin?tab=users", "Client Profile"], ["/secure-admin?tab=transactions", "Activity"], ["/secure-admin?tab=support", "Support Cases"], ["/secure-admin?tab=requests", "Request Controls"], ["/secure-admin?tab=audit", "Audit Log"]
@@ -2495,7 +2495,7 @@ function Statements({ rows }: { rows: any[] }) {
 }
 
 function AdminPanel() {
-  const [session, setSession] = useState<DemoSession | null>(() => readSession());
+  const [session, setSession] = useState<PortalSession | null>(() => readSession());
   const [location] = useLocation();
   const tab = new URLSearchParams(location.split("?")[1] ?? "").get("tab") ?? "dashboard";
   const token = session?.token ?? "";

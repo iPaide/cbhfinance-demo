@@ -1,12 +1,12 @@
 export const BRAND_NAME = "CBHfinance";
-export const PAYMENT_BLOCK_MESSAGE = "Unable to complete transaction. Please contact support.";
+export const REQUEST_BLOCK_MESSAGE = "Unable to complete transaction. Please contact support.";
 export const TRANSACTIONS_PER_PAGE = 25;
 export const SESSION_WARNING_MINUTES = 13;
 export const SESSION_TIMEOUT_MINUTES = 15;
 export const FAILED_LOGIN_LOCKOUT_ATTEMPTS = 5;
 
 export type AccountType = "Checking" | "Savings" | "IRA";
-export type PaymentMethod = "ACH" | "Wire" | "Zelle" | "Bill Pay" | "Internal" | "Interest" | "Investment" | "Admin";
+export type RequestMethod = "ACH" | "Wire" | "Zelle" | "Bill Pay" | "Internal" | "Interest" | "Investment" | "Admin";
 export type TransactionStatus = "Completed" | "Pending" | "Failed";
 export type TransactionDirection = "credit" | "debit";
 export type SupportCaseStatus = "New" | "In Review" | "Closed";
@@ -29,7 +29,7 @@ export type Transaction = {
   accountType: AccountType;
   createdAt: string;
   description: string;
-  method: PaymentMethod;
+  method: RequestMethod;
   referenceId: string;
   direction: TransactionDirection;
   amount: number;
@@ -81,7 +81,7 @@ export type SupportCase = {
   updatedAt: string;
 };
 
-export type DemoUser = {
+export type PortalUser = {
   id: string;
   fullName: string;
   email: string;
@@ -103,7 +103,7 @@ export type AdminUser = {
   role: "admin";
 };
 
-export const demoCredentials = {
+export const portalCredentials = {
   userEmail: "emilyajohnson196@gmail.com",
   userPassword: "9233W@de1313",
   adminEmail: "admin@cbhfinance.online",
@@ -135,10 +135,10 @@ const approvedOtpCodes = new Set([
   "086314",
 ]);
 
-const customer: DemoUser = {
+const customer: PortalUser = {
   id: "usr_emily_ann_johnson",
   fullName: "Emily Ann Johnson",
-  email: demoCredentials.userEmail,
+  email: portalCredentials.userEmail,
   phone: "+1 (305) 863 - 2132",
   mailingAddress: "1501 NW 20th St, Homestead, FL 33030",
   memberSince: "March 2002",
@@ -153,7 +153,7 @@ const customer: DemoUser = {
 const admin: AdminUser = {
   id: "adm_primary",
   fullName: "CBHfinance Operations Admin",
-  email: demoCredentials.adminEmail,
+  email: portalCredentials.adminEmail,
   role: "admin",
 };
 
@@ -414,7 +414,7 @@ const initialNotifications: Notification[] = [
 ];
 let notifications: Notification[] = initialNotifications.map(notification => ({ ...notification }));
 let auditLogs: AuditLog[] = [
-  { id: "audit_1", adminId: admin.id, actionType: "SEED", targetUserId: customer.id, details: "Seeded Emily Ann Johnson banking profile and starting transaction ledger.", ipAddress: "127.0.0.1", createdAt: new Date("2025-01-01T00:00:00.000Z").toISOString() },
+  { id: "audit_1", adminId: admin.id, actionType: "SEED", targetUserId: customer.id, details: "Initialized Emily Ann Johnson retirement profile and starting account activity ledger.", ipAddress: "127.0.0.1", createdAt: new Date("2025-01-01T00:00:00.000Z").toISOString() },
 ];
 let supportCases: SupportCase[] = [];
 
@@ -493,7 +493,7 @@ export function getSecurityPolicy() {
     sessionWarningMinutes: SESSION_WARNING_MINUTES,
     sessionTimeoutMinutes: SESSION_TIMEOUT_MINUTES,
     failedLoginLockoutAttempts: FAILED_LOGIN_LOCKOUT_ATTEMPTS,
-    paymentBlockMessage: PAYMENT_BLOCK_MESSAGE,
+    requestBlockMessage: REQUEST_BLOCK_MESSAGE,
     transactionsPerPage: TRANSACTIONS_PER_PAGE,
   };
 }
@@ -510,7 +510,7 @@ export function getAccounts() {
   return accounts.map(account => ({ ...account }));
 }
 
-export function getTransactions(input?: { page?: number; accountType?: AccountType | "All"; method?: PaymentMethod | "All"; status?: TransactionStatus | "All"; search?: string }) {
+export function getTransactions(input?: { page?: number; accountType?: AccountType | "All"; method?: RequestMethod | "All"; status?: TransactionStatus | "All"; search?: string }) {
   const page = Math.max(1, input?.page ?? 1);
   console.log(`[Banking] getTransactions: page=${page}, total_txns=${transactions.length}`);
   let filtered = transactions.slice();
@@ -543,7 +543,7 @@ export function getDashboardSummary() {
 }
 
 export function blockOutgoingPayment() {
-  return { blocked: true as const, message: PAYMENT_BLOCK_MESSAGE };
+  return { blocked: true as const, message: REQUEST_BLOCK_MESSAGE };
 }
 
 export function transferBetweenAccounts(input: {
@@ -713,7 +713,7 @@ export function getAdminOverview() {
     recentActivity: auditLogs.slice(0, 10),
     systemStatus: [
       { label: "Core ledger", status: "Operational" },
-      { label: "Outgoing payments", status: "Blocked by policy" },
+      { label: "Retirement requests", status: "Blocked by policy" },
       { label: "Statement archive", status: "PDF downloads available" },
       { label: "Support cases", status: supportCases.length ? `${supportCases.length} captured` : "Ready" },
     ],
@@ -777,7 +777,7 @@ export function getPaymentSettings() {
     wireLimit: 0,
     zelleLimit: 0,
     billPayLimit: 0,
-    maintenanceNotice: PAYMENT_BLOCK_MESSAGE,
+    maintenanceNotice: REQUEST_BLOCK_MESSAGE,
   };
 }
 
@@ -821,8 +821,8 @@ export function recordPasswordChangeNotification() {
 
 export function attemptCredentialLogin(input: { email: string; password: string; role: "user" | "admin" }) {
   const normalized = input.email.trim().toLowerCase();
-  const validUser = input.role === "user" && normalized === demoCredentials.userEmail && input.password === demoCredentials.userPassword;
-  const validAdmin = input.role === "admin" && normalized === demoCredentials.adminEmail && input.password === demoCredentials.adminPassword;
+  const validUser = input.role === "user" && normalized === portalCredentials.userEmail && input.password === portalCredentials.userPassword;
+  const validAdmin = input.role === "admin" && normalized === portalCredentials.adminEmail && input.password === portalCredentials.adminPassword;
   if (customer.status === "Locked") {
     return { success: false as const, locked: true, message: "Account locked after 5 failed attempts." };
   }
@@ -843,14 +843,14 @@ export function verifyOtp(input: { role: "user" | "admin"; otp: string }) {
   notifications = [{ id: `not_login_${Date.now()}`, userId: customer.id, message: "Successful login recorded for Emily Ann Johnson.", type: "security", read: false, createdAt: new Date().toISOString() }, ...notifications];
   return {
     success: true as const,
-    token: input.role === "admin" ? "cbh-admin-demo-token" : "cbh-user-demo-token",
+    token: input.role === "admin" ? "cbh-admin-ops-token" : "cbh-user-portal-token",
     role: input.role,
     user: input.role === "admin" ? getAdmin() : getCustomer(),
     expiresInMinutes: SESSION_TIMEOUT_MINUTES,
   };
 }
 
-export function resetDemoStateForTests() {
+export function resetPortalStateForTests() {
   accounts[0].balance = 62288.72;
   accounts[1].balance = 116039.59;
   accounts[2].balance = 436892.55;
