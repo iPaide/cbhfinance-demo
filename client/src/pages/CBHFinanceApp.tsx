@@ -810,15 +810,311 @@ function Setting({ label, value }: { label: string; value: string }) {
   return <div className="rounded-2xl bg-[#f8f6f1] p-4"><div className="text-xs font-bold uppercase tracking-widest text-slate-500">{label}</div><div className="mt-1 font-semibold">{value}</div></div>;
 }
 
+function formatSafeDate(value: string) {
+  const date = new Date(value);
+  const today = new Date();
+
+  if (Number.isNaN(date.getTime())) return "Pending";
+  if (date.getTime() > today.getTime()) return today.toLocaleDateString();
+
+  return date.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function retirementActivityLabel(row: any) {
+  const text = `${row.description ?? ""} ${row.method ?? ""}`.toLowerCase();
+
+  if (text.includes("dividend") || text.includes("market gain") || text.includes("investment")) {
+    return "Dividend Reinvestment";
+  }
+
+  if (text.includes("interest")) {
+    return "Cash Reserve Interest";
+  }
+
+  if (text.includes("payroll") || text.includes("direct deposit") || text.includes("contribution")) {
+    return "Employee Contribution";
+  }
+
+  if (text.includes("admin credit")) {
+    return "Plan Contribution Adjustment";
+  }
+
+  if (text.includes("transfer from")) {
+    return "Transfer In";
+  }
+
+  if (text.includes("transfer to")) {
+    return "Transfer Out";
+  }
+
+  if (text.includes("wire")) {
+    return "Rollover / Transfer Review";
+  }
+
+  if (text.includes("fee")) {
+    return "Plan Administration Fee";
+  }
+
+  if (row.direction === "credit") {
+    return "Retirement Account Credit";
+  }
+
+  return "Account Activity";
+}
+
+function retirementActivityType(row: any) {
+  const label = retirementActivityLabel(row).toLowerCase();
+
+  if (label.includes("contribution")) return "Contribution";
+  if (label.includes("dividend")) return "Investment";
+  if (label.includes("interest")) return "Interest";
+  if (label.includes("transfer")) return "Transfer";
+  if (label.includes("fee")) return "Fee";
+
+  return "Activity";
+}
+
+function retirementAccountName(accountType: string) {
+  if (accountType === "Checking") return "Traditional Retirement Savings";
+  if (accountType === "Savings") return "High-Yield Cash Reserve";
+  if (accountType === "IRA") return "Individual Retirement Account";
+  return accountType;
+}
+
 function TransactionTable({ rows }: { rows: any[] }) {
-  return <div className="overflow-x-auto"><table className="w-full min-w-[760px] text-left text-sm"><thead className="text-xs uppercase tracking-widest text-slate-500"><tr><th className="py-3">Date</th><th>Description</th><th>Account</th><th>Method</th><th>Reference</th><th>Amount</th><th>Balance After</th><th>Status</th></tr></thead><tbody>{rows.map(row => <tr key={row.id} className="border-t border-slate-100"><td className="py-3">{new Date(row.createdAt).toLocaleDateString()}</td><td>{row.description}</td><td>{row.accountType}</td><td>{row.method}</td><td>{row.referenceId}</td><td className={row.direction === "credit" ? "text-emerald-700" : "text-rose-700"}>{row.direction === "credit" ? "+" : "-"}{money(row.amount)}</td><td>{money(row.balanceAfter)}</td><td><span className="rounded-full bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700">{row.status}</span></td></tr>)}</tbody></table></div>;
+  return (
+    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[860px] text-left text-sm">
+          <thead className="bg-[#f8fafc] text-xs uppercase tracking-widest text-slate-500">
+            <tr>
+              <th className="px-5 py-4">Date</th>
+              <th className="px-5 py-4">Activity</th>
+              <th className="px-5 py-4">Type</th>
+              <th className="px-5 py-4">Account</th>
+              <th className="px-5 py-4 text-right">Amount</th>
+              <th className="px-5 py-4 text-right">Balance</th>
+              <th className="px-5 py-4">Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {rows.map((row) => {
+              const activity = retirementActivityLabel(row);
+              const type = retirementActivityType(row);
+              const isCredit = row.direction === "credit";
+
+              return (
+                <tr key={row.id} className="border-t border-slate-100 hover:bg-[#fbfcfe]">
+                  <td className="px-5 py-4 font-medium text-slate-700">
+                    {formatSafeDate(row.createdAt)}
+                  </td>
+                  <td className="px-5 py-4">
+                    <div className="font-semibold text-[#071f46]">{activity}</div>
+                    <div className="mt-1 text-xs text-slate-500">
+                      Ref {row.referenceId} · {row.method}
+                    </div>
+                  </td>
+                  <td className="px-5 py-4">
+                    <span className="rounded-full bg-[#071f46]/5 px-3 py-1 text-xs font-semibold text-[#071f46]">
+                      {type}
+                    </span>
+                  </td>
+                  <td className="px-5 py-4 text-slate-600">
+                    {retirementAccountName(row.accountType)}
+                  </td>
+                  <td
+                    className={`px-5 py-4 text-right font-semibold ${
+                      isCredit ? "text-emerald-700" : "text-[#071f46]"
+                    }`}
+                  >
+                    {isCredit ? "+" : "-"}
+                    {money(row.amount)}
+                  </td>
+                  <td className="px-5 py-4 text-right font-medium text-slate-700">
+                    {money(row.balanceAfter)}
+                  </td>
+                  <td className="px-5 py-4">
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                        row.status === "Completed"
+                          ? "bg-emerald-50 text-emerald-700"
+                          : row.status === "Pending"
+                            ? "bg-amber-50 text-amber-700"
+                            : "bg-slate-100 text-slate-600"
+                      }`}
+                    >
+                      {row.status}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+
+            {!rows.length && (
+              <tr>
+                <td colSpan={7} className="px-5 py-10 text-center text-sm text-slate-500">
+                  No retirement activity matched your filters.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 }
 
 function TransactionHistory() {
-  const [page, setPage] = useState(1); const [search, setSearch] = useState(""); const [method, setMethod] = useState<any>("All"); const [accountType, setAccountType] = useState<any>("All");
-  const query = trpc.banking.transactions.useQuery({ page, search, method, accountType, status: "All" });
-  const csv = useMemo(() => (query.data?.rows ?? []).map((r: any) => [r.createdAt, r.description, r.accountType, r.method, r.referenceId, r.direction, r.amount, r.balanceAfter, r.status].join(",")).join("\n"), [query.data]);
-  return <Panel title="Transaction History"><div className="mb-5 grid gap-3 md:grid-cols-4"><label className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3"><Search className="h-4 w-4 text-slate-400" /><input value={search} onChange={e => { setPage(1); setSearch(e.target.value); }} placeholder="Search description or reference" className="w-full outline-none" /></label><select value={accountType} onChange={e => setAccountType(e.target.value)} className="rounded-2xl border border-slate-200 px-4 py-3"><option>All</option><option>Checking</option><option>Savings</option><option>IRA</option></select><select value={method} onChange={e => setMethod(e.target.value)} className="rounded-2xl border border-slate-200 px-4 py-3"><option>All</option><option>ACH</option><option>Wire</option><option>Zelle</option><option>Bill Pay</option><option>Internal</option><option>Interest</option><option>Investment</option><option>Admin</option></select><a download="cbhfinance-transactions.csv" href={`data:text/csv;charset=utf-8,${encodeURIComponent(csv)}`} className="rounded-full bg-[#0a1f44] px-5 py-3 text-center font-semibold text-white">Export CSV</a></div><TransactionTable rows={query.data?.rows ?? []} /><div className="mt-5 flex items-center justify-between text-sm"><span>Page {query.data?.page ?? page} of {query.data?.pageCount ?? 1} · exactly 25 records per page</span><div className="flex gap-2"><button disabled={page <= 1} onClick={() => setPage(page - 1)} className="rounded-full border px-4 py-2 disabled:opacity-40">Previous</button><button disabled={page >= (query.data?.pageCount ?? 1)} onClick={() => setPage(page + 1)} className="rounded-full border px-4 py-2 disabled:opacity-40">Next</button></div></div></Panel>;
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [method, setMethod] = useState<any>("All");
+  const [accountType, setAccountType] = useState<any>("All");
+
+  const query = trpc.banking.transactions.useQuery({
+    page,
+    search,
+    method,
+    accountType,
+    status: "All",
+  });
+
+  const rows = query.data?.rows ?? [];
+
+  const csv = useMemo(
+    () =>
+      rows
+        .map((r: any) =>
+          [
+            formatSafeDate(r.createdAt),
+            retirementActivityLabel(r),
+            retirementActivityType(r),
+            retirementAccountName(r.accountType),
+            r.method,
+            r.referenceId,
+            r.direction,
+            r.amount,
+            r.balanceAfter,
+            r.status,
+          ].join(",")
+        )
+        .join("\n"),
+    [rows]
+  );
+
+  return (
+    <div className="grid gap-6">
+      <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
+        <div className="flex flex-wrap items-start justify-between gap-5">
+          <div>
+            <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
+              Retirement Account Activity
+            </div>
+            <h2 className="mt-2 font-serif text-4xl font-semibold">Activity & Transactions</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/70">
+              Review contributions, transfers, dividend reinvestments, interest credits,
+              plan adjustments, and retirement account activity.
+            </p>
+          </div>
+
+          <a
+            download="cbhfinance-retirement-activity.csv"
+            href={`data:text/csv;charset=utf-8,${encodeURIComponent(csv)}`}
+            className="rounded-full bg-[#d6ad42] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-black/10"
+          >
+            Export activity
+          </a>
+        </div>
+      </section>
+
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="grid gap-3 lg:grid-cols-[1.4fr_0.8fr_0.8fr]">
+          <label className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3">
+            <Search className="h-4 w-4 text-slate-400" />
+            <input
+              value={search}
+              onChange={(e) => {
+                setPage(1);
+                setSearch(e.target.value);
+              }}
+              placeholder="Search activity, reference, contribution, rollover..."
+              className="w-full outline-none"
+            />
+          </label>
+
+          <select
+            value={accountType}
+            onChange={(e) => {
+              setPage(1);
+              setAccountType(e.target.value);
+            }}
+            className="rounded-2xl border border-slate-200 px-4 py-3"
+          >
+            <option>All</option>
+            <option>Checking</option>
+            <option>Savings</option>
+            <option>IRA</option>
+          </select>
+
+          <select
+            value={method}
+            onChange={(e) => {
+              setPage(1);
+              setMethod(e.target.value);
+            }}
+            className="rounded-2xl border border-slate-200 px-4 py-3"
+          >
+            <option>All</option>
+            <option>ACH</option>
+            <option>Internal</option>
+            <option>Interest</option>
+            <option>Investment</option>
+            <option>Wire</option>
+            <option>Admin</option>
+          </select>
+        </div>
+
+        <div className="mt-5 flex flex-wrap gap-2 text-xs font-semibold">
+          {["Contributions", "Transfers", "Investment Activity", "Interest", "Fees"].map((chip) => (
+            <span key={chip} className="rounded-full bg-[#f6f7fb] px-3 py-1 text-slate-600">
+              {chip}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      <TransactionTable rows={rows} />
+
+      <div className="flex flex-wrap items-center justify-between gap-4 text-sm">
+        <span className="text-slate-600">
+          Page {query.data?.page ?? page} of {query.data?.pageCount ?? 1} · 25 records per page
+        </span>
+
+        <div className="flex gap-2">
+          <button
+            type="button"
+            disabled={page <= 1}
+            onClick={() => setPage(page - 1)}
+            className="rounded-full border border-slate-200 bg-white px-4 py-2 font-semibold disabled:opacity-40"
+          >
+            Previous
+          </button>
+          <button
+            type="button"
+            disabled={page >= (query.data?.pageCount ?? 1)}
+            onClick={() => setPage(page + 1)}
+            className="rounded-full border border-slate-200 bg-white px-4 py-2 font-semibold disabled:opacity-40"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function Payments() {
