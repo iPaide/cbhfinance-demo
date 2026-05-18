@@ -786,7 +786,7 @@ function PortalLayout({ children, title, role = "user" }: { children: React.Reac
   const { warning, logout, dismissWarning } = useDemoSession(role);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const nav: [string, string][] = role === "admin" ? [
-    ["/secure-admin", "Dashboard"], ["/secure-admin?tab=users", "Users"], ["/secure-admin?tab=transactions", "Transactions"], ["/secure-admin?tab=support", "Support"], ["/secure-admin?tab=requests", "Requests"], ["/secure-admin?tab=audit", "Audit"]
+    ["/secure-admin", "Console"], ["/secure-admin?tab=users", "Client Profile"], ["/secure-admin?tab=transactions", "Activity"], ["/secure-admin?tab=support", "Support Cases"], ["/secure-admin?tab=requests", "Request Controls"], ["/secure-admin?tab=audit", "Audit Log"]
   ] : [
     ["/portal", "Dashboard"], ["/portal?tab=transactions", "Transactions"], ["/portal?tab=requests", "Requests"], ["/portal?tab=statements", "Statements"], ["/portal?tab=settings", "Settings"]
   ];
@@ -2499,21 +2499,483 @@ function AdminPanel() {
   const [location] = useLocation();
   const tab = new URLSearchParams(location.split("?")[1] ?? "").get("tab") ?? "dashboard";
   const token = session?.token ?? "";
-  const overview = trpc.banking.adminOverview.useQuery({ token }, { enabled: Boolean(session && session.role === "admin") });
-  const audit = trpc.banking.auditLogs.useQuery({ token }, { enabled: Boolean(session && session.role === "admin") });
+
+  const overview = trpc.banking.adminOverview.useQuery(
+    { token },
+    { enabled: Boolean(session && session.role === "admin") }
+  );
+  const audit = trpc.banking.auditLogs.useQuery(
+    { token },
+    { enabled: Boolean(session && session.role === "admin") }
+  );
   const requestSettings = trpc.banking.requestSettings.useQuery();
-  const supportCases = trpc.banking.supportCases.useQuery({ token }, { enabled: Boolean(session && session.role === "admin") });
-  const [adminPage, setAdminPage] = useState(1); const [adminSearch, setAdminSearch] = useState(""); const [adminMethod, setAdminMethod] = useState<any>("All"); const [adminStatus, setAdminStatus] = useState<any>("All");
-  const txns = trpc.banking.transactions.useQuery({ page: adminPage, accountType: "All", method: adminMethod, status: adminStatus, search: adminSearch }, { enabled: Boolean(session && session.role === "admin") });
+  const supportCases = trpc.banking.supportCases.useQuery(
+    { token },
+    { enabled: Boolean(session && session.role === "admin") }
+  );
+
+  const [adminPage, setAdminPage] = useState(1);
+  const [adminSearch, setAdminSearch] = useState("");
+  const [adminMethod, setAdminMethod] = useState<any>("All");
+  const [adminStatus, setAdminStatus] = useState<any>("All");
+
+  const txns = trpc.banking.transactions.useQuery(
+    {
+      page: adminPage,
+      accountType: "All",
+      method: adminMethod,
+      status: adminStatus,
+      search: adminSearch,
+    },
+    { enabled: Boolean(session && session.role === "admin") }
+  );
+
   const utils = trpc.useUtils();
-  const adjust = trpc.banking.adminAdjustBalance.useMutation({ onSuccess: async () => { await utils.banking.adminOverview.invalidate(); await utils.banking.transactions.invalidate(); await utils.banking.auditLogs.invalidate(); } });
-  const setStatus = trpc.banking.adminSetCustomerStatus.useMutation({ onSuccess: async () => { await utils.banking.adminOverview.invalidate(); await utils.banking.auditLogs.invalidate(); } });
-  const updateSupport = trpc.banking.updateSupportCaseStatus.useMutation({ onSuccess: async () => { await utils.banking.supportCases.invalidate(); await utils.banking.adminOverview.invalidate(); await utils.banking.auditLogs.invalidate(); } });
-  const [accountId, setAccountId] = useState("acc_checking"); const [action, setAction] = useState<"Credit" | "Debit">("Credit"); const [amount, setAmount] = useState(100); const [description, setDescription] = useState("Manual account review adjustment"); const [message, setMessage] = useState("");
-  const adminCsv = useMemo(() => (txns.data?.rows ?? []).map((r: any) => [r.createdAt, r.description, r.accountType, r.method, r.referenceId, r.direction, r.amount, r.balanceAfter, r.status].join(",")).join("\n"), [txns.data]);
-  if (!session || session.role !== "admin") return <LoginPage role="admin" onAuthenticated={setSession} />;
-  async function submitAdjustment(e: FormEvent) { e.preventDefault(); setMessage(""); try { await adjust.mutateAsync({ token, accountId, action, amount, description }); setMessage("Adjustment posted, transaction created, and immutable audit log recorded."); } catch (err: any) { setMessage(err.message); } }
-  return <PortalLayout title="Secure Admin Panel" role="admin">{tab === "dashboard" && <div className="grid gap-6"><div className="grid gap-5 md:grid-cols-4">{[["Total Users", overview.data?.totalUsers], ["Total Deposits", overview.data ? money(overview.data.totalDeposits) : "Loading"], ["Transactions Today", overview.data?.totalTransactionsToday], ["Pending Reviews", overview.data?.pendingReviews]].map(([k, v]) => <div key={k as string} className="rounded-[1.5rem] bg-white p-6 shadow-sm"><div className="text-sm text-slate-500">{k}</div><div className="mt-2 font-serif text-3xl font-semibold">{v}</div></div>)}</div><Panel title="Admin Credit & Debit Control"><form onSubmit={submitAdjustment} className="grid gap-4 md:grid-cols-5"><select value={accountId} onChange={e => setAccountId(e.target.value)} className="rounded-2xl border px-4 py-3">{overview.data?.accounts.map(a => <option key={a.id} value={a.id}>{a.type} · {a.number}</option>)}</select><select value={action} onChange={e => setAction(e.target.value as any)} className="rounded-2xl border px-4 py-3"><option>Credit</option><option>Debit</option></select><input type="number" min="0.01" step="0.01" value={amount} onChange={e => setAmount(Number(e.target.value))} className="rounded-2xl border px-4 py-3" /><input value={description} onChange={e => setDescription(e.target.value)} className="rounded-2xl border px-4 py-3 md:col-span-1" required /><button className="rounded-full bg-[#0a1f44] px-5 py-3 font-semibold text-white">Post</button></form>{message && <div className="mt-4 rounded-2xl bg-[#f8f6f1] p-4 text-sm">{message}</div>}</Panel><Panel title="Recent Admin Activity"><div className="grid gap-3">{overview.data?.recentActivity.map(log => <div key={log.id} className="rounded-2xl bg-[#f8f6f1] p-4 text-sm"><strong>{log.actionType}</strong> · {log.details}</div>)}</div></Panel></div>}{tab === "users" && <Panel title="User Management"><div className="rounded-2xl bg-[#f8f6f1] p-5"><UserRound className="mb-3 h-7 w-7 text-[#c9a84c]" /><div className="font-serif text-2xl font-semibold">Emily Ann Johnson</div><p className="mt-2 text-sm text-slate-600">{overview.data?.customer.status ?? "Active"} · Member since March 2002 · Routing 121000248</p><div className="mt-5 flex flex-wrap gap-3"><button onClick={() => setStatus.mutate({ token, status: "Active" })} className="rounded-full border px-4 py-2 font-semibold">Mark Active</button><button onClick={() => setStatus.mutate({ token, status: "Suspended" })} className="rounded-full border px-4 py-2 font-semibold">Suspend</button><button onClick={() => setStatus.mutate({ token, status: "Locked" })} className="rounded-full bg-[#0a1f44] px-4 py-2 font-semibold text-white">Lock</button></div><div className="mt-5 grid gap-3 md:grid-cols-3">{overview.data?.accounts.map(a => <div key={a.id} className="rounded-2xl bg-white p-4"><div className="font-semibold">{a.type}</div><div>{a.number}</div><div>{money(a.balance)}</div></div>)}</div><div className="mt-6"><h3 className="mb-3 font-serif text-xl font-semibold">User Transaction View</h3><TransactionTable rows={txns.data?.rows.slice(0, 5) ?? []} /></div></div></Panel>} {tab === "support" && <Panel title="Support Case Review"><p className="mb-5 text-slate-600">Submitted Contact Support requests are captured by the backend and exposed here for operational review.</p><div className="grid gap-3">{supportCases.isLoading ? <div className="rounded-2xl bg-[#f8f6f1] p-5 text-sm text-slate-600">Loading support cases...</div> : supportCases.isError ? <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-700">Unable to load support cases. Please refresh the admin panel.</div> : supportCases.data?.length ? supportCases.data.map(ticket => <div key={ticket.id} className="rounded-2xl bg-[#f8f6f1] p-5"><div className="flex flex-wrap items-start justify-between gap-3"><div><div className="text-xs font-bold uppercase tracking-widest text-[#c9a84c]">{ticket.caseNumber} · {ticket.status}</div><h3 className="mt-2 font-serif text-xl font-semibold">{ticket.subject}</h3><p className="mt-1 text-sm text-slate-600">{ticket.fullName} · {ticket.email} · {new Date(ticket.createdAt).toLocaleString()}</p></div><div className="flex gap-2"><button onClick={() => updateSupport.mutate({ token, id: ticket.id, status: "In Review" })} className="rounded-full border px-3 py-2 text-sm font-semibold">Review</button><button onClick={() => updateSupport.mutate({ token, id: ticket.id, status: "Closed" })} className="rounded-full bg-[#0a1f44] px-3 py-2 text-sm font-semibold text-white">Close</button></div></div><p className="mt-4 text-sm leading-6 text-slate-700">{ticket.message}</p></div>) : <div className="rounded-2xl bg-[#f8f6f1] p-5 text-sm text-slate-600">No support cases have been submitted yet.</div>}</div></Panel>}{tab === "transactions" && <Panel title="Global Transaction Management"><div className="mb-5 grid gap-3 md:grid-cols-5"><input value={adminSearch} onChange={e => { setAdminPage(1); setAdminSearch(e.target.value); }} placeholder="Search" className="rounded-2xl border px-4 py-3" /><select value={adminMethod} onChange={e => { setAdminPage(1); setAdminMethod(e.target.value); }} className="rounded-2xl border px-4 py-3"><option>All</option><option>ACH</option><option>Wire</option><option>Zelle</option><option>Bill Pay</option><option>Internal</option><option>Interest</option><option>Investment</option><option>Admin</option></select><select value={adminStatus} onChange={e => { setAdminPage(1); setAdminStatus(e.target.value); }} className="rounded-2xl border px-4 py-3"><option>All</option><option>Completed</option><option>Pending</option><option>Failed</option></select><button type="button" className="rounded-full border border-[#0a1f44]/20 px-5 py-3 font-semibold">Review pending</button><a download="cbhfinance-admin-transactions.csv" href={`data:text/csv;charset=utf-8,${encodeURIComponent(adminCsv)}`} className="rounded-full bg-[#0a1f44] px-5 py-3 text-center font-semibold text-white">Export CSV</a></div><TransactionTable rows={txns.data?.rows ?? []} /><div className="mt-5 flex items-center justify-between text-sm"><span>Page {txns.data?.page ?? adminPage} of {txns.data?.pageCount ?? 1} · exactly 25 records per page</span><div className="flex gap-2"><button disabled={adminPage <= 1} onClick={() => setAdminPage(adminPage - 1)} className="rounded-full border px-4 py-2 disabled:opacity-40">Previous</button><button disabled={adminPage >= (txns.data?.pageCount ?? 1)} onClick={() => setAdminPage(adminPage + 1)} className="rounded-full border px-4 py-2 disabled:opacity-40">Next</button></div></div></Panel>}{tab === "requests" && <Panel title="Retirement Request Controls"><div className="grid gap-4 md:grid-cols-2"><Setting label="Global retirement requests" value={requestSettings.data?.globalOutgoingRequestsEnabled ? "Enabled" : "Disabled"} /><Setting label="Client retirement requests" value={requestSettings.data?.perUserOutgoingRequestsEnabled ? "Enabled" : "Disabled"} /><Setting label="Daily review threshold" value={money(requestSettings.data?.dailyTransferLimit ?? 0)} /><Setting label="Maintenance notice" value={requestSettings.data?.maintenanceNotice ?? "Loading"} /></div><p className="mt-5 rounded-2xl bg-[#f8f6f1] p-4 text-sm text-slate-700">Controls are visible to administrators so contribution, rollover, withdrawal, and transfer requests can be reviewed before processing.</p></Panel>}{tab === "audit" && <Panel title="Immutable Audit Log"><p className="mb-5 text-slate-600">Audit records are append-only. No edit or delete action is exposed in the UI or server procedures.</p><div className="grid gap-3">{audit.data?.map(log => <div key={log.id} className="rounded-2xl bg-[#f8f6f1] p-4 text-sm"><strong>{log.actionType}</strong> · {new Date(log.createdAt).toLocaleString()} · {log.details} · IP {log.ipAddress}</div>)}</div></Panel>}</PortalLayout>;
+
+  const adjust = trpc.banking.adminAdjustBalance.useMutation({
+    onSuccess: async () => {
+      await utils.banking.adminOverview.invalidate();
+      await utils.banking.transactions.invalidate();
+      await utils.banking.auditLogs.invalidate();
+    },
+  });
+
+  const setStatus = trpc.banking.adminSetCustomerStatus.useMutation({
+    onSuccess: async () => {
+      await utils.banking.adminOverview.invalidate();
+      await utils.banking.auditLogs.invalidate();
+    },
+  });
+
+  const updateSupport = trpc.banking.updateSupportCaseStatus.useMutation({
+    onSuccess: async () => {
+      await utils.banking.supportCases.invalidate();
+      await utils.banking.adminOverview.invalidate();
+      await utils.banking.auditLogs.invalidate();
+    },
+  });
+
+  const [accountId, setAccountId] = useState("acc_checking");
+  const [action, setAction] = useState<"Credit" | "Debit">("Credit");
+  const [amount, setAmount] = useState(100);
+  const [description, setDescription] = useState("Retirement account review adjustment");
+  const [message, setMessage] = useState("");
+
+  const adminCsv = useMemo(
+    () =>
+      (txns.data?.rows ?? [])
+        .map((r: any) =>
+          [
+            r.createdAt,
+            retirementActivityLabel(r),
+            retirementAccountName(r.accountType),
+            r.method,
+            r.referenceId,
+            r.direction,
+            r.amount,
+            r.balanceAfter,
+            r.status,
+          ].join(",")
+        )
+        .join("\n"),
+    [txns.data]
+  );
+
+  if (!session || session.role !== "admin") {
+    return <LoginPage role="admin" onAuthenticated={setSession} />;
+  }
+
+  async function submitAdjustment(e: FormEvent) {
+    e.preventDefault();
+    setMessage("");
+
+    try {
+      await adjust.mutateAsync({
+        token,
+        accountId,
+        action,
+        amount,
+        description,
+      });
+
+      setMessage("Retirement account adjustment posted and recorded in the immutable audit log.");
+    } catch (err: any) {
+      setMessage(err.message);
+    }
+  }
+
+  function exportAdminActivity() {
+    const blob = new Blob([adminCsv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "cbhfinance-retirement-operations-activity.csv";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  return (
+    <PortalLayout title="Retirement Operations Console" role="admin">
+      {tab === "dashboard" && (
+        <div className="grid gap-6">
+          <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
+            <div className="flex flex-wrap items-start justify-between gap-5">
+              <div>
+                <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
+                  CBHfinance Operations
+                </div>
+                <h2 className="mt-2 font-serif text-4xl font-semibold">
+                  Retirement operations console
+                </h2>
+                <p className="mt-3 max-w-3xl text-sm leading-6 text-white/70">
+                  Monitor client profile status, retirement activity, support cases,
+                  contribution and rollover controls, account adjustments, and audit records.
+                </p>
+              </div>
+
+              <div className="rounded-3xl border border-white/15 bg-white/5 p-5 text-sm">
+                <div className="text-white/55">Console status</div>
+                <div className="mt-2 text-2xl font-semibold">Active</div>
+                <p className="mt-2 max-w-xs text-xs leading-5 text-white/60">
+                  Changes are recorded through controlled operations and audit logging.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <div className="grid gap-5 md:grid-cols-4">
+            {[
+              ["Total Clients", overview.data?.totalUsers],
+              ["Retirement Assets", overview.data ? money(overview.data.totalDeposits) : "Loading"],
+              ["Activity Today", overview.data?.totalTransactionsToday],
+              ["Pending Reviews", overview.data?.pendingReviews],
+            ].map(([label, value]) => (
+              <div key={label as string} className="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="text-sm text-slate-500">{label}</div>
+                <div className="mt-2 font-serif text-3xl font-semibold text-[#071f46]">{value}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+            <Panel title="Account Review Adjustment">
+              <p className="mb-5 text-sm leading-6 text-slate-600">
+                Post controlled retirement account adjustments with required reason capture.
+                Each adjustment is recorded in activity history and audit records.
+              </p>
+
+              <form onSubmit={submitAdjustment} className="grid gap-4 md:grid-cols-5">
+                <select
+                  value={accountId}
+                  onChange={(e) => setAccountId(e.target.value)}
+                  className="rounded-2xl border border-slate-200 px-4 py-3"
+                >
+                  {overview.data?.accounts.map((account: any) => (
+                    <option key={account.id} value={account.id}>
+                      {retirementAccountName(account.type)} · {account.number}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={action}
+                  onChange={(e) => setAction(e.target.value as any)}
+                  className="rounded-2xl border border-slate-200 px-4 py-3"
+                >
+                  <option>Credit</option>
+                  <option>Debit</option>
+                </select>
+
+                <input
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  value={amount}
+                  onChange={(e) => setAmount(Number(e.target.value))}
+                  className="rounded-2xl border border-slate-200 px-4 py-3"
+                />
+
+                <input
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="rounded-2xl border border-slate-200 px-4 py-3"
+                  required
+                />
+
+                <button className="rounded-full bg-[#071f46] px-5 py-3 font-semibold text-white">
+                  Post review
+                </button>
+              </form>
+
+              {message && (
+                <div className="mt-4 rounded-2xl border border-[#d6ad42]/30 bg-[#fff8e1] p-4 text-sm text-[#071f46]">
+                  {message}
+                </div>
+              )}
+            </Panel>
+
+            <Panel title="Recent Operations Activity">
+              <div className="grid gap-3">
+                {overview.data?.recentActivity.map((log: any) => (
+                  <div key={log.id} className="rounded-2xl bg-[#f6f7fb] p-4 text-sm">
+                    <strong>{log.actionType}</strong>
+                    <span className="text-slate-500"> · {log.details}</span>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+          </div>
+        </div>
+      )}
+
+      {tab === "users" && (
+        <Panel title="Client Retirement Profile">
+          <div className="rounded-2xl bg-[#f6f7fb] p-6">
+            <div className="flex flex-wrap items-start justify-between gap-5">
+              <div>
+                <div className="text-xs font-bold uppercase tracking-widest text-[#d6ad42]">
+                  Client profile
+                </div>
+                <div className="mt-2 font-serif text-3xl font-semibold text-[#071f46]">
+                  Emily Ann Johnson
+                </div>
+                <p className="mt-2 text-sm text-slate-600">
+                  {overview.data?.customer.status ?? "Active"} · Member since March 2002 · Retirement profile review enabled
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={() => setStatus.mutate({ token, status: "Active" })}
+                  className="rounded-full border border-slate-200 bg-white px-4 py-2 font-semibold"
+                >
+                  Mark Active
+                </button>
+                <button
+                  onClick={() => setStatus.mutate({ token, status: "Suspended" })}
+                  className="rounded-full border border-slate-200 bg-white px-4 py-2 font-semibold"
+                >
+                  Suspend
+                </button>
+                <button
+                  onClick={() => setStatus.mutate({ token, status: "Locked" })}
+                  className="rounded-full bg-[#071f46] px-4 py-2 font-semibold text-white"
+                >
+                  Lock profile
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              {overview.data?.accounts.map((account: any) => (
+                <div key={account.id} className="rounded-2xl border border-slate-200 bg-white p-5">
+                  <div className="font-semibold text-[#071f46]">{retirementAccountName(account.type)}</div>
+                  <div className="mt-1 text-sm text-slate-500">{account.number}</div>
+                  <div className="mt-4 font-serif text-2xl font-semibold">{money(account.balance)}</div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8">
+              <h3 className="mb-3 font-serif text-xl font-semibold">Recent Client Activity</h3>
+              <TransactionTable rows={txns.data?.rows.slice(0, 5) ?? []} />
+            </div>
+          </div>
+        </Panel>
+      )}
+
+      {tab === "support" && (
+        <Panel title="Support Case Review">
+          <p className="mb-5 text-slate-600">
+            Client support requests are captured for retirement services review,
+            document questions, account access issues, and beneficiary or rollover support.
+          </p>
+
+          <div className="grid gap-3">
+            {supportCases.isLoading ? (
+              <div className="rounded-2xl bg-[#f6f7fb] p-5 text-sm text-slate-600">
+                Loading support cases...
+              </div>
+            ) : supportCases.isError ? (
+              <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-700">
+                Unable to load support cases. Please refresh the operations console.
+              </div>
+            ) : supportCases.data?.length ? (
+              supportCases.data.map((ticket: any) => (
+                <div key={ticket.id} className="rounded-2xl bg-[#f6f7fb] p-5">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <div className="text-xs font-bold uppercase tracking-widest text-[#d6ad42]">
+                        {ticket.caseNumber} · {ticket.status}
+                      </div>
+                      <h3 className="mt-2 font-serif text-xl font-semibold">{ticket.subject}</h3>
+                      <p className="mt-1 text-sm text-slate-600">
+                        {ticket.fullName} · {ticket.email} · {new Date(ticket.createdAt).toLocaleString()}
+                      </p>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => updateSupport.mutate({ token, id: ticket.id, status: "In Review" })}
+                        className="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold"
+                      >
+                        Review
+                      </button>
+                      <button
+                        onClick={() => updateSupport.mutate({ token, id: ticket.id, status: "Closed" })}
+                        className="rounded-full bg-[#071f46] px-3 py-2 text-sm font-semibold text-white"
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </div>
+
+                  <p className="mt-4 text-sm leading-6 text-slate-700">{ticket.message}</p>
+                </div>
+              ))
+            ) : (
+              <div className="rounded-2xl bg-[#f6f7fb] p-5 text-sm text-slate-600">
+                No support cases have been submitted yet.
+              </div>
+            )}
+          </div>
+        </Panel>
+      )}
+
+      {tab === "transactions" && (
+        <Panel title="Retirement Activity Management">
+          <div className="mb-5 grid gap-3 md:grid-cols-5">
+            <input
+              value={adminSearch}
+              onChange={(e) => {
+                setAdminPage(1);
+                setAdminSearch(e.target.value);
+              }}
+              placeholder="Search activity"
+              className="rounded-2xl border border-slate-200 px-4 py-3"
+            />
+
+            <select
+              value={adminMethod}
+              onChange={(e) => {
+                setAdminPage(1);
+                setAdminMethod(e.target.value);
+              }}
+              className="rounded-2xl border border-slate-200 px-4 py-3"
+            >
+              <option>All</option>
+              <option>ACH</option>
+              <option>Wire</option>
+              <option>Internal</option>
+              <option>Interest</option>
+              <option>Investment</option>
+              <option>Admin</option>
+            </select>
+
+            <select
+              value={adminStatus}
+              onChange={(e) => {
+                setAdminPage(1);
+                setAdminStatus(e.target.value);
+              }}
+              className="rounded-2xl border border-slate-200 px-4 py-3"
+            >
+              <option>All</option>
+              <option>Completed</option>
+              <option>Pending</option>
+              <option>Failed</option>
+            </select>
+
+            <button
+              type="button"
+              className="rounded-full border border-[#071f46]/20 px-5 py-3 font-semibold"
+            >
+              Review pending
+            </button>
+
+            <button
+              type="button"
+              onClick={exportAdminActivity}
+              className="rounded-full bg-[#071f46] px-5 py-3 text-center font-semibold text-white"
+            >
+              Export CSV
+            </button>
+          </div>
+
+          <TransactionTable rows={txns.data?.rows ?? []} />
+
+          <div className="mt-5 flex items-center justify-between text-sm">
+            <span>
+              Page {txns.data?.page ?? adminPage} of {txns.data?.pageCount ?? 1} · 25 records per page
+            </span>
+
+            <div className="flex gap-2">
+              <button
+                disabled={adminPage <= 1}
+                onClick={() => setAdminPage(adminPage - 1)}
+                className="rounded-full border px-4 py-2 disabled:opacity-40"
+              >
+                Previous
+              </button>
+              <button
+                disabled={adminPage >= (txns.data?.pageCount ?? 1)}
+                onClick={() => setAdminPage(adminPage + 1)}
+                className="rounded-full border px-4 py-2 disabled:opacity-40"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </Panel>
+      )}
+
+      {tab === "requests" && (
+        <Panel title="Retirement Request Controls">
+          <div className="grid gap-4 md:grid-cols-2">
+            <Setting
+              label="Global retirement requests"
+              value={requestSettings.data?.globalOutgoingRequestsEnabled ? "Enabled" : "Disabled"}
+            />
+            <Setting
+              label="Client retirement requests"
+              value={requestSettings.data?.perUserOutgoingRequestsEnabled ? "Enabled" : "Disabled"}
+            />
+            <Setting
+              label="Daily review threshold"
+              value={money(requestSettings.data?.dailyTransferLimit ?? 0)}
+            />
+            <Setting
+              label="Maintenance notice"
+              value={requestSettings.data?.maintenanceNotice ?? "Loading"}
+            />
+          </div>
+
+          <p className="mt-5 rounded-2xl bg-[#f6f7fb] p-4 text-sm text-slate-700">
+            Contribution, rollover, withdrawal, beneficiary, and transfer requests are controlled
+            through retirement-services review workflows before processing.
+          </p>
+        </Panel>
+      )}
+
+      {tab === "audit" && (
+        <Panel title="Immutable Audit Log">
+          <p className="mb-5 text-slate-600">
+            Audit records are append-only. No edit or delete action is exposed in the UI or server procedures.
+          </p>
+
+          <div className="grid gap-3">
+            {audit.data?.map((log: any) => (
+              <div key={log.id} className="rounded-2xl bg-[#f6f7fb] p-4 text-sm">
+                <strong>{log.actionType}</strong> · {new Date(log.createdAt).toLocaleString()} · {log.details} · IP {log.ipAddress}
+              </div>
+            ))}
+          </div>
+        </Panel>
+      )}
+    </PortalLayout>
+  );
 }
 
 function LegalPage({ type }: { type: "terms" | "privacy" | "contact" }) {
