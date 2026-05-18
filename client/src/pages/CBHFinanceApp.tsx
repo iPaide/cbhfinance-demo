@@ -41,8 +41,8 @@ function writeSession(session: PortalSession | null) {
 function BrandMark({ compact = false }: { compact?: boolean }) {
   return (
     <Link href="/" className="flex items-center gap-3">
-      <span className="grid h-11 w-11 place-items-center rounded-2xl border border-[#c9a84c]/50 bg-[#0a1f44] text-[#c9a84c] shadow-lg shadow-[#0a1f44]/20">
-        <Landmark className="h-5 w-5" />
+      <span className="grid h-11 w-11 place-items-center overflow-hidden rounded-2xl border border-[#c9a84c]/50 bg-[#071f46] shadow-lg shadow-[#0a1f44]/20">
+        <img src="/icons/icon-192.png" alt="CBHfinance" className="h-full w-full object-cover" />
       </span>
       {!compact && (
         <span className="leading-none">
@@ -1009,11 +1009,16 @@ function UserPortal() {
 
           <aside className="relative flex h-full w-[82vw] max-w-sm flex-col bg-[#071f46] p-6 text-white shadow-2xl">
             <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
-              <div className="font-serif text-3xl font-bold leading-none text-white">
-                CBHfinance
-              </div>
-              <div className="mt-2 text-[10px] uppercase tracking-[0.35em] text-[#d6ad42]">
-                Retirement Portal
+              <div className="flex items-center gap-4">
+                <img src="/icons/icon-192.png" alt="CBHfinance" className="h-16 w-16 rounded-2xl shadow-lg shadow-black/20" />
+                <div>
+                  <div className="font-serif text-3xl font-bold leading-none text-white">
+                    CBHfinance
+                  </div>
+                  <div className="mt-2 text-[10px] uppercase tracking-[0.35em] text-[#d6ad42]">
+                    Retirement Portal
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -1088,8 +1093,9 @@ function UserPortal() {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(true)}
-                className="rounded-full bg-[#071f46] px-5 py-2.5 text-sm font-semibold text-white shadow-sm"
+                className="inline-flex items-center gap-2 rounded-full bg-[#071f46] px-4 py-2.5 text-sm font-semibold text-white shadow-sm"
               >
+                <img src="/icons/icon-192.png" alt="" className="h-6 w-6 rounded-full" />
                 Menu
               </button>
 
