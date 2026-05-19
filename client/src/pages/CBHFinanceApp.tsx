@@ -2192,7 +2192,7 @@ function UserPortal() {
                       </div>
                     )}
 
-                    <div className="mt-5 grid gap-4 lg:grid-cols-3">
+                    <div className="mt-5 grid gap-4 2xl:grid-cols-3">
                       <div className="min-w-0 rounded-2xl bg-[#f6f7fb] p-5">
                         <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
                           Request type
