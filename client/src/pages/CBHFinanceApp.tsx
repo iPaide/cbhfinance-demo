@@ -929,7 +929,7 @@ function UserPortal() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#f6f7fb] text-[#071f46]">
-      <aside className="fixed left-0 top-0 hidden h-screen w-72 bg-[#071f46] p-6 text-white shadow-2xl lg:block">
+      <aside className="fixed left-0 top-0 hidden h-screen w-72 overflow-y-auto bg-[#071f46] p-6 text-white shadow-2xl lg:flex lg:flex-col">
         <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
           <div className="flex min-w-0 items-center gap-3">
             <img
@@ -955,7 +955,7 @@ function UserPortal() {
               className={`rounded-2xl px-5 py-3.5 text-left text-sm font-semibold transition ${
                 tab === value
                   ? "bg-[#d6ad42] text-white shadow-lg shadow-black/20"
-                  : "text-white/75 hover:bg-white/10 hover:text-white"
+                  : "border border-white/10 bg-white/5 text-white/80 hover:bg-white/10 hover:text-white"
               }`}
             >
               {label}
@@ -963,7 +963,7 @@ function UserPortal() {
           ))}
         </nav>
 
-        <div className="absolute bottom-24 left-6 right-6 rounded-3xl bg-white/5 p-5 text-sm text-white/75">
+        <div className="mt-8 rounded-3xl bg-white/5 p-5 text-sm text-white/75">
           <div className="font-semibold text-white">Retirement readiness</div>
           <div className="mt-3 h-2 rounded-full bg-white/10">
             <div className="h-2 w-[72%] rounded-full bg-[#d6ad42]" />
@@ -976,7 +976,7 @@ function UserPortal() {
         <button
           type="button"
           onClick={logout}
-          className="absolute bottom-7 left-8 right-8 rounded-2xl border border-white/25 px-5 py-3 font-semibold text-white transition hover:bg-white/10"
+          className="mt-5 w-full rounded-2xl border border-white/25 px-5 py-3 font-semibold text-white transition hover:bg-white/10"
         >
           Sign out
         </button>
@@ -1130,28 +1130,28 @@ function UserPortal() {
                     </div>
                   </div>
 
-                  <div className="mt-8 grid gap-4 md:grid-cols-3">
-                    <div className="rounded-2xl bg-white/8 p-5">
+                  <div className="mt-8 grid gap-4 2xl:grid-cols-3">
+                    <div className="min-w-0 overflow-hidden rounded-2xl bg-white/10 p-6">
                       <div className="text-xs uppercase tracking-widest text-white/45">
                         Vested balance
                       </div>
-                      <div className="mt-2 text-2xl font-semibold">
+                      <div className="mt-2 whitespace-nowrap text-[1.65rem] font-semibold leading-tight tracking-tight 2xl:text-3xl">
                         {money(estimatedVestedBalance)}
                       </div>
                     </div>
-                    <div className="rounded-2xl bg-white/8 p-5">
+                    <div className="min-w-0 overflow-hidden rounded-2xl bg-white/10 p-6">
                       <div className="text-xs uppercase tracking-widest text-white/45">
                         YTD contributions
                       </div>
-                      <div className="mt-2 text-2xl font-semibold">
+                      <div className="mt-2 whitespace-nowrap text-[1.65rem] font-semibold leading-tight tracking-tight 2xl:text-3xl">
                         {money(estimatedYtdContributions)}
                       </div>
                     </div>
-                    <div className="rounded-2xl bg-white/8 p-5">
+                    <div className="min-w-0 overflow-hidden rounded-2xl bg-white/10 p-6">
                       <div className="text-xs uppercase tracking-widest text-white/45">
                         Investment profile
                       </div>
-                      <div className="mt-2 text-2xl font-semibold">Balanced</div>
+                      <div className="mt-2 whitespace-nowrap text-[1.65rem] font-semibold leading-tight tracking-tight 2xl:text-3xl">Balanced</div>
                     </div>
                   </div>
                 </section>
