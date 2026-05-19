@@ -1449,7 +1449,7 @@ function UserPortal() {
                             <div className="text-xs font-semibold uppercase tracking-widest text-slate-400">
                               {formatSafeDate(row.createdAt)}
                             </div>
-                            <div className="mt-2 font-semibold text-[#071f46]">
+                            <div className="mt-2 break-words font-semibold leading-7 text-[#071f46]">
                               {retirementActivityLabel(row)}
                             </div>
                             <div className="mt-1 text-xs text-slate-500">
@@ -1933,7 +1933,7 @@ function UserPortal() {
                         <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
                           Status
                         </div>
-                        <div className="mt-2 font-semibold text-[#071f46]">
+                        <div className="mt-2 break-words font-semibold leading-7 text-[#071f46]">
                           Review required
                         </div>
                       </div>
@@ -1942,7 +1942,7 @@ function UserPortal() {
                         <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
                           Verification
                         </div>
-                        <div className="mt-2 font-semibold text-[#071f46]">
+                        <div className="mt-2 break-words font-semibold leading-7 text-[#071f46]">
                           Secure identity check
                         </div>
                       </div>
@@ -2192,8 +2192,8 @@ function UserPortal() {
                       </div>
                     )}
 
-                    <div className="mt-5 grid gap-4 md:grid-cols-3">
-                      <div className="rounded-2xl bg-[#f6f7fb] p-5">
+                    <div className="mt-5 grid gap-4 xl:grid-cols-3">
+                      <div className="min-w-0 rounded-2xl bg-[#f6f7fb] p-5">
                         <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
                           Request type
                         </div>
@@ -2202,7 +2202,7 @@ function UserPortal() {
                         </div>
                       </div>
 
-                      <div className="rounded-2xl bg-[#f6f7fb] p-5">
+                      <div className="min-w-0 rounded-2xl bg-[#f6f7fb] p-5">
                         <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
                           Status
                         </div>
@@ -2211,7 +2211,7 @@ function UserPortal() {
                         </div>
                       </div>
 
-                      <div className="rounded-2xl bg-[#f6f7fb] p-5">
+                      <div className="min-w-0 rounded-2xl bg-[#f6f7fb] p-5">
                         <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
                           Next step
                         </div>
