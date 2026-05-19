@@ -850,7 +850,7 @@ function UserPortal() {
     ["Activity", "transactions"],
     ["Statements", "statements"],
     ["Beneficiaries", "beneficiaries"],
-    ["Profile & Security", "settings"],
+    ["Profile and Security", "settings"],
   ];
 
   const quickActions = [
@@ -1019,7 +1019,7 @@ function UserPortal() {
                 ["Activity", "transactions"],
                 ["Statements", "statements"],
                 ["Beneficiaries", "beneficiaries"],
-                ["Profile & Security", "settings"],
+                ["Profile and Security", "settings"],
               ].map(([label, value]) => (
                 <button
                   key={`${label}-${value}-drawer`}
@@ -1105,7 +1105,7 @@ function UserPortal() {
                             : tab === "beneficiaries"
                               ? "Beneficiaries"
                               : tab === "settings"
-                                ? "Profile & Security"
+                                ? "Profile and Security"
                                 : "Overview"}
               </div>
             </div>
@@ -1352,7 +1352,7 @@ function UserPortal() {
                 </section>
 
                 <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                  <h2 className="font-serif text-2xl font-semibold">Guidance & alerts</h2>
+                  <h2 className="font-serif text-2xl font-semibold">Guidance and alerts</h2>
                   <div className="mt-5 grid gap-3">
                     <div className="rounded-2xl bg-emerald-50 p-4 text-sm text-emerald-900">
                       <ShieldCheck className="mr-2 inline h-4 w-4" />
@@ -1576,7 +1576,7 @@ function UserPortal() {
                 <div className="flex flex-wrap items-start justify-between gap-5">
                   <div>
                     <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
-                      Profile, Beneficiaries & Security
+                      Profile, Beneficiaries and Security
                     </div>
                     <h2 className="mt-2 font-serif text-4xl font-semibold">
                       Manage your retirement profile
@@ -2099,7 +2099,7 @@ function TransactionHistory() {
             <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
               Retirement Account Activity
             </div>
-            <h2 className="mt-2 font-serif text-4xl font-semibold">Activity & Transactions</h2>
+            <h2 className="mt-2 font-serif text-4xl font-semibold">Activity and Transactions</h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-white/70">
               Review contributions, transfers, dividend reinvestments, interest credits,
               plan adjustments, and retirement account activity.
@@ -2348,7 +2348,7 @@ function Requests() {
         <div className="flex flex-wrap items-start justify-between gap-5">
           <div>
             <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
-              Contributions & Transfers
+              Contributions and Transfers
             </div>
             <h2 className="mt-2 font-serif text-4xl font-semibold">
               Manage retirement money movement
@@ -2711,7 +2711,7 @@ function Statements({ rows }: { rows: any[] }) {
         <div className="flex flex-wrap items-start justify-between gap-5">
           <div>
             <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
-              Statements & Documents
+              Statements and Documents
             </div>
             <h2 className="mt-2 font-serif text-4xl font-semibold">
               Retirement document center
