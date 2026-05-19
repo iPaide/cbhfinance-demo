@@ -839,6 +839,7 @@ function PortalLayout({ children, title, role = "user" }: { children: React.Reac
   );
 }
 
+// activeTab runtime hotfix marker
 function normalizePortalTab(value: string | null | undefined) {
   const tab = String(value ?? "dashboard").toLowerCase();
 
