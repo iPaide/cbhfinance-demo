@@ -172,7 +172,7 @@ function LandingPage() {
               </h1>
 
               <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-700">
-                CBHfinance provides secure access to retirement savings, IRA records,
+                CBHfinance provides secure access to private retirement banking, IRA records,
                 rollovers, contribution activity, statements, tax documents, and beneficiary tools.
               </p>
 
@@ -637,7 +637,7 @@ function LoginPage({ role, onAuthenticated }: { role: "user" | "admin"; onAuthen
               Account access protected by verification.
             </h1>
             <p className="mt-6 text-lg leading-8 text-slate-700">
-              Sign in to review retirement savings, contributions, rollovers, activity,
+              Sign in to review private retirement banking, contributions, rollovers, activity,
               documents, beneficiary records, and profile security settings.
             </p>
 
@@ -1059,7 +1059,7 @@ function UserPortal() {
   const retirementAccounts = accounts.map((account: any) => {
     const displayName =
       account.type === "Checking"
-        ? "Traditional Retirement Savings"
+        ? "Traditional Private Retirement Banking"
         : account.type === "Savings"
           ? "High-Yield Cash Reserve"
           : account.type === "IRA"
@@ -1219,7 +1219,7 @@ function UserPortal() {
           <div className="flex flex-wrap items-center justify-between gap-5">
             <div>
               <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
-                Retirement Savings
+                Private Retirement Banking
               </div>
               <h1 className="mt-1 font-serif text-3xl font-semibold text-[#071f46]">
                 Emily Ann Johnson
@@ -1572,7 +1572,7 @@ function UserPortal() {
                       Account balances and savings structure
                     </h2>
                     <p className="mt-3 max-w-3xl text-sm leading-6 text-white/70">
-                      Review retirement savings, cash reserve, and individual retirement account
+                      Review private retirement banking, cash reserve, and individual retirement account
                       balances in one secure account view.
                     </p>
                   </div>
@@ -1594,7 +1594,7 @@ function UserPortal() {
 
                   const displayName =
                     accountType === "Checking"
-                      ? "Traditional Retirement Savings"
+                      ? "Traditional Private Retirement Banking"
                       : accountType === "Savings"
                         ? "High-Yield Cash Reserve"
                         : accountType === "IRA"
@@ -1603,7 +1603,7 @@ function UserPortal() {
 
                   const accountNote =
                     accountType === "Checking"
-                      ? "Core retirement savings account"
+                      ? "Core private retirement banking account"
                       : accountType === "Savings"
                         ? "Liquid reserve for retirement planning"
                         : accountType === "IRA"
@@ -2245,7 +2245,7 @@ function retirementActivityType(row: any) {
 }
 
 function retirementAccountName(accountType: string) {
-  if (accountType === "Checking") return "Traditional Retirement Savings";
+  if (accountType === "Checking") return "Traditional Private Retirement Banking";
   if (accountType === "Savings") return "High-Yield Cash Reserve";
   if (accountType === "IRA") return "Individual Retirement Account";
   return accountType;
@@ -2749,7 +2749,7 @@ function Requests() {
     const type = accountType(account);
     const name =
       type === "Checking"
-        ? "Traditional Retirement Savings"
+        ? "Traditional Private Retirement Banking"
         : type === "Savings"
           ? "High-Yield Cash Reserve"
           : type === "IRA"
@@ -3035,7 +3035,7 @@ function Requests() {
                 <div key={account.id ?? accountNumber(account)} className="rounded-2xl bg-[#f6f7fb] p-4">
                   <div className="font-semibold text-[#071f46]">
                     {accountType(account) === "Checking"
-                      ? "Traditional Retirement Savings"
+                      ? "Traditional Private Retirement Banking"
                       : accountType(account) === "Savings"
                         ? "High-Yield Cash Reserve"
                         : accountType(account) === "IRA"
