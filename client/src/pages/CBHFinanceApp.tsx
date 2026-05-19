@@ -273,21 +273,18 @@ function LandingPage() {
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-[1.5rem] border border-slate-200 bg-white p-5 shadow-sm">
                   <div className="text-xs font-black uppercase tracking-[0.25em] text-[#d6ad42]">
-                    Allocation
+                    Platform access
                   </div>
                   <div className="mt-4 grid gap-3">
                     {[
-                      ["Target date", "48%"],
-                      ["Equity index", "24%"],
-                      ["Bond income", "18%"],
+                      ["Enroll online", "Request secure access"],
+                      ["Review accounts", "Sign in required"],
+                      ["Manage records", "Protected portal"],
                     ].map(([label, value]) => (
-                      <div key={label}>
-                        <div className="mb-2 flex justify-between text-xs font-semibold text-slate-600">
-                          <span>{label}</span>
-                          <span>{value}</span>
-                        </div>
-                        <div className="h-2 rounded-full bg-slate-100">
-                          <div className="h-2 rounded-full bg-[#d6ad42]" style={{ width: value }} />
+                      <div key={label} className="rounded-2xl bg-[#f6f7fb] p-3">
+                        <div className="flex items-center justify-between gap-3 text-xs">
+                          <span className="font-semibold text-[#071f46]">{label}</span>
+                          <span className="text-slate-500">{value}</span>
                         </div>
                       </div>
                     ))}
