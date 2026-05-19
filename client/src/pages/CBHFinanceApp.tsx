@@ -846,10 +846,10 @@ function UserPortal() {
     ["Overview", "dashboard"],
     ["Retirement Accounts", "accounts"],
     ["Investments", "investments"],
-    ["Contributions", "requests"],
+    ["Contributions", "payments"],
     ["Activity", "transactions"],
     ["Statements", "statements"],
-    ["Beneficiaries", "settings"],
+    ["Beneficiaries", "beneficiaries"],
     ["Profile & Security", "settings"],
   ];
 
@@ -1030,7 +1030,7 @@ function UserPortal() {
                   className={`rounded-2xl px-5 py-3.5 text-left text-sm font-semibold transition ${
                     tab === value
                       ? "bg-[#d6ad42] text-white shadow-lg shadow-black/20"
-                      : "text-white/75 hover:bg-white/10 hover:text-white"
+                      : "border border-white/10 bg-white/5 text-white/80 hover:bg-white/10 hover:text-white"
                   }`}
                 >
                   {label}
@@ -1094,9 +1094,11 @@ function UserPortal() {
                       ? "Activity"
                       : tab === "statements"
                         ? "Documents"
-                        : tab === "settings"
-                          ? "Profile & Security"
-                          : "Overview"}
+                        : tab === "beneficiaries"
+                          ? "Beneficiaries"
+                          : tab === "settings"
+                            ? "Profile & Security"
+                            : "Overview"}
               </div>
             </div>
           </div>
@@ -1365,7 +1367,7 @@ function UserPortal() {
           {tab === "transactions" && <TransactionHistory />}
           {tab === "requests" && <Requests />}
           {tab === "statements" && <Statements rows={statements.data ?? []} />}
-          {tab === "settings" && (
+          {["settings", "beneficiaries"].includes(tab) && (
             <div className="grid gap-6">
               <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
                 <div className="flex flex-wrap items-start justify-between gap-5">
@@ -2814,7 +2816,7 @@ function AdminPanel() {
 
   return (
     <PortalLayout title="Retirement Operations Console" role="admin">
-      {tab === "dashboard" && (
+      {["dashboard", "accounts", "investments"].includes(tab) && (
         <div className="grid gap-6">
           <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
             <div className="flex flex-wrap items-start justify-between gap-5">
