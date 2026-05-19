@@ -844,8 +844,8 @@ function UserPortal() {
 
   const navItems = [
     ["Overview", "dashboard"],
-    ["Retirement Accounts", "dashboard"],
-    ["Investments", "dashboard"],
+    ["Retirement Accounts", "accounts"],
+    ["Investments", "investments"],
     ["Contributions", "requests"],
     ["Activity", "transactions"],
     ["Statements", "statements"],
@@ -931,15 +931,15 @@ function UserPortal() {
     <div className="min-h-screen overflow-x-hidden bg-[#f6f7fb] text-[#071f46]">
       <aside className="fixed left-0 top-0 hidden h-screen w-72 bg-[#071f46] p-6 text-white shadow-2xl lg:block">
         <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
-          <div className="flex items-center gap-4">
+          <div className="flex min-w-0 items-center gap-3">
             <img
               src="/icons/icon-192.png"
               alt="CBHfinance"
-              className="h-14 w-14 rounded-2xl shadow-lg shadow-black/20"
+              className="h-12 w-12 shrink-0 rounded-2xl shadow-lg shadow-black/20"
             />
-            <div>
-              <div className="font-serif text-3xl font-bold leading-none text-white">CBHfinance</div>
-              <div className="mt-2 text-[10px] uppercase tracking-[0.35em] text-[#d6ad42]">
+            <div className="min-w-0">
+              <div className="truncate font-serif text-2xl font-bold leading-none text-white">CBHfinance</div>
+              <div className="mt-2 truncate text-[9px] uppercase tracking-[0.28em] text-[#d6ad42]">
                 Retirement Portal
               </div>
             </div>
@@ -993,17 +993,17 @@ function UserPortal() {
 
           <aside className="relative flex h-full w-[82vw] max-w-sm flex-col bg-[#071f46] p-6 text-white shadow-2xl">
             <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
-              <div className="flex items-center gap-4">
+              <div className="flex min-w-0 items-center gap-3">
                 <img
                   src="/icons/icon-192.png"
                   alt="CBHfinance"
-                  className="h-16 w-16 rounded-2xl shadow-lg shadow-black/20"
+                  className="h-12 w-12 shrink-0 rounded-2xl shadow-lg shadow-black/20"
                 />
-                <div>
-                  <div className="font-serif text-3xl font-bold leading-none text-white">
+                <div className="min-w-0">
+                  <div className="truncate font-serif text-2xl font-bold leading-none text-white">
                     CBHfinance
                   </div>
-                  <div className="mt-2 text-[10px] uppercase tracking-[0.35em] text-[#d6ad42]">
+                  <div className="mt-2 truncate text-[9px] uppercase tracking-[0.28em] text-[#d6ad42]">
                     Retirement Portal
                   </div>
                 </div>
@@ -1013,8 +1013,8 @@ function UserPortal() {
             <nav className="mt-8 grid gap-2">
               {[
                 ["Overview", "dashboard"],
-                ["Retirement Accounts", "dashboard"],
-                ["Investments", "dashboard"],
+                ["Retirement Accounts", "accounts"],
+                ["Investments", "investments"],
                 ["Contributions", "payments"],
                 ["Activity", "transactions"],
                 ["Documents", "statements"],
@@ -1103,7 +1103,7 @@ function UserPortal() {
         </header>
 
         <div className="p-5 lg:p-10">
-          {tab === "dashboard" && (
+          {["dashboard", "accounts", "investments"].includes(tab) && (
             <div className="grid gap-6">
               <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
                 <section className="overflow-hidden rounded-[2rem] bg-[#071f46] p-6 text-white shadow-xl sm:p-8">
