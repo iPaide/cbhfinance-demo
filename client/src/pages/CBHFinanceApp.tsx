@@ -1767,229 +1767,36 @@ function UserPortal() {
                       Beneficiaries
                     </div>
                     <h2 className="mt-2 font-serif text-4xl font-semibold">
-                      Beneficiary records and review
-                    </h2>
-                    <p className="mt-3 max-w-3xl text-sm leading-6 text-white/70">
-                      Review beneficiary status, trusted contact guidance, and request updates
-                      for retirement account beneficiary records.
-                    </p>
-                  </div>
-
-                  <div className="rounded-3xl border border-white/15 bg-white/5 p-5 text-sm">
-                    <div className="text-white/55">Review status</div>
-                    <div className="mt-2 text-2xl font-semibold text-[#d6ad42]">Current</div>
-                    <p className="mt-2 max-w-xs text-xs leading-5 text-white/60">
-                      Beneficiary changes may require additional review before records are updated.
-                    </p>
-                  </div>
-                </div>
-              </section>
-
-              <div className="grid gap-6 lg:grid-cols-[1fr_0.85fr]">
-                <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                  <h3 className="font-serif text-2xl font-semibold text-[#071f46]">
-                    Beneficiary information
-                  </h3>
-
-                  <div className="mt-5 grid gap-4">
-                    <div className="rounded-2xl bg-[#f6f7fb] p-5">
-                      <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                        Primary beneficiary
-                      </div>
-                      <div className="mt-2 font-semibold text-[#071f46]">
-                        Not displayed in portal preview
-                      </div>
-                      <p className="mt-2 text-sm leading-6 text-slate-600">
-                        Beneficiary names and sensitive personal details are protected and may require
-                        additional verification before display or update.
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl bg-[#f6f7fb] p-5">
-                      <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                        Beneficiary update requests
-                      </div>
-                      <div className="mt-2 font-semibold text-[#071f46]">
-                        Review required
-                      </div>
-                      <p className="mt-2 text-sm leading-6 text-slate-600">
-                        Updates to beneficiary records are submitted for secure account review.
-                      </p>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="mt-6 rounded-full bg-[#071f46] px-6 py-3 font-semibold text-white hover:bg-[#0b2d63]"
-                  >
-                    Start update request
-                  </button>
-                </section>
-
-                <aside className="grid gap-6">
-                  <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                    <h3 className="font-serif text-2xl font-semibold text-[#071f46]">
-                      Trusted contact
-                    </h3>
-                    <p className="mt-3 text-sm leading-6 text-slate-600">
-                      A trusted contact can help CBHfinance reach someone you authorize if account
-                      security concerns arise.
-                    </p>
-                    <button
-                      type="button"
-                      className="mt-5 rounded-full border border-[#071f46]/15 px-5 py-3 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
-                    >
-                      Add or update
-                    </button>
-                  </section>
-
-                  <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                    <h3 className="font-serif text-2xl font-semibold text-[#071f46]">
-                      Account review
-                    </h3>
-                    <p className="mt-3 text-sm leading-6 text-slate-600">
-                      Review beneficiary records regularly, especially after life events or account changes.
-                    </p>
-                    <button
-                      type="button"
-                      className="mt-5 rounded-full border border-[#071f46]/15 px-5 py-3 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
-                    >
-                      Start review
-                    </button>
-                  </section>
-                </aside>
-              </div>
-            </div>
-          )}
-
-          {tab === "beneficiaries" && (
-            <div className="grid gap-6">
-              <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
-                <div className="flex flex-wrap items-start justify-between gap-5">
-                  <div>
-                    <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
-                      Beneficiaries
-                    </div>
-                    <h2 className="mt-2 font-serif text-4xl font-semibold">
-                      Beneficiary records and account review
+                      Beneficiary and legacy records
                     </h2>
                     <p className="mt-3 max-w-3xl text-sm leading-6 text-white/70">
                       Review beneficiary status, trusted contact guidance, delivery preferences,
-                      and retirement account review tools in one secure place.
+                      and account review tools in one secure place.
                     </p>
                   </div>
 
                   <div className="rounded-3xl border border-white/15 bg-white/5 p-5 text-sm">
-                    <div className="text-white/55">Beneficiary status</div>
+                    <div className="text-white/55">Record status</div>
                     <div className="mt-2 text-2xl font-semibold text-[#d6ad42]">Protected</div>
                     <p className="mt-2 max-w-xs text-xs leading-5 text-white/60">
-                      Beneficiary details remain hidden until identity verification is completed.
+                      Sensitive beneficiary details remain hidden until verification is completed.
                     </p>
                   </div>
                 </div>
-              </section>
-
-              <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div>
-                    <h3 className="font-serif text-2xl font-semibold text-[#071f46]">
-                      Beneficiary action center
-                    </h3>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">
-                      Choose an action below to begin a secure beneficiary, contact, delivery,
-                      or account review workflow.
-                    </p>
-                  </div>
-
-                  {beneficiaryWorkflow && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setBeneficiaryWorkflow(null);
-                        setProfileNotice("");
-                      }}
-                      className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
-                    >
-                      Clear action
-                    </button>
-                  )}
-                </div>
-
-                {profileNotice && (
-                  <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm leading-6 text-emerald-900">
-                    <CheckCircle2 className="mr-2 inline h-4 w-4" />
-                    {profileNotice}
-                  </div>
-                )}
-
-                {beneficiaryWorkflow ? (
-                  <div className="mt-5 rounded-2xl bg-[#f6f7fb] p-5">
-                    <div className="text-xs font-bold uppercase tracking-widest text-[#d6ad42]">
-                      {beneficiaryWorkflow === "beneficiary"
-                        ? "Beneficiary update"
-                        : beneficiaryWorkflow === "trustedContact"
-                          ? "Trusted contact"
-                          : beneficiaryWorkflow === "delivery"
-                            ? "Delivery preferences"
-                            : "Account review"}
-                    </div>
-
-                    <h4 className="mt-3 font-serif text-2xl font-semibold text-[#071f46]">
-                      {beneficiaryWorkflow === "beneficiary"
-                        ? "Request beneficiary record update"
-                        : beneficiaryWorkflow === "trustedContact"
-                          ? "Add or update trusted contact"
-                          : beneficiaryWorkflow === "delivery"
-                            ? "Manage electronic delivery"
-                            : "Start account review"}
-                    </h4>
-
-                    <p className="mt-3 text-sm leading-6 text-slate-600">
-                      {beneficiaryWorkflow === "beneficiary"
-                        ? "Beneficiary changes require identity verification before records are updated. A representative will review the request before changes are applied."
-                        : beneficiaryWorkflow === "trustedContact"
-                          ? "Trusted contact details help CBHfinance contact someone you authorize if account security concerns arise."
-                          : beneficiaryWorkflow === "delivery"
-                            ? "Statements, tax forms, confirmations, and notices are currently delivered electronically through the secure portal."
-                            : "Review your beneficiary records, trusted contact guidance, delivery preferences, and security status regularly."}
-                    </p>
-
-                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                      <div className="rounded-2xl bg-white p-4">
-                        <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                          Status
-                        </div>
-                        <div className="mt-2 break-words font-semibold leading-7 text-[#071f46]">
-                          Review required
-                        </div>
-                      </div>
-
-                      <div className="rounded-2xl bg-white p-4">
-                        <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                          Verification
-                        </div>
-                        <div className="mt-2 break-words font-semibold leading-7 text-[#071f46]">
-                          Secure identity check
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="mt-5 rounded-2xl bg-[#f6f7fb] p-5 text-sm leading-6 text-slate-600">
-                    Select a beneficiary action to begin. Sensitive beneficiary details remain hidden
-                    until verification is completed.
-                  </div>
-                )}
               </section>
 
               <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
                   <div>
-                    <h3 className="font-serif text-2xl font-semibold">Beneficiary records</h3>
-                    <p className="mt-2 text-sm text-slate-600">
-                      Primary and contingent beneficiary records are protected. Changes require verification and review.
+                    <h3 className="font-serif text-2xl font-semibold text-[#071f46]">
+                      Beneficiary records
+                    </h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">
+                      Primary and contingent beneficiary records are protected. Changes require
+                      verification and review.
                     </p>
                   </div>
+
                   <button
                     type="button"
                     onClick={() => {
@@ -2000,7 +1807,7 @@ function UserPortal() {
                     }}
                     className="rounded-full bg-[#071f46] px-5 py-3 text-sm font-semibold text-white hover:bg-[#0b2d63]"
                   >
-                    Request beneficiary update
+                    Start update request
                   </button>
                 </div>
 
@@ -2011,7 +1818,7 @@ function UserPortal() {
                         <div className="text-xs font-bold uppercase tracking-widest text-[#d6ad42]">
                           Primary beneficiary
                         </div>
-                        <div className="mt-2 font-serif text-2xl font-semibold text-[#071f46]">
+                        <div className="mt-2 text-2xl font-bold tracking-tight text-[#071f46]">
                           On file
                         </div>
                       </div>
@@ -2031,7 +1838,7 @@ function UserPortal() {
                         <div className="text-xs font-bold uppercase tracking-widest text-[#d6ad42]">
                           Contingent beneficiary
                         </div>
-                        <div className="mt-2 font-serif text-2xl font-semibold text-[#071f46]">
+                        <div className="mt-2 text-2xl font-bold tracking-tight text-[#071f46]">
                           On file
                         </div>
                       </div>
@@ -2047,66 +1854,120 @@ function UserPortal() {
                 </div>
               </section>
 
-              <div className="grid gap-6 lg:grid-cols-3">
-                <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                  <h3 className="font-serif text-xl font-semibold">Trusted contact</h3>
-                  <p className="mt-3 text-sm leading-6 text-slate-600">
-                    A trusted contact can help CBHfinance reach someone you authorize if account
-                    security concerns arise.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setBeneficiaryWorkflow("trustedContact");
-                      setProfileNotice(
-                        "Trusted contact update started. You can add or update an authorized contact after verification."
-                      );
-                    }}
-                    className="mt-5 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
-                  >
-                    Add or update
-                  </button>
-                </section>
+              <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <h3 className="font-serif text-2xl font-semibold text-[#071f46]">
+                      Action center
+                    </h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">
+                      Select an action to begin a secure beneficiary, trusted contact, delivery,
+                      or annual review workflow.
+                    </p>
+                  </div>
 
-                <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                  <h3 className="font-serif text-xl font-semibold">Delivery preferences</h3>
-                  <p className="mt-3 text-sm leading-6 text-slate-600">
-                    Statements, tax forms, confirmations, and notices are currently delivered
-                    electronically.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setBeneficiaryWorkflow("delivery");
-                      setProfileNotice(
-                        "Delivery preference request started. Electronic delivery is currently active for statements, tax forms, confirmations, and notices."
-                      );
-                    }}
-                    className="mt-5 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
-                  >
-                    Manage delivery
-                  </button>
-                </section>
+                  {beneficiaryWorkflow && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setBeneficiaryWorkflow(null);
+                        setProfileNotice("");
+                      }}
+                      className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
+                    >
+                      Clear action
+                    </button>
+                  )}
+                </div>
 
-                <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                  <h3 className="font-serif text-xl font-semibold">Annual review</h3>
-                  <p className="mt-3 text-sm leading-6 text-slate-600">
-                    Review beneficiary records, trusted contact guidance, delivery preferences, and account status regularly.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setBeneficiaryWorkflow("accountReview");
-                      setProfileNotice(
-                        "Account review started. Please review personal information, beneficiary status, document delivery, and security settings."
-                      );
-                    }}
-                    className="mt-5 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
-                  >
-                    Start review
-                  </button>
-                </section>
-              </div>
+                <div className="mt-5 grid gap-4 md:grid-cols-3">
+                  {[
+                    ["trustedContact", "Trusted contact", "Add or update an authorized contact."],
+                    ["delivery", "Delivery preferences", "Manage electronic delivery settings."],
+                    ["accountReview", "Annual review", "Review records and security status."],
+                  ].map(([workflow, title, copy]) => (
+                    <button
+                      key={workflow}
+                      type="button"
+                      onClick={() => {
+                        setBeneficiaryWorkflow(workflow as any);
+                        setProfileNotice(
+                          workflow === "trustedContact"
+                            ? "Trusted contact update started. You can add or update an authorized contact after verification."
+                            : workflow === "delivery"
+                              ? "Delivery preference request started. Electronic delivery is currently active for statements, tax forms, confirmations, and notices."
+                              : "Account review started. Please review beneficiary status, trusted contact guidance, document delivery, and security settings."
+                        );
+                      }}
+                      className="rounded-2xl border border-slate-200 bg-[#fbfcfe] p-5 text-left transition hover:border-[#d6ad42] hover:shadow-md"
+                    >
+                      <h4 className="font-serif text-xl font-semibold text-[#071f46]">{title}</h4>
+                      <p className="mt-3 text-sm leading-6 text-slate-600">{copy}</p>
+                    </button>
+                  ))}
+                </div>
+
+                {profileNotice && (
+                  <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm leading-6 text-emerald-900">
+                    <CheckCircle2 className="mr-2 inline h-4 w-4" />
+                    {profileNotice}
+                  </div>
+                )}
+
+                {beneficiaryWorkflow && (
+                  <div className="mt-5 rounded-2xl bg-[#f6f7fb] p-5">
+                    <div className="text-xs font-bold uppercase tracking-widest text-[#d6ad42]">
+                      {beneficiaryWorkflow === "beneficiary"
+                        ? "Beneficiary update"
+                        : beneficiaryWorkflow === "trustedContact"
+                          ? "Trusted contact"
+                          : beneficiaryWorkflow === "delivery"
+                            ? "Delivery preferences"
+                            : "Annual review"}
+                    </div>
+
+                    <h4 className="mt-3 font-serif text-2xl font-semibold text-[#071f46]">
+                      {beneficiaryWorkflow === "beneficiary"
+                        ? "Request beneficiary record update"
+                        : beneficiaryWorkflow === "trustedContact"
+                          ? "Add or update trusted contact"
+                          : beneficiaryWorkflow === "delivery"
+                            ? "Manage electronic delivery"
+                            : "Start annual beneficiary review"}
+                    </h4>
+
+                    <p className="mt-3 text-sm leading-6 text-slate-600">
+                      {beneficiaryWorkflow === "beneficiary"
+                        ? "Beneficiary changes require identity verification before records are updated."
+                        : beneficiaryWorkflow === "trustedContact"
+                          ? "Trusted contact details help CBHfinance contact someone you authorize if account security concerns arise."
+                          : beneficiaryWorkflow === "delivery"
+                            ? "Statements, tax forms, confirmations, and notices are currently delivered electronically through the secure portal."
+                            : "Review beneficiary records, trusted contact guidance, delivery preferences, and security status regularly."}
+                    </p>
+
+                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                      <div className="rounded-2xl bg-white p-4">
+                        <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                          Status
+                        </div>
+                        <div className="mt-2 font-semibold leading-7 text-[#071f46]">
+                          Review required
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl bg-white p-4">
+                        <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                          Verification
+                        </div>
+                        <div className="mt-2 font-semibold leading-7 text-[#071f46]">
+                          Secure identity check
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </section>
             </div>
           )}
 
