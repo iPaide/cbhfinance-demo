@@ -3809,72 +3809,177 @@ function AdminPanel() {
 }
 
 function LegalPage({ type }: { type: "terms" | "privacy" | "contact" }) {
-  const title = type === "terms" ? "Terms of Service" : type === "privacy" ? "Privacy Policy" : "Contact Support";
+  const title =
+    type === "terms" ? "Terms of Service" : type === "privacy" ? "Privacy Policy" : "Contact Support";
+
   const support = trpc.banking.createSupportCase.useMutation();
-  const [supportForm, setSupportForm] = useState({ fullName: "", email: "", subject: "", message: "" });
+  const [supportForm, setSupportForm] = useState({
+    fullName: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
   const [supportMessage, setSupportMessage] = useState("");
+
+  function updateSupportField(field: "fullName" | "email" | "subject" | "message", value: string) {
+    setSupportForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  }
+
   async function submitSupport(event: FormEvent) {
     event.preventDefault();
     setSupportMessage("");
+
     try {
       await support.mutateAsync(supportForm);
       setSupportMessage("Thank you for contacting us. We'll respond within 24 hours.");
       setSupportForm({ fullName: "", email: "", subject: "", message: "" });
     } catch (err: any) {
-      setSupportMessage(err.message);
+      setSupportMessage(err?.message ?? "Your message could not be submitted. Please try again.");
     }
   }
+
   return (
-    <div className="min-h-screen bg-[#f8f6f1] text-[#0a1f44]">
+    <div className="min-h-screen bg-[#f7f8fb] text-[#071f46]">
       <MarketingNav />
-      <main className="container py-20">
+
+      <main className="container py-16 md:py-20">
         {type === "contact" ? (
-          <div className="max-w-2xl">
-            <h1 className="font-serif text-5xl font-semibold">Contact Support</h1>
-            <p className="mt-4 text-slate-600">Have a question or need assistance? We're here to help.</p>
-            <form onSubmit={submitSupport} className="mt-10 space-y-5 rounded-[2rem] border border-[#0a1f44]/10 bg-white p-8">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Full Name</label>
-                <input type="text" value={supportForm.fullName} onChange={e => setSupportForm({ ...supportForm, fullName: e.target.value })} className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]" required />
+          <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+            <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
+              <div className="text-xs font-black uppercase tracking-[0.32em] text-[#d6ad42]">
+                Client support
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Email</label>
-                <input type="email" value={supportForm.email} onChange={e => setSupportForm({ ...supportForm, email: e.target.value })} className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]" required />
+              <h1 className="mt-4 font-serif text-5xl font-semibold">Contact Support</h1>
+              <p className="mt-5 text-sm leading-7 text-white/70">
+                Need help with retirement account access, statements, beneficiary records,
+                rollovers, or secure portal enrollment? Send a support request and the
+                CBHfinance team will review it.
+              </p>
+
+              <div className="mt-8 grid gap-4">
+                {[
+                  ["Account access", "Help with login, OTP, enrollment, and secure access."],
+                  ["Documents", "Questions about statements, tax forms, confirmations, and notices."],
+                  ["Retirement requests", "Support for rollovers, withdrawals, contributions, and beneficiary reviews."],
+                ].map(([label, copy]) => (
+                  <div key={label} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <div className="font-semibold text-white">{label}</div>
+                    <div className="mt-1 text-sm leading-6 text-white/60">{copy}</div>
+                  </div>
+                ))}
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Subject</label>
-                <input type="text" value={supportForm.subject} onChange={e => setSupportForm({ ...supportForm, subject: e.target.value })} className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]" required />
+            </section>
+
+            <form
+              onSubmit={submitSupport}
+              className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm md:p-8"
+            >
+              <h2 className="font-serif text-3xl font-semibold text-[#071f46]">
+                Send a message
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Please do not include full account numbers, passwords, or one-time passcodes.
+              </p>
+
+              <div className="mt-7 grid gap-5">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Full name
+                  </label>
+                  <input
+                    type="text"
+                    value={supportForm.fullName}
+                    onChange={(event) => updateSupportField("fullName", event.target.value)}
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={supportForm.email}
+                    onChange={(event) => updateSupportField("email", event.target.value)}
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Subject
+                  </label>
+                  <input
+                    type="text"
+                    value={supportForm.subject}
+                    onChange={(event) => updateSupportField("subject", event.target.value)}
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Message
+                  </label>
+                  <textarea
+                    value={supportForm.message}
+                    onChange={(event) => updateSupportField("message", event.target.value)}
+                    rows={6}
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
+                    required
+                  />
+                </div>
+
+                {supportMessage && (
+                  <div
+                    className={`rounded-2xl p-4 text-sm ${
+                      supportMessage.includes("Thank")
+                        ? "bg-emerald-50 text-emerald-700"
+                        : "bg-red-50 text-red-700"
+                    }`}
+                  >
+                    {supportMessage}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={support.isPending}
+                  className="w-full rounded-full bg-[#071f46] px-5 py-3 font-semibold text-white transition hover:bg-[#0b2d63] disabled:opacity-50"
+                >
+                  {support.isPending ? "Sending..." : "Send message"}
+                </button>
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Message</label>
-                <textarea value={supportForm.message} onChange={e => setSupportForm({ ...supportForm, message: e.target.value })} rows={6} className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#c9a84c]" required />
-              </div>
-              {supportMessage && <div className={`rounded-2xl p-4 text-sm ${supportMessage.includes("Thank") ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"}`}>{supportMessage}</div>}
-              <button type="submit" className="w-full rounded-full bg-[#0a1f44] px-5 py-3 font-semibold text-white transition hover:bg-[#09285d]">
-                Send Message
-              </button>
             </form>
           </div>
         ) : (
-          <div className="max-w-3xl">
+          <div className="max-w-3xl rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
             <h1 className="font-serif text-5xl font-semibold">{title}</h1>
             <div className="mt-10 space-y-6 text-slate-700">
-              <p>CBHfinance provides a secure retirement account portal for reviewing account access, retirement activity, documents, support requests, and profile controls.</p>
-              <h2 className="font-serif text-2xl font-semibold text-[#0a1f44]">Key Features</h2>
-              <ul className="space-y-3 list-disc list-inside">
-                <li>Secure client authentication with OTP verification</li>
-                <li>Secure account dashboard with real transaction history</li>
-                <li>Monthly statement generation and download</li>
-                <li>Admin panel with user management and audit controls</li>
-                <li>Session timeout and security warnings</li>
-              </ul>
-              <h2 className="font-serif text-2xl font-semibold text-[#0a1f44]">Important Account Notice</h2>
-              <p>Certain retirement requests, including rollovers, withdrawals, beneficiary updates, and external contributions, may require additional review before processing. Information shown in the portal is protected and available only after secure sign-in.</p>
+              <p>
+                CBHfinance provides a secure retirement account portal for reviewing account access,
+                retirement activity, documents, support requests, and profile controls.
+              </p>
+              <p>
+                Information shown in the portal is protected and available only after secure sign-in.
+                Certain retirement requests, including rollovers, withdrawals, beneficiary updates,
+                and external contributions, may require additional review before processing.
+              </p>
+              <p>
+                This page is provided for project presentation purposes and does not replace formal
+                legal, regulatory, privacy, custody, brokerage, or compliance documentation.
+              </p>
             </div>
           </div>
         )}
       </main>
-      <Footer />
     </div>
   );
 }
