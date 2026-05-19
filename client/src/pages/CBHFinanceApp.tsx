@@ -55,318 +55,401 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
 }
 
 function MarketingNav() {
-  return (
-    <nav className="sticky top-0 z-40 border-b border-[#0a1f44]/10 bg-[#f8f6f1]/90 px-5 py-4 backdrop-blur lg:px-10">
-      <div className="flex items-center justify-between gap-6">
-        <BrandMark />
-        <div className="hidden gap-8 lg:flex">
-          {[["Services", "#services"], ["Security", "#security"], ["Terms", "/terms"], ["Privacy", "/privacy"], ["Contact", "/contact"]].map(([label, href]) =>
-            href.startsWith("/") ? (
-              <Link key={href} href={href} className="text-sm font-semibold text-[#0a1f44] transition hover:text-[#c9a84c]">
-                {label}
-              </Link>
-            ) : (
-              <a key={href} href={href} className="text-sm font-semibold text-[#0a1f44] transition hover:text-[#c9a84c]">
-                {label}
-              </a>
-            )
-          )}
-        </div>
-        <div className="flex gap-3">
-          <Link href="/contact" className="rounded-full border border-[#0a1f44]/20 px-5 py-2 text-sm font-semibold text-[#0a1f44] transition hover:border-[#c9a84c]">
-            Contact Support
-          </Link>
-          <Link href="/login" className="rounded-full bg-[#0a1f44] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#09285d]">
-            Client Login
-          </Link>
-        </div>
-      </div>
-    </nav>
-  );
-}
+  const navLinks = [
+    ["Retirement Services", "#services"],
+    ["Planning", "#planning"],
+    ["Documents", "#documents"],
+    ["Security", "#security"],
+    ["Support", "/contact"],
+  ];
 
-function Footer() {
   return (
-    <footer className="border-t border-[#0a1f44]/10 bg-white py-12 text-slate-600">
-      <div className="container grid gap-8 md:grid-cols-4">
-        <div>
-          <BrandMark compact />
-          <p className="mt-4 text-sm">Secure retirement savings and wealth account access.</p>
-        </div>
-        {([
-          ["Platform", ["Retirement Services", "Security", "Documents"]],
-          ["Client Support", ["About", "Contact", "Guidance"]],
-          ["Resources", ["Terms", "Privacy", "Disclosures"]],
-        ] as const).map(([category, items]) => (
-          <div key={category}>
-            <h3 className="font-semibold text-[#0a1f44]">{category}</h3>
-            <ul className="mt-4 space-y-2 text-sm">
-              {items.map((item: string) => (
-                <li key={item}>
-                  <a href="#" className="transition hover:text-[#0a1f44]">
-                    {item}
-                  </a>
-                </li>
-              ))}
-            </ul>
+    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <div className="container flex min-h-[82px] items-center justify-between gap-6 py-4">
+        <a href="/" className="flex min-w-0 items-center gap-3">
+          <img
+            src="/icons/icon-192.png"
+            alt="CBHfinance"
+            className="h-12 w-12 rounded-2xl shadow-sm"
+          />
+          <div className="min-w-0">
+            <div className="font-serif text-2xl font-bold leading-none text-[#071f46]">
+              CBHfinance
+            </div>
+            <div className="mt-1 text-[10px] font-black uppercase tracking-[0.32em] text-[#d6ad42]">
+              Retirement Portal
+            </div>
           </div>
-        ))}
+        </a>
+
+        <nav className="hidden items-center gap-7 text-sm font-semibold text-slate-700 lg:flex">
+          {navLinks.map(([label, href]) => (
+            <a key={label} href={href} className="transition hover:text-[#071f46]">
+              {label}
+            </a>
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-3">
+          <a
+            href="/login"
+            className="hidden rounded-full border border-slate-200 px-5 py-2.5 text-sm font-semibold text-[#071f46] transition hover:bg-slate-50 sm:inline-flex"
+          >
+            Request access
+          </a>
+          <a
+            href="/login"
+            className="rounded-full bg-[#071f46] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0b2d63]"
+          >
+            Sign in
+          </a>
+        </div>
       </div>
-      <div className="container mt-8 border-t border-[#0a1f44]/10 pt-8 text-center text-sm">© 2026 CBHfinance. All rights reserved.</div>
-    </footer>
+    </header>
   );
 }
 
 function LandingPage() {
+  const serviceCards = [
+    {
+      title: "Retirement account access",
+      copy: "Review retirement savings, IRA records, cash reserve balances, and account activity from one protected portal.",
+      label: "Account view",
+    },
+    {
+      title: "IRA and rollover support",
+      copy: "Submit rollover, transfer, and contribution requests through review-ready retirement workflows.",
+      label: "Guided requests",
+    },
+    {
+      title: "Statements and tax records",
+      copy: "Access monthly statements, contribution confirmations, tax forms, plan notices, and secure disclosures.",
+      label: "Document center",
+    },
+    {
+      title: "Beneficiary and profile tools",
+      copy: "Review beneficiary records, trusted contact details, delivery preferences, and account security settings.",
+      label: "Profile controls",
+    },
+  ];
+
+  const planningItems = [
+    ["Contribution tracking", "Follow employee contributions, employer matches, rollover activity, and cash reserve interest."],
+    ["Allocation review", "Understand retirement allocation direction with a clear view of savings, cash, and investment exposure."],
+    ["Readiness indicators", "Use profile, account, and activity signals to support long-term retirement planning conversations."],
+  ];
+
+  const securityItems = [
+    ["One-time passcode verification", "Sensitive access and protected actions are gated by passcode verification."],
+    ["Secure document delivery", "Statements, tax forms, and confirmations remain available only after secure sign-in."],
+    ["Review-required requests", "Rollovers, withdrawals, beneficiary changes, and selected transfers can require additional review."],
+  ];
+
+  const resourceItems = [
+    ["IRA basics", "Understand how retirement accounts can support long-term savings."],
+    ["Rollover checklist", "Prepare information needed before moving retirement assets."],
+    ["Tax document timing", "Know when statements, confirmations, and tax forms may become available."],
+    ["Beneficiary review", "Keep beneficiary and trusted contact information current."],
+  ];
+
   return (
-    <div className="min-h-screen bg-white text-[#071f46]">
+    <div className="min-h-screen bg-[#f7f8fb] text-[#071f46]">
       <MarketingNav />
 
       <main>
         <section className="relative overflow-hidden bg-white">
-          <div className="container grid min-h-[690px] items-center gap-14 py-20 lg:grid-cols-[1.05fr_0.95fr]">
-            <div>
-              <p className="mb-6 text-xs font-black uppercase tracking-[0.35em] text-[#3157d5]">
-                Your retirement outlook
-              </p>
+          <div className="absolute inset-y-0 right-0 hidden w-[45%] bg-[#071f46] lg:block" />
+          <div className="absolute right-10 top-24 hidden h-72 w-72 rounded-full bg-[#d6ad42]/15 blur-3xl lg:block" />
 
-              <h1 className="max-w-4xl font-serif text-6xl font-semibold leading-[0.95] tracking-tight text-[#071f46] md:text-7xl">
-                Retirement planning, organized around you.
+          <div className="container relative grid gap-12 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
+            <div className="max-w-3xl">
+              <div className="inline-flex rounded-full border border-[#d6ad42]/30 bg-[#fff8e1] px-4 py-2 text-xs font-black uppercase tracking-[0.25em] text-[#071f46]">
+                Retirement savings and wealth access
+              </div>
+
+              <h1 className="mt-7 font-serif text-5xl font-semibold leading-[0.98] tracking-tight text-[#071f46] md:text-7xl">
+                Build a more confident retirement.
               </h1>
 
-              <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-700">
-                Your CBHfinance portal brings retirement savings, contribution activity,
-                rollover records, investment activity, statements, tax forms, and beneficiary
-                tools into one secure account experience.
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-700">
+                CBHfinance provides secure access to retirement savings, IRA records,
+                rollovers, contribution activity, statements, tax documents, and beneficiary tools.
               </p>
 
-              <div className="mt-10 grid gap-6 md:grid-cols-3">
+              <div className="mt-9 flex flex-wrap gap-3">
+                <a
+                  href="/login"
+                  className="rounded-full bg-[#071f46] px-7 py-3.5 font-semibold text-white shadow-lg shadow-[#071f46]/15 transition hover:bg-[#0b2d63]"
+                >
+                  Access retirement portal
+                </a>
+                <a
+                  href="/login"
+                  className="rounded-full border border-slate-300 bg-white px-7 py-3.5 font-semibold text-[#071f46] transition hover:border-[#d6ad42] hover:bg-[#fffdf5]"
+                >
+                  Request online access
+                </a>
+              </div>
+
+              <div className="mt-10 grid gap-4 border-t border-slate-200 pt-8 sm:grid-cols-3">
                 {[
-                  [
-                    "Personalized guidance",
-                    "Review retirement insights, account activity, and savings progress from your secure portal.",
-                    "Get guidance",
-                  ],
-                  [
-                    "Enroll or access your account",
-                    "Sign in to review retirement accounts, documents, and contribution records.",
-                    "Client login",
-                  ],
-                  [
-                    "Rollover support",
-                    "Start a rollover request or review transfer options with retirement-service controls.",
-                    "Start request",
-                  ],
-                ].map(([title, copy, action]) => (
-                  <div key={title} className="border-l border-slate-300 pl-5">
-                    <h3 className="font-serif text-xl font-semibold text-[#071f46]">{title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">{copy}</p>
-                    <Link
-                      href={action === "Client login" ? "/login" : "/contact"}
-                      className="mt-4 inline-flex text-sm font-semibold text-[#3157d5] hover:underline"
-                    >
-                      {action}
-                    </Link>
+                  ["OTP protected", "Secure sign-in verification"],
+                  ["Document center", "Statements and tax records"],
+                  ["Review workflows", "Rollovers and withdrawals"],
+                ].map(([title, copy]) => (
+                  <div key={title}>
+                    <div className="font-semibold text-[#071f46]">{title}</div>
+                    <div className="mt-1 text-sm leading-6 text-slate-600">{copy}</div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="relative">
-              <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-2xl shadow-[#071f46]/15">
+            <div className="relative lg:pl-6">
+              <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-2xl shadow-[#071f46]/15 lg:mt-10">
                 <div className="rounded-[1.5rem] bg-[#071f46] p-6 text-white">
-                  <div className="flex items-start justify-between gap-6">
-                    <div>
-                      <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#d6ad42]">
-                        Secure portal preview
-                      </p>
-                      <h2 className="mt-4 font-serif text-4xl font-semibold leading-tight">
-                        Retirement account access in one place.
-                      </h2>
-                      <p className="mt-4 text-sm leading-6 text-white/70">
-                        View balances, contribution history, documents, beneficiary settings,
-                        and account activity after secure sign-in.
-                      </p>
-                    </div>
-                    <ShieldCheck className="h-10 w-10 shrink-0 text-[#d6ad42]" />
+                  <div className="text-xs uppercase tracking-[0.3em] text-[#d6ad42]">
+                    Retirement overview
                   </div>
-
-                  <div className="mt-8 grid gap-3">
-                    {[
-                      ["Retirement savings", "Private after sign-in"],
-                      ["Statements & tax forms", "Available in document center"],
-                      ["Beneficiary records", "Protected review access"],
-                    ].map(([label, value]) => (
-                      <div key={label} className="rounded-2xl border border-white/10 bg-white/10 p-4">
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="text-sm text-white/70">{label}</span>
-                          <span className="font-semibold text-white">{value}</span>
-                        </div>
-                      </div>
-                    ))}
+                  <div className="mt-4 font-serif text-3xl font-semibold">
+                    Private account access begins after secure sign-in.
                   </div>
+                  <p className="mt-4 text-sm leading-6 text-white/70">
+                    Account values, documents, and personal records remain protected inside the client portal.
+                  </p>
                 </div>
 
-                <div className="mt-5 grid grid-cols-3 gap-3 text-center text-sm">
-                  <div className="rounded-2xl bg-[#f6f7fb] p-4">
-                    <div className="font-semibold text-[#071f46]">Secure</div>
-                    <div className="text-slate-500">OTP access</div>
-                  </div>
-                  <div className="rounded-2xl bg-[#f6f7fb] p-4">
-                    <div className="font-semibold text-[#071f46]">Organized</div>
-                    <div className="text-slate-500">Documents</div>
-                  </div>
-                  <div className="rounded-2xl bg-[#f6f7fb] p-4">
-                    <div className="font-semibold text-[#071f46]">Guided</div>
-                    <div className="text-slate-500">Rollovers</div>
-                  </div>
+                <div className="mt-5 grid gap-3">
+                  {[
+                    ["Contributions", "Track current-year savings activity"],
+                    ["Rollovers", "Submit requests for retirement services review"],
+                    ["Statements", "Access account and tax records securely"],
+                    ["Beneficiaries", "Review profile and beneficiary settings"],
+                  ].map(([label, copy]) => (
+                    <div key={label} className="rounded-2xl border border-slate-200 bg-[#fbfcfe] p-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <div className="font-semibold text-[#071f46]">{label}</div>
+                          <div className="mt-1 text-sm leading-6 text-slate-600">{copy}</div>
+                        </div>
+                        <CheckCircle2 className="h-5 w-5 shrink-0 text-[#d6ad42]" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
-
-          <div className="border-y border-slate-200 bg-[#f8fafc]">
-            <div className="container flex flex-wrap items-center gap-4 py-6 text-sm font-semibold text-[#071f46]">
-              <span className="mr-2 text-xs font-black uppercase tracking-[0.3em] text-slate-400">
-                Take action
-              </span>
-              <Link href="/login" className="rounded-full bg-[#071f46] px-5 py-2 text-white">
-                Client Login
-              </Link>
-              <Link href="/contact" className="rounded-full border border-slate-300 px-5 py-2">
-                Get Support
-              </Link>
-              <a href="#services" className="rounded-full border border-slate-300 px-5 py-2">
-                Explore Services
-              </a>
-            </div>
-          </div>
         </section>
 
-        <section className="container py-24">
-          <div className="max-w-5xl">
-            <p className="text-xs font-black uppercase tracking-[0.35em] text-[#3157d5]">
-              Our vision
-            </p>
-            <h2 className="mt-6 text-4xl font-semibold leading-tight text-slate-400 md:text-6xl">
-              A secure retirement should feel{" "}
-              <span className="text-[#15736b]">clear</span>,{" "}
-              <span className="text-[#15736b]">organized</span>, and{" "}
-              <span className="text-[#15736b]">within reach</span>. CBHfinance helps clients
-              manage life beyond work with confidence.
-            </h2>
-          </div>
-        </section>
-
-        <section id="services" className="bg-[#f6f7fb] py-24">
-          <div className="container">
-            <div className="max-w-3xl">
-              <p className="text-xs font-black uppercase tracking-[0.35em] text-[#3157d5]">
-                Why CBHfinance
-              </p>
-              <h2 className="mt-4 font-serif text-5xl font-semibold leading-tight">
-                Count on a more organized retirement account experience.
-              </h2>
-            </div>
-
-            <div className="mt-12 grid gap-6 md:grid-cols-3">
-              {[
-                [
-                  "Retirement income visibility",
-                  "See retirement savings, cash reserves, investment activity, and long-term account progress through protected access.",
-                  <Eye className="h-6 w-6" />,
-                  "Review accounts",
-                ],
-                [
-                  "Professional support",
-                  "Contribution, rollover, transfer, and withdrawal requests are guided through review-ready workflows.",
-                  <UserRound className="h-6 w-6" />,
-                  "Get support",
-                ],
-                [
-                  "Financial documents",
-                  "Statements, tax forms, contribution confirmations, rollover records, notices, and disclosures are organized in one document center.",
-                  <FileText className="h-6 w-6" />,
-                  "View documents",
-                ],
-              ].map(([title, copy, icon, action]) => (
-                <div key={title as string} className="rounded-[2rem] border border-slate-200 bg-white p-7 shadow-sm">
-                  <div className="mb-8 grid h-14 w-14 place-items-center rounded-2xl bg-[#071f46] text-[#d6ad42]">
-                    {icon}
-                  </div>
-                  <h3 className="font-serif text-2xl font-semibold">{title}</h3>
-                  <p className="mt-4 text-sm leading-6 text-slate-600">{copy}</p>
-                  <Link href="/login" className="mt-6 inline-flex text-sm font-semibold text-[#3157d5] hover:underline">
-                    {action}
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="bg-white py-24">
-          <div className="container grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.35em] text-[#3157d5]">
-                Performance & trust
-              </p>
-              <h2 className="mt-4 font-serif text-5xl font-semibold leading-tight">
-                Built for protected access, clear records, and confident planning.
-              </h2>
-            </div>
-
-            <div className="grid gap-5 md:grid-cols-2">
-              {[
-                ["Secure access", "Client data stays behind protected login and OTP verification."],
-                ["Document vault", "Statements, tax forms, confirmations, notices, and disclosures stay organized."],
-                ["Rollover workflows", "Rollover and withdrawal requests are captured for review before processing."],
-                ["Beneficiary protection", "Beneficiary details are protected and reviewed through secure account workflows."],
-              ].map(([title, copy]) => (
-                <div key={title} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                  <CheckCircle2 className="h-6 w-6 text-[#d6ad42]" />
-                  <h3 className="mt-5 font-serif text-2xl font-semibold">{title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-slate-600">{copy}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="container mt-16 grid gap-5 md:grid-cols-3">
-            {[
-              ["Retirement", "Account access, activity tracking, and long-term savings visibility."],
-              ["Documents", "Statements, tax forms, confirmations, plan notices, and disclosures."],
-              ["Security", "OTP verification, session monitoring, and protected profile records."],
-            ].map(([stat, copy]) => (
-              <div key={stat} className="rounded-[2rem] bg-[#071f46] p-7 text-white shadow-xl shadow-[#071f46]/10">
-                <div className="font-serif text-5xl font-semibold text-[#d6ad42]">{stat}</div>
-                <p className="mt-4 text-sm leading-6 text-white/70">{copy}</p>
+        <section className="border-y border-slate-200 bg-[#071f46] py-5 text-white">
+          <div className="container grid gap-4 text-sm font-semibold md:grid-cols-5">
+            {["Secure portal", "IRA records", "Rollover review", "Tax documents", "Beneficiary tools"].map((item) => (
+              <div key={item} className="rounded-2xl bg-white/5 px-4 py-3 text-center text-white/85">
+                {item}
               </div>
             ))}
           </div>
         </section>
 
-        <section className="border-t border-slate-200 bg-[#f6f7fb] py-16">
-          <div className="container flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <h2 className="font-serif text-3xl font-semibold">Ready to review your retirement outlook?</h2>
-              <p className="mt-2 text-slate-600">
-                Sign in securely to access accounts, documents, contribution records, and profile settings.
-              </p>
+        <section id="services" className="container py-18 md:py-24">
+          <div className="max-w-3xl">
+            <div className="text-xs font-black uppercase tracking-[0.32em] text-[#d6ad42]">
+              Retirement services
             </div>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/login" className="rounded-full bg-[#071f46] px-6 py-3 font-semibold text-white">
-                Client Login
-              </Link>
-              <Link href="/contact" className="rounded-full border border-slate-300 bg-white px-6 py-3 font-semibold text-[#071f46]">
-                Contact Support
-              </Link>
+            <h2 className="mt-4 font-serif text-4xl font-semibold tracking-tight md:text-5xl">
+              One secure place for retirement account activity.
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-slate-700">
+              CBHfinance brings together the tools clients expect from a retirement platform:
+              account access, contributions, rollovers, documents, profile review, and support.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            {serviceCards.map((card) => (
+              <article key={card.title} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="mb-6 inline-flex rounded-full bg-[#071f46]/5 px-3 py-1 text-xs font-bold uppercase tracking-widest text-[#071f46]">
+                  {card.label}
+                </div>
+                <h3 className="font-serif text-2xl font-semibold">{card.title}</h3>
+                <p className="mt-4 text-sm leading-7 text-slate-600">{card.copy}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section id="planning" className="bg-white py-18 md:py-24">
+          <div className="container grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+            <div>
+              <div className="text-xs font-black uppercase tracking-[0.32em] text-[#d6ad42]">
+                Planning and readiness
+              </div>
+              <h2 className="mt-4 font-serif text-4xl font-semibold tracking-tight md:text-5xl">
+                Designed around retirement decisions, not everyday banking.
+              </h2>
+              <p className="mt-5 text-lg leading-8 text-slate-700">
+                The portal focuses on long-term savings visibility, review workflows,
+                contribution records, allocation awareness, and retirement documentation.
+              </p>
+              <a
+                href="/login"
+                className="mt-8 inline-flex rounded-full bg-[#071f46] px-6 py-3 font-semibold text-white hover:bg-[#0b2d63]"
+              >
+                Review your retirement access
+              </a>
+            </div>
+
+            <div className="grid gap-4">
+              {planningItems.map(([title, copy]) => (
+                <div key={title} className="rounded-[1.5rem] border border-slate-200 bg-[#fbfcfe] p-6">
+                  <h3 className="font-serif text-2xl font-semibold">{title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-slate-600">{copy}</p>
+                </div>
+              ))}
             </div>
           </div>
         </section>
-      </main>
 
-      <Footer />
+        <section id="documents" className="container py-18 md:py-24">
+          <div className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl md:p-10">
+            <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr]">
+              <div>
+                <div className="text-xs font-black uppercase tracking-[0.32em] text-[#d6ad42]">
+                  Document center
+                </div>
+                <h2 className="mt-4 font-serif text-4xl font-semibold tracking-tight">
+                  Statements, confirmations, and tax records stay protected.
+                </h2>
+                <p className="mt-5 text-sm leading-7 text-white/70">
+                  Clients can access monthly statements, tax forms, contribution confirmations,
+                  rollover records, plan notices, and secure disclosures after sign-in.
+                </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                {["Monthly statements", "Tax forms", "Contribution confirmations", "Plan notices"].map((item) => (
+                  <div key={item} className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                    <FileText className="h-5 w-5 text-[#d6ad42]" />
+                    <div className="mt-4 font-semibold">{item}</div>
+                    <p className="mt-2 text-xs leading-5 text-white/60">
+                      Available through secure document delivery.
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="security" className="bg-white py-18 md:py-24">
+          <div className="container">
+            <div className="max-w-3xl">
+              <div className="text-xs font-black uppercase tracking-[0.32em] text-[#d6ad42]">
+                Security and review controls
+              </div>
+              <h2 className="mt-4 font-serif text-4xl font-semibold tracking-tight md:text-5xl">
+                Built for private retirement access.
+              </h2>
+              <p className="mt-5 text-lg leading-8 text-slate-700">
+                Sensitive account information, documents, and selected actions are protected
+                by secure sign-in, OTP verification, and review-ready workflows.
+              </p>
+            </div>
+
+            <div className="mt-10 grid gap-5 md:grid-cols-3">
+              {securityItems.map(([title, copy]) => (
+                <div key={title} className="rounded-[2rem] border border-slate-200 bg-[#fbfcfe] p-6">
+                  <ShieldCheck className="h-7 w-7 text-[#d6ad42]" />
+                  <h3 className="mt-5 font-serif text-2xl font-semibold">{title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-slate-600">{copy}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="container py-18 md:py-24">
+          <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
+            <div>
+              <div className="text-xs font-black uppercase tracking-[0.32em] text-[#d6ad42]">
+                Retirement resources
+              </div>
+              <h2 className="mt-4 font-serif text-4xl font-semibold tracking-tight">
+                Clear guidance for common retirement account needs.
+              </h2>
+              <p className="mt-5 text-lg leading-8 text-slate-700">
+                Educational guidance helps clients understand the records, requests,
+                and review steps that support retirement account management.
+              </p>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              {resourceItems.map(([title, copy]) => (
+                <div key={title} className="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm">
+                  <h3 className="font-serif text-xl font-semibold">{title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-slate-600">{copy}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-[#071f46] py-16 text-white">
+          <div className="container flex flex-wrap items-center justify-between gap-8">
+            <div>
+              <div className="text-xs font-black uppercase tracking-[0.32em] text-[#d6ad42]">
+                Secure retirement access
+              </div>
+              <h2 className="mt-3 font-serif text-4xl font-semibold">
+                Access your retirement portal with confidence.
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-white/70">
+                Sign in to review account activity, documents, contribution records,
+                beneficiary tools, and profile security settings.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <a
+                href="/login"
+                className="rounded-full bg-[#d6ad42] px-7 py-3.5 font-semibold text-white shadow-lg shadow-black/15 hover:bg-[#c99c2f]"
+              >
+                Sign in
+              </a>
+              <a
+                href="/contact"
+                className="rounded-full border border-white/25 px-7 py-3.5 font-semibold text-white hover:bg-white/10"
+              >
+                Contact support
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <footer className="bg-white py-10">
+          <div className="container flex flex-col gap-6 text-sm text-slate-600 md:flex-row md:items-start md:justify-between">
+            <div>
+              <div className="font-serif text-2xl font-bold text-[#071f46]">CBHfinance</div>
+              <p className="mt-2 max-w-xl leading-6">
+                CBHfinance provides a secure retirement account portal for reviewing account access,
+                activity, documents, support requests, and profile controls.
+              </p>
+            </div>
+
+            <div className="grid gap-2 text-right md:min-w-52">
+              <a href="/login" className="font-semibold text-[#071f46] hover:underline">Client sign in</a>
+              <a href="/contact" className="font-semibold text-[#071f46] hover:underline">Support</a>
+              <a href="/legal" className="font-semibold text-[#071f46] hover:underline">Legal and security</a>
+            </div>
+          </div>
+
+          <div className="container mt-8 border-t border-slate-200 pt-6 text-xs leading-6 text-slate-500">
+            Investment and retirement account information is available only after secure sign-in.
+            Certain contribution, rollover, transfer, withdrawal, and beneficiary requests require review before processing.
+          </div>
+        </footer>
+      </main>
     </div>
   );
 }
