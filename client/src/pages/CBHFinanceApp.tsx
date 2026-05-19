@@ -1536,7 +1536,7 @@ function UserPortal() {
                       <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
                         Vested balance
                       </div>
-                      <div className="mt-2 font-serif text-2xl font-semibold text-[#071f46]">
+                      <div className="mt-2 text-2xl font-bold tracking-tight text-[#071f46]">
                         {money(estimatedVestedBalance)}
                       </div>
                     </div>
@@ -1545,7 +1545,7 @@ function UserPortal() {
                       <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
                         YTD contributions
                       </div>
-                      <div className="mt-2 font-serif text-2xl font-semibold text-[#071f46]">
+                      <div className="mt-2 text-2xl font-bold tracking-tight text-[#071f46]">
                         {money(estimatedYtdContributions)}
                       </div>
                     </div>
