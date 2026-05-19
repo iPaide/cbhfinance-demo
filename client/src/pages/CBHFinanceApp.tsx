@@ -2054,6 +2054,117 @@ function TransactionTable({ rows }: { rows: any[] }) {
   );
 }
 
+function triggerSecureDownload(url: string, fileName: string) {
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
+function SecureOtpPrompt({
+  open,
+  title,
+  description,
+  onClose,
+  onVerified,
+}: {
+  open: boolean;
+  title: string;
+  description: string;
+  onClose: () => void;
+  onVerified: () => void;
+}) {
+  const verify = trpc.banking.verifyOtp.useMutation();
+  const [otp, setOtp] = useState("");
+  const [message, setMessage] = useState("");
+
+  if (!open) return null;
+
+  async function submitOtp(event: FormEvent) {
+    event.preventDefault();
+    setMessage("");
+
+    try {
+      const result = await verify.mutateAsync({ role: "user", otp });
+
+      if (!result.success) {
+        setMessage(result.message ?? "Invalid or expired one-time passcode.");
+        return;
+      }
+
+      setOtp("");
+      onVerified();
+      onClose();
+    } catch (error: any) {
+      setMessage(error.message ?? "Unable to verify the one-time passcode.");
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-[70] grid place-items-center bg-[#071f46]/60 px-4 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-[2rem] bg-white p-6 shadow-2xl">
+        <div className="text-xs font-black uppercase tracking-[0.3em] text-[#d6ad42]">
+          Secure verification
+        </div>
+
+        <h3 className="mt-3 font-serif text-3xl font-semibold text-[#071f46]">
+          {title}
+        </h3>
+
+        <p className="mt-3 text-sm leading-6 text-slate-600">
+          {description}
+        </p>
+
+        {message && (
+          <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+            {message}
+          </div>
+        )}
+
+        <form onSubmit={submitOtp} className="mt-5 grid gap-4">
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-slate-700">
+              One-time passcode
+            </label>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={otp}
+              onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))}
+              placeholder="000000"
+              maxLength={6}
+              className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-center font-mono text-xl tracking-[0.5em] outline-none focus:border-[#d6ad42]"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={verify.isPending || otp.length !== 6}
+            className="rounded-full bg-[#071f46] px-6 py-3 font-semibold text-white disabled:opacity-50"
+          >
+            {verify.isPending ? "Verifying..." : "Verify and continue"}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setOtp("");
+              setMessage("");
+              onClose();
+            }}
+            className="rounded-full border border-slate-200 px-6 py-3 font-semibold text-[#071f46] hover:bg-slate-50"
+          >
+            Cancel
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 function TransactionHistory() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -2344,6 +2455,14 @@ function Requests() {
 
   return (
     <div className="grid gap-6">
+      <SecureOtpPrompt
+        open={Boolean(pendingDownload)}
+        title="Verify document download"
+        description="For your protection, CBHfinance requires a one-time passcode before downloading retirement statements or secure documents."
+        onClose={() => setPendingDownload(null)}
+        onVerified={downloadPendingDocument}
+      />
+
       <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
         <div className="flex flex-wrap items-start justify-between gap-5">
           <div>
@@ -2613,6 +2732,16 @@ function Requests() {
 
 function Statements({ rows }: { rows: any[] }) {
   const [documentType, setDocumentType] = useState("All");
+  const [pendingDownload, setPendingDownload] = useState<any | null>(null);
+
+  function downloadPendingDocument() {
+    if (!pendingDownload?.fileUrl) return;
+
+    triggerSecureDownload(
+      pendingDownload.fileUrl,
+      pendingDownload.fileName ?? "cbhfinance-document.pdf"
+    );
+  }
 
   const documentGroups = [
     {
@@ -2834,13 +2963,13 @@ function Statements({ rows }: { rows: any[] }) {
 
               <div className="mt-4">
                 {document.fileUrl ? (
-                  <a
-                    download={document.fileName}
-                    href={document.fileUrl}
+                  <button
+                    type="button"
+                    onClick={() => setPendingDownload(document)}
                     className="inline-flex w-full justify-center rounded-full bg-[#071f46] px-4 py-3 text-sm font-semibold text-white hover:bg-[#0b2d63]"
                   >
                     Download
-                  </a>
+                  </button>
                 ) : (
                   <button
                     type="button"
@@ -2916,13 +3045,13 @@ function Statements({ rows }: { rows: any[] }) {
                     </td>
                     <td className="px-5 py-4 text-right">
                       {document.fileUrl ? (
-                        <a
-                          download={document.fileName}
-                          href={document.fileUrl}
+                        <button
+                          type="button"
+                          onClick={() => setPendingDownload(document)}
                           className="rounded-full bg-[#071f46] px-4 py-2 text-xs font-semibold text-white hover:bg-[#0b2d63]"
                         >
                           Download
-                        </a>
+                        </button>
                       ) : (
                         <button
                           type="button"
