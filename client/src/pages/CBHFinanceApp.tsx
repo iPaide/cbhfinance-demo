@@ -1038,7 +1038,7 @@ function UserPortal() {
               ))}
             </nav>
 
-            <div className="mt-auto rounded-3xl bg-white/5 p-5 text-sm text-white/75">
+            <div className="mt-8 rounded-3xl bg-white/5 p-5 text-sm text-white/75">
               <div className="font-semibold text-white">Secure session</div>
               <p className="mt-2 text-xs leading-5">
                 Your retirement account access is protected by secure session controls.
