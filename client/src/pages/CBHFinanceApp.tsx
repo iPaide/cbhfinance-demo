@@ -2192,12 +2192,12 @@ function UserPortal() {
                       </div>
                     )}
 
-                    <div className="mt-5 grid gap-4 xl:grid-cols-3">
+                    <div className="mt-5 grid gap-4 lg:grid-cols-3">
                       <div className="min-w-0 rounded-2xl bg-[#f6f7fb] p-5">
                         <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
                           Request type
                         </div>
-                        <div className="mt-2 font-semibold text-[#071f46]">
+                        <div className="mt-2 text-base font-semibold leading-7 text-[#071f46]">
                           Profile update
                         </div>
                       </div>
@@ -2206,7 +2206,7 @@ function UserPortal() {
                         <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
                           Status
                         </div>
-                        <div className="mt-2 font-semibold text-[#071f46]">
+                        <div className="mt-2 text-base font-semibold leading-7 text-[#071f46]">
                           Verification required
                         </div>
                       </div>
@@ -2215,7 +2215,7 @@ function UserPortal() {
                         <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
                           Next step
                         </div>
-                        <div className="mt-2 font-semibold text-[#071f46]">
+                        <div className="mt-2 text-base font-semibold leading-7 text-[#071f46]">
                           Representative review
                         </div>
                       </div>
