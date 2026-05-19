@@ -2870,17 +2870,25 @@ function Statements({ rows }: { rows: any[] }) {
     },
   ];
 
-  const monthlyDocs = rows.slice(0, 36).map((row: any) => ({
-    id: row.id,
-    type: "Statements",
-    title: `${retirementAccountName(row.accountType)} Statement`,
-    accountType: row.accountType,
-    period: row.period,
-    date: row.generatedAt ? formatSafeDate(row.generatedAt) : row.period,
-    status: "Available",
-    fileUrl: row.fileUrl,
-    fileName: `CBHfinance-${row.accountType}-${row.period}.pdf`,
-  }));
+  const monthlyDocs = [...rows]
+    .sort((a: any, b: any) => {
+      const aDate = new Date(a.generatedAt ?? a.period ?? 0).getTime();
+      const bDate = new Date(b.generatedAt ?? b.period ?? 0).getTime();
+
+      return bDate - aDate;
+    })
+    .slice(0, 36)
+    .map((row: any) => ({
+      id: row.id,
+      type: "Statements",
+      title: `${retirementAccountName(row.accountType)} Statement`,
+      accountType: row.accountType,
+      period: row.period,
+      date: row.generatedAt ? formatSafeDate(row.generatedAt) : row.period,
+      status: "Available",
+      fileUrl: row.fileUrl,
+      fileName: `CBHfinance-${row.accountType}-${row.period}.pdf`,
+    }));
 
   const allDocuments = [...monthlyDocs, ...supplementalDocs];
 
