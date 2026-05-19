@@ -985,6 +985,9 @@ function UserPortal() {
   const [tab, setTab] = useState(initialTab);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileNotice, setProfileNotice] = useState("");
+  const [beneficiaryWorkflow, setBeneficiaryWorkflow] = useState<
+    null | "beneficiary" | "trustedContact" | "delivery" | "accountReview"
+  >(null);
   const dashboard = trpc.banking.dashboard.useQuery();
   const statements = trpc.banking.statements.useQuery();
 
@@ -1860,6 +1863,99 @@ function UserPortal() {
               </section>
 
               <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <h3 className="font-serif text-2xl font-semibold text-[#071f46]">
+                      Beneficiary action center
+                    </h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">
+                      Choose an action below to begin a secure beneficiary, contact, delivery,
+                      or account review workflow.
+                    </p>
+                  </div>
+
+                  {beneficiaryWorkflow && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setBeneficiaryWorkflow(null);
+                        setProfileNotice("");
+                      }}
+                      className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
+                    >
+                      Clear action
+                    </button>
+                  )}
+                </div>
+
+                {profileNotice && (
+                  <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm leading-6 text-emerald-900">
+                    <CheckCircle2 className="mr-2 inline h-4 w-4" />
+                    {profileNotice}
+                  </div>
+                )}
+
+                {beneficiaryWorkflow ? (
+                  <div className="mt-5 rounded-2xl bg-[#f6f7fb] p-5">
+                    <div className="text-xs font-bold uppercase tracking-widest text-[#d6ad42]">
+                      {beneficiaryWorkflow === "beneficiary"
+                        ? "Beneficiary update"
+                        : beneficiaryWorkflow === "trustedContact"
+                          ? "Trusted contact"
+                          : beneficiaryWorkflow === "delivery"
+                            ? "Delivery preferences"
+                            : "Account review"}
+                    </div>
+
+                    <h4 className="mt-3 font-serif text-2xl font-semibold text-[#071f46]">
+                      {beneficiaryWorkflow === "beneficiary"
+                        ? "Request beneficiary record update"
+                        : beneficiaryWorkflow === "trustedContact"
+                          ? "Add or update trusted contact"
+                          : beneficiaryWorkflow === "delivery"
+                            ? "Manage electronic delivery"
+                            : "Start account review"}
+                    </h4>
+
+                    <p className="mt-3 text-sm leading-6 text-slate-600">
+                      {beneficiaryWorkflow === "beneficiary"
+                        ? "Beneficiary changes require identity verification before records are updated. A representative will review the request before changes are applied."
+                        : beneficiaryWorkflow === "trustedContact"
+                          ? "Trusted contact details help CBHfinance contact someone you authorize if account security concerns arise."
+                          : beneficiaryWorkflow === "delivery"
+                            ? "Statements, tax forms, confirmations, and notices are currently delivered electronically through the secure portal."
+                            : "Review your beneficiary records, trusted contact guidance, delivery preferences, and security status regularly."}
+                    </p>
+
+                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                      <div className="rounded-2xl bg-white p-4">
+                        <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                          Status
+                        </div>
+                        <div className="mt-2 font-semibold text-[#071f46]">
+                          Review required
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl bg-white p-4">
+                        <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                          Verification
+                        </div>
+                        <div className="mt-2 font-semibold text-[#071f46]">
+                          Secure identity check
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-5 rounded-2xl bg-[#f6f7fb] p-5 text-sm leading-6 text-slate-600">
+                    Select a beneficiary action to begin. Sensitive beneficiary details remain hidden
+                    until verification is completed.
+                  </div>
+                )}
+              </section>
+
+              <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
                   <div>
                     <h3 className="font-serif text-2xl font-semibold">Beneficiaries</h3>
@@ -1869,11 +1965,12 @@ function UserPortal() {
                   </div>
                   <button
                     type="button"
-                    onClick={() =>
+                    onClick={() => {
+                      setBeneficiaryWorkflow("beneficiary");
                       setProfileNotice(
                         "Beneficiary update request started. A CBHfinance retirement services representative will verify identity before changes are applied."
-                      )
-                    }
+                      );
+                    }}
                     className="rounded-full bg-[#071f46] px-5 py-3 text-sm font-semibold text-white hover:bg-[#0b2d63]"
                   >
                     Request beneficiary update
@@ -1932,11 +2029,12 @@ function UserPortal() {
                   </p>
                   <button
                     type="button"
-                    onClick={() =>
+                    onClick={() => {
+                      setBeneficiaryWorkflow("trustedContact");
                       setProfileNotice(
                         "Trusted contact update started. You can add or update an authorized contact after verification."
-                      )
-                    }
+                      );
+                    }}
                     className="mt-5 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
                   >
                     Add or update
@@ -1951,11 +2049,12 @@ function UserPortal() {
                   </p>
                   <button
                     type="button"
-                    onClick={() =>
+                    onClick={() => {
+                      setBeneficiaryWorkflow("delivery");
                       setProfileNotice(
                         "Delivery preference request started. Electronic delivery is currently active for statements, tax forms, confirmations, and notices."
-                      )
-                    }
+                      );
+                    }}
                     className="mt-5 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
                   >
                     Manage delivery
@@ -1969,11 +2068,12 @@ function UserPortal() {
                   </p>
                   <button
                     type="button"
-                    onClick={() =>
+                    onClick={() => {
+                      setBeneficiaryWorkflow("accountReview");
                       setProfileNotice(
                         "Account review started. Please review personal information, beneficiary status, document delivery, and security settings."
-                      )
-                    }
+                      );
+                    }}
                     className="mt-5 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
                   >
                     Start review
