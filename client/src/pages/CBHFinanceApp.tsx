@@ -164,11 +164,11 @@ function LandingPage() {
           <div className="container relative grid gap-12 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
             <div className="max-w-3xl">
               <div className="inline-flex rounded-full border border-[#d6ad42]/30 bg-[#fff8e1] px-4 py-2 text-xs font-black uppercase tracking-[0.25em] text-[#071f46]">
-                Retirement savings and wealth access
+                Account access and wealth access
               </div>
 
               <h1 className="mt-7 font-serif text-5xl font-semibold leading-[0.98] tracking-tight text-[#071f46] md:text-7xl">
-                Build a more confident retirement.
+                Retirement account access built for every stage of saving.
               </h1>
 
               <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-700">
@@ -181,21 +181,21 @@ function LandingPage() {
                   href="/login"
                   className="rounded-full bg-[#071f46] px-7 py-3.5 font-semibold text-white shadow-lg shadow-[#071f46]/15 transition hover:bg-[#0b2d63]"
                 >
-                  Access retirement portal
+                  Access your account
                 </a>
                 <a
                   href="/login"
                   className="rounded-full border border-slate-300 bg-white px-7 py-3.5 font-semibold text-[#071f46] transition hover:border-[#d6ad42] hover:bg-[#fffdf5]"
                 >
-                  Request online access
+                  Enroll or request access
                 </a>
               </div>
 
               <div className="mt-10 grid gap-4 border-t border-slate-200 pt-8 sm:grid-cols-3">
                 {[
+                  ["Client enrollment", "Request online access"],
                   ["OTP protected", "Secure sign-in verification"],
                   ["Document center", "Statements and tax records"],
-                  ["Review workflows", "Rollovers and withdrawals"],
                 ].map(([title, copy]) => (
                   <div key={title}>
                     <div className="font-semibold text-[#071f46]">{title}</div>
@@ -215,10 +215,10 @@ function LandingPage() {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <div className="text-xs uppercase tracking-[0.3em] text-[#d6ad42]">
-                        Retirement portal preview
+                        Client access preview
                       </div>
                       <div className="mt-4 font-serif text-3xl font-semibold">
-                        Private account access begins after secure sign-in.
+                        Enroll, sign in, and manage retirement records securely.
                       </div>
                     </div>
                     <img
@@ -229,19 +229,19 @@ function LandingPage() {
                   </div>
 
                   <p className="mt-4 text-sm leading-6 text-white/70">
-                    Account values, documents, and personal records remain protected inside the client portal.
+                    Clients can securely access account activity, documents, rollovers, contribution records, and profile tools after verification.
                   </p>
 
                   <div className="mt-6 rounded-2xl bg-white/5 p-4">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-white/60">Retirement savings</span>
-                      <span className="font-semibold text-[#d6ad42]">Protected</span>
+                      <span className="text-white/60">Account access</span>
+                      <span className="font-semibold text-[#d6ad42]">Secure</span>
                     </div>
                     <div className="mt-4 h-2 rounded-full bg-white/10">
                       <div className="h-2 w-[72%] rounded-full bg-[#d6ad42]" />
                     </div>
                     <div className="mt-4 grid grid-cols-3 gap-3 text-center text-xs">
-                      {["Activity", "Documents", "Profile"].map((item) => (
+                      {["Enroll", "Accounts", "Documents"].map((item) => (
                         <div key={item} className="rounded-xl bg-white/5 px-2 py-3 text-white/75">
                           {item}
                         </div>
@@ -252,10 +252,10 @@ function LandingPage() {
 
                 <div className="mt-5 grid gap-3">
                   {[
-                    ["Contributions", "Track current-year savings activity"],
-                    ["Rollovers", "Submit requests for retirement services review"],
-                    ["Statements", "Access account and tax records securely"],
-                    ["Beneficiaries", "Review profile and beneficiary settings"],
+                    ["Enroll or request access", "Begin secure online access for eligible retirement accounts"],
+                    ["Account dashboard", "Review retirement balances, activity, and savings records"],
+                    ["Statements and tax forms", "Access account documents through secure delivery"],
+                    ["Rollovers and beneficiaries", "Manage retirement requests and profile records"],
                   ].map(([label, copy]) => (
                     <div key={label} className="rounded-2xl border border-slate-200 bg-[#fbfcfe] p-4">
                       <div className="flex items-start justify-between gap-4">
@@ -329,7 +329,7 @@ function LandingPage() {
               Retirement services
             </div>
             <h2 className="mt-4 font-serif text-4xl font-semibold tracking-tight md:text-5xl">
-              One secure place for retirement account activity.
+              A secure retirement platform for account holders.
             </h2>
             <p className="mt-5 text-lg leading-8 text-slate-700">
               CBHfinance brings together the tools clients expect from a retirement platform:
@@ -357,7 +357,7 @@ function LandingPage() {
                 Planning and readiness
               </div>
               <h2 className="mt-4 font-serif text-4xl font-semibold tracking-tight md:text-5xl">
-                Designed around retirement decisions, not everyday banking.
+                Designed for retirement savers, account holders, and rollover needs.
               </h2>
               <p className="mt-5 text-lg leading-8 text-slate-700">
                 The portal focuses on long-term savings visibility, review workflows,
@@ -367,7 +367,7 @@ function LandingPage() {
                 href="/login"
                 className="mt-8 inline-flex rounded-full bg-[#071f46] px-6 py-3 font-semibold text-white hover:bg-[#0b2d63]"
               >
-                Review your retirement access
+                Start secure access
               </a>
             </div>
 
@@ -390,7 +390,7 @@ function LandingPage() {
                   Document center
                 </div>
                 <h2 className="mt-4 font-serif text-4xl font-semibold tracking-tight">
-                  Statements, confirmations, and tax records stay protected.
+                  Statements, confirmations, and tax records stay organized.
                 </h2>
                 <p className="mt-5 text-sm leading-7 text-white/70">
                   Clients can access monthly statements, tax forms, contribution confirmations,
@@ -420,7 +420,7 @@ function LandingPage() {
                 Security and review controls
               </div>
               <h2 className="mt-4 font-serif text-4xl font-semibold tracking-tight md:text-5xl">
-                Built for private retirement access.
+                Built for secure client access at scale.
               </h2>
               <p className="mt-5 text-lg leading-8 text-slate-700">
                 Sensitive account information, documents, and selected actions are protected
@@ -473,7 +473,7 @@ function LandingPage() {
                 Secure retirement access
               </div>
               <h2 className="mt-3 font-serif text-4xl font-semibold">
-                Access your retirement portal with confidence.
+                Enroll, sign in, and manage retirement access with confidence.
               </h2>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-white/70">
                 Sign in to review account activity, documents, contribution records,
@@ -669,14 +669,14 @@ function LoginPage({ role, onAuthenticated }: { role: "user" | "admin"; onAuthen
               {step === "otp" && "Verify one-time passcode"}
               {step === "forgotEmail" && "Recover email access"}
               {step === "forgotPassword" && "Reset password"}
-              {step === "enroll" && "Request online access"}
+              {step === "enroll" && "Enroll or request access"}
             </h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">
               {step === "login" && "Enter your credentials to begin secure account verification."}
               {step === "otp" && "Enter the 6-digit passcode sent to the verified email address on file."}
               {step === "forgotEmail" && "Provide identifying information so support can help recover account access."}
               {step === "forgotPassword" && "Submit your email to begin a secure password reset request."}
-              {step === "enroll" && "Request online access for a retirement account, rollover, or IRA relationship."}
+              {step === "enroll" && "Enroll or request access for a retirement account, rollover, or IRA relationship."}
             </p>
           </div>
 
@@ -1562,7 +1562,7 @@ function UserPortal() {
               <section className="grid gap-5 md:grid-cols-3">
                 {(dashboard.data?.accounts ?? []).map((account: any) => {
                   const accountType = account.accountType ?? account.type ?? "Retirement";
-                  const accountNumber = account.accountNumber ?? account.number ?? "Protected";
+                  const accountNumber = account.accountNumber ?? account.number ?? "Secure";
                   const balance = Number(account.balance ?? 0);
 
                   const displayName =
@@ -1581,7 +1581,7 @@ function UserPortal() {
                         ? "Liquid reserve for retirement planning"
                         : accountType === "IRA"
                           ? "Tax-advantaged individual retirement account"
-                          : "Protected retirement account";
+                          : "Secure retirement account";
 
                   return (
                     <div
@@ -1750,7 +1750,7 @@ function UserPortal() {
 
                   <div className="rounded-3xl border border-white/15 bg-white/5 p-5 text-sm">
                     <div className="text-white/55">Security status</div>
-                    <div className="mt-2 text-2xl font-semibold">Protected</div>
+                    <div className="mt-2 text-2xl font-semibold">Secure</div>
                     <p className="mt-2 max-w-xs text-xs leading-5 text-white/60">
                       Email OTP verification and secure session monitoring are active.
                     </p>
@@ -3866,7 +3866,7 @@ function LegalPage({ type }: { type: "terms" | "privacy" | "contact" }) {
               <h2 className="font-serif text-2xl font-semibold text-[#0a1f44]">Key Features</h2>
               <ul className="space-y-3 list-disc list-inside">
                 <li>Secure client authentication with OTP verification</li>
-                <li>Protected account dashboard with real transaction history</li>
+                <li>Secure account dashboard with real transaction history</li>
                 <li>Monthly statement generation and download</li>
                 <li>Admin panel with user management and audit controls</li>
                 <li>Session timeout and security warnings</li>
