@@ -1048,6 +1048,13 @@ function UserPortal() {
                 Your projected savings profile is on track based on current account activity.
               </p>
             </div>
+            <button
+              type="button"
+              onClick={logout}
+              className="mt-5 w-full rounded-2xl border border-white/25 px-5 py-3 font-semibold text-white transition hover:bg-white/10"
+            >
+              Sign out
+            </button>
           </aside>
         </div>
       )}
