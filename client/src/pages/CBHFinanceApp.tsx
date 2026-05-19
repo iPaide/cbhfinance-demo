@@ -2787,7 +2787,86 @@ function Statements({ rows }: { rows: any[] }) {
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-slate-200">
+        <div className="grid gap-3 md:hidden">
+          {filteredDocuments.slice(0, 12).map((document: any) => (
+            <div key={document.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="flex items-start gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#071f46]/5">
+                  <FileText className="h-5 w-5 text-[#d6ad42]" />
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <div className="font-semibold leading-5 text-[#071f46]">
+                    {document.title}
+                  </div>
+                  <div className="mt-1 text-xs leading-5 text-slate-500">
+                    {document.accountType ? retirementAccountName(document.accountType) : "CBHfinance record"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 grid gap-2 rounded-2xl bg-[#f6f7fb] p-3 text-xs">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-slate-500">Category</span>
+                  <span className="rounded-full bg-[#071f46]/5 px-3 py-1 font-semibold text-[#071f46]">
+                    {document.type}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-slate-500">Period / Date</span>
+                  <span className="font-semibold text-[#071f46]">{document.period ?? document.date}</span>
+                </div>
+
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-slate-500">Status</span>
+                  <span
+                    className={`rounded-full px-3 py-1 font-semibold ${
+                      document.status === "Available"
+                        ? "bg-emerald-50 text-emerald-700"
+                        : "bg-amber-50 text-amber-700"
+                    }`}
+                  >
+                    {document.status}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-4">
+                {document.fileUrl ? (
+                  <a
+                    download={document.fileName}
+                    href={document.fileUrl}
+                    className="inline-flex w-full justify-center rounded-full bg-[#071f46] px-4 py-3 text-sm font-semibold text-white hover:bg-[#0b2d63]"
+                  >
+                    Download
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    className="w-full rounded-full border border-slate-200 px-4 py-3 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
+                  >
+                    View details
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+
+          {filteredDocuments.length > 12 && (
+            <div className="rounded-2xl bg-[#f6f7fb] p-4 text-center text-sm font-medium text-slate-600">
+              Showing 12 of {filteredDocuments.length} documents. Use filters above to narrow results.
+            </div>
+          )}
+
+          {!filteredDocuments.length && (
+            <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">
+              No documents matched this category.
+            </div>
+          )}
+        </div>
+
+        <div className="hidden overflow-hidden rounded-2xl border border-slate-200 md:block">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[820px] text-left text-sm">
               <thead className="bg-[#f8fafc] text-xs uppercase tracking-widest text-slate-500">
