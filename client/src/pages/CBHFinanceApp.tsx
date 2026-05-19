@@ -76,9 +76,9 @@ function MarketingNav() {
             <div className="font-serif text-2xl font-bold leading-none text-[#071f46]">
               CBHfinance
             </div>
-            <div className="mt-1 text-[10px] font-black uppercase tracking-[0.32em] text-[#d6ad42]">
-              Private Banking
-            </div>
+            <div className="mt-1 text-[9px] font-black uppercase tracking-[0.22em] text-[#d6ad42] xl:text-[10px] xl:tracking-[0.28em]">
+                Private Banking
+              </div>
           </div>
         </a>
 
@@ -1001,7 +1001,7 @@ function UserPortal() {
     ["Overview", "dashboard"],
     ["Private Retirement Accounts", "accounts"],
     ["Investment Strategy", "investments"],
-    ["Contributions", "requests"],
+    ["Money Movement", "requests"],
     ["Activity", "transactions"],
     ["Statements", "statements"],
     ["Beneficiaries", "beneficiaries"],
@@ -1093,8 +1093,8 @@ function UserPortal() {
               className="h-12 w-12 shrink-0 rounded-2xl shadow-lg shadow-black/20"
             />
             <div className="min-w-0">
-              <div className="truncate font-serif text-2xl font-bold leading-none text-white">CBHfinance</div>
-              <div className="mt-2 truncate text-[9px] uppercase tracking-[0.28em] text-[#d6ad42]">
+              <div className=" font-serif text-2xl font-bold leading-none text-white">CBHfinance</div>
+              <div className="mt-2  text-[9px] uppercase tracking-[0.28em] text-[#d6ad42]">
                 Private Banking
               </div>
             </div>
@@ -1155,10 +1155,10 @@ function UserPortal() {
                   className="h-12 w-12 shrink-0 rounded-2xl shadow-lg shadow-black/20"
                 />
                 <div className="min-w-0">
-                  <div className="truncate font-serif text-2xl font-bold leading-none text-white">
+                  <div className=" font-serif text-2xl font-bold leading-none text-white">
                     CBHfinance
                   </div>
-                  <div className="mt-2 truncate text-[9px] uppercase tracking-[0.28em] text-[#d6ad42]">
+                  <div className="mt-2  text-[9px] uppercase tracking-[0.28em] text-[#d6ad42]">
                     Private Banking
                   </div>
                 </div>
@@ -1170,7 +1170,7 @@ function UserPortal() {
                 ["Overview", "dashboard"],
                 ["Private Retirement Accounts", "accounts"],
                 ["Investment Strategy", "investments"],
-                ["Contributions", "requests"],
+                ["Money Movement", "requests"],
                 ["Activity", "transactions"],
                 ["Statements", "statements"],
                 ["Beneficiaries", "beneficiaries"],
