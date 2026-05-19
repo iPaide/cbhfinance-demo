@@ -41,8 +41,8 @@ function writeSession(session: PortalSession | null) {
 function BrandMark({ compact = false }: { compact?: boolean }) {
   return (
     <Link href="/" className="flex items-center gap-3">
-      <span className="grid h-11 w-11 place-items-center overflow-hidden rounded-2xl border border-[#c9a84c]/50 bg-[#071f46] shadow-lg shadow-[#0a1f44]/20">
-        <img src="/icons/icon-192.png" alt="CBHfinance" className="h-full w-full object-cover" />
+      <span className="grid h-11 w-11 place-items-center rounded-2xl border border-[#c9a84c]/50 bg-[#0a1f44] text-[#c9a84c] shadow-lg shadow-[#0a1f44]/20">
+        <Landmark className="h-5 w-5" />
       </span>
       {!compact && (
         <span className="leading-none">
@@ -353,10 +353,6 @@ function LandingPage() {
               <p className="mt-2 text-slate-600">
                 Sign in securely to access accounts, documents, contribution records, and profile settings.
               </p>
-              <p className="mt-3 max-w-2xl text-xs leading-5 text-slate-500">
-                Investment and retirement account information is available only after secure sign-in.
-                Certain contribution, rollover, transfer, withdrawal, and beneficiary requests require review before processing.
-              </p>
             </div>
             <div className="flex flex-wrap gap-3">
               <Link href="/login" className="rounded-full bg-[#071f46] px-6 py-3 font-semibold text-white">
@@ -528,13 +524,6 @@ function LoginPage({ role, onAuthenticated }: { role: "user" | "admin"; onAuthen
               {step === "forgotPassword" && "Submit your email to begin a secure password reset request."}
               {step === "enroll" && "Request online access for a retirement account, rollover, or IRA relationship."}
             </p>
-
-            {step === "login" && (
-              <div className="mt-5 rounded-2xl border border-[#d6ad42]/30 bg-[#fff8e1] p-4 text-sm leading-6 text-[#071f46]">
-                For your protection, CBHfinance requires password verification and a one-time
-                passcode before showing retirement account information.
-              </div>
-            )}
           </div>
 
           {message && (
@@ -839,22 +828,9 @@ function PortalLayout({ children, title, role = "user" }: { children: React.Reac
   );
 }
 
-// activeTab runtime hotfix marker
-function normalizePortalTab(value: string | null | undefined) {
-  const tab = String(value ?? "dashboard").toLowerCase();
-
-  if (tab === "contributions" || normalizePortalTab(tab) === "payments") return "payments";
-  if (tab === "activity" || normalizePortalTab(tab) === "transactions") return "transactions";
-  if (tab === "documents" || normalizePortalTab(tab) === "statements") return "statements";
-  if (tab === "beneficiaries" || tab === "profile" || tab === "security" || normalizePortalTab(tab) === "settings") return "settings";
-  if (tab === "accounts" || tab === "investments" || tab === "overview" || normalizePortalTab(tab) === "dashboard") return "dashboard";
-
-  return "dashboard";
-}
-
 function UserPortal() {
   const [location] = useLocation();
-  const initialTab = normalizePortalTab(new URLSearchParams(location.split("?")[1] ?? "").get("tab"));
+  const initialTab = new URLSearchParams(location.split("?")[1] ?? "").get("tab") ?? "dashboard";
   const [tab, setTab] = useState(initialTab);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileNotice, setProfileNotice] = useState("");
@@ -862,8 +838,8 @@ function UserPortal() {
   const statements = trpc.banking.statements.useQuery();
 
   useEffect(() => {
-    const urlTab = normalizePortalTab(new URLSearchParams(location.split("?")[1] ?? "").get("tab"));
-    setTab(normalizePortalTab(urlTab));
+    const urlTab = new URLSearchParams(location.split("?")[1] ?? "").get("tab") ?? "dashboard";
+    setTab(urlTab);
   }, [location]);
 
   const navItems = [
@@ -968,7 +944,7 @@ function UserPortal() {
             <button
               key={`${label}-${value}`}
               type="button"
-              onClick={() => setTab(normalizePortalTab(value))}
+              onClick={() => setTab(value)}
               className={`rounded-2xl px-5 py-3.5 text-left text-sm font-semibold transition ${
                 tab === value
                   ? "bg-[#d6ad42] text-white shadow-lg shadow-black/20"
@@ -1010,16 +986,11 @@ function UserPortal() {
 
           <aside className="relative flex h-full w-[82vw] max-w-sm flex-col bg-[#071f46] p-6 text-white shadow-2xl">
             <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
-              <div className="flex items-center gap-4">
-                <img src="/icons/icon-192.png" alt="CBHfinance" className="h-16 w-16 rounded-2xl shadow-lg shadow-black/20" />
-                <div>
-                  <div className="font-serif text-3xl font-bold leading-none text-white">
-                    CBHfinance
-                  </div>
-                  <div className="mt-2 text-[10px] uppercase tracking-[0.35em] text-[#d6ad42]">
-                    Retirement Portal
-                  </div>
-                </div>
+              <div className="font-serif text-3xl font-bold leading-none text-white">
+                CBHfinance
+              </div>
+              <div className="mt-2 text-[10px] uppercase tracking-[0.35em] text-[#d6ad42]">
+                Retirement Portal
               </div>
             </div>
 
@@ -1030,15 +1001,14 @@ function UserPortal() {
                 ["Investments", "dashboard"],
                 ["Contributions", "payments"],
                 ["Activity", "transactions"],
-                ["Statements", "statements"],
-                ["Beneficiaries", "settings"],
+                ["Documents", "statements"],
                 ["Profile & Security", "settings"],
               ].map(([label, value]) => (
                 <button
                   key={`${label}-${value}-drawer`}
                   type="button"
                   onClick={() => {
-                    setTab(normalizePortalTab(value));
+                    setTab(value);
                     setMobileMenuOpen(false);
                   }}
                   className={`rounded-2xl px-5 py-3.5 text-left text-sm font-semibold transition ${
@@ -1094,22 +1064,21 @@ function UserPortal() {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(true)}
-                className="inline-flex items-center gap-2 rounded-full bg-[#071f46] px-4 py-2.5 text-sm font-semibold text-white shadow-sm"
+                className="rounded-full bg-[#071f46] px-5 py-2.5 text-sm font-semibold text-white shadow-sm"
               >
-                <img src="/icons/icon-192.png" alt="" className="h-6 w-6 rounded-full" />
                 Menu
               </button>
 
               <div className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-[#071f46]">
-                {normalizePortalTab(tab) === "dashboard"
+                {tab === "dashboard"
                   ? "Overview"
-                  : normalizePortalTab(tab) === "payments"
+                  : tab === "payments"
                     ? "Contributions"
-                    : normalizePortalTab(tab) === "transactions"
+                    : tab === "transactions"
                       ? "Activity"
-                      : normalizePortalTab(tab) === "statements"
-                        ? "Statements"
-                        : normalizePortalTab(tab) === "settings"
+                      : tab === "statements"
+                        ? "Documents"
+                        : tab === "settings"
                           ? "Profile & Security"
                           : "Overview"}
               </div>
@@ -1118,7 +1087,7 @@ function UserPortal() {
         </header>
 
         <div className="p-5 lg:p-10">
-          {normalizePortalTab(tab) === "dashboard" && (
+          {tab === "dashboard" && (
             <div className="grid gap-6">
               <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
                 <section className="overflow-hidden rounded-[2rem] bg-[#071f46] p-6 text-white shadow-xl sm:p-8">
@@ -1131,9 +1100,6 @@ function UserPortal() {
                       <p className="mt-4 max-w-xl text-sm leading-6 text-white/70">
                         Includes retirement savings, cash reserve, and investment account values
                         available through CBHfinance.
-                      </p>
-                      <p className="mt-3 text-xs font-semibold uppercase tracking-[0.25em] text-white/45">
-                        Updated today
                       </p>
                     </div>
 
@@ -1380,10 +1346,10 @@ function UserPortal() {
             </div>
           )}
 
-          {normalizePortalTab(tab) === "transactions" && <TransactionHistory />}
+          {tab === "transactions" && <TransactionHistory />}
           {tab === "requests" && <Requests />}
-          {normalizePortalTab(tab) === "statements" && <Statements rows={statements.data ?? []} />}
-          {normalizePortalTab(tab) === "settings" && (
+          {tab === "statements" && <Statements rows={statements.data ?? []} />}
+          {tab === "settings" && (
             <div className="grid gap-6">
               <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
                 <div className="flex flex-wrap items-start justify-between gap-5">
@@ -2832,7 +2798,7 @@ function AdminPanel() {
 
   return (
     <PortalLayout title="Retirement Operations Console" role="admin">
-      {normalizePortalTab(tab) === "dashboard" && (
+      {tab === "dashboard" && (
         <div className="grid gap-6">
           <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
             <div className="flex flex-wrap items-start justify-between gap-5">
@@ -3058,7 +3024,7 @@ function AdminPanel() {
         </Panel>
       )}
 
-      {normalizePortalTab(tab) === "transactions" && (
+      {tab === "transactions" && (
         <Panel title="Retirement Activity Management">
           <div className="mb-5 grid gap-3 md:grid-cols-5">
             <input
