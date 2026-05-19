@@ -1000,7 +1000,7 @@ function UserPortal() {
   const navItems = [
     ["Overview", "dashboard"],
     ["Private Retirement Accounts", "accounts"],
-    ["Investments", "investments"],
+    ["Investment Strategy", "investments"],
     ["Contributions", "requests"],
     ["Activity", "transactions"],
     ["Statements", "statements"],
@@ -1011,13 +1011,13 @@ function UserPortal() {
   const quickActions = [
     {
       icon: "CON",
-      label: "Make Contribution",
+      label: "Make Deposit or Contribution",
       desc: "Schedule a one-time or recurring retirement contribution.",
       target: "requests",
     },
     {
       icon: "ROL",
-      label: "Start Rollover",
+      label: "Start Rollover Review",
       desc: "Begin a rollover request from another retirement provider.",
       target: "requests",
     },
@@ -1041,7 +1041,7 @@ function UserPortal() {
     },
     {
       icon: "ACT",
-      label: "Account Activity",
+      label: "Private Activity",
       desc: "Search contributions, dividends, fees, and transfers.",
       target: "transactions",
     },
@@ -1119,12 +1119,12 @@ function UserPortal() {
         </nav>
 
         <div className="mt-8 rounded-3xl bg-white/5 p-5 text-sm text-white/75">
-          <div className="font-semibold text-white">Retirement readiness</div>
+          <div className="font-semibold text-white">Private client readiness</div>
           <div className="mt-3 h-2 rounded-full bg-white/10">
             <div className="h-2 w-[72%] rounded-full bg-[#d6ad42]" />
           </div>
           <p className="mt-3 text-xs leading-5">
-            Your projected savings profile is on track based on current account activity.
+            Your private retirement profile is on track based on current account activity.
           </p>
         </div>
 
@@ -1169,7 +1169,7 @@ function UserPortal() {
               {[
                 ["Overview", "dashboard"],
                 ["Private Retirement Accounts", "accounts"],
-                ["Investments", "investments"],
+                ["Investment Strategy", "investments"],
                 ["Contributions", "requests"],
                 ["Activity", "transactions"],
                 ["Statements", "statements"],
@@ -1195,12 +1195,12 @@ function UserPortal() {
             </nav>
 
             <div className="mt-8 rounded-3xl bg-white/5 p-5 text-sm text-white/75">
-              <div className="font-semibold text-white">Retirement readiness</div>
+              <div className="font-semibold text-white">Private client readiness</div>
               <div className="mt-3 h-2 rounded-full bg-white/10">
                 <div className="h-2 w-[72%] rounded-full bg-[#d6ad42]" />
               </div>
               <p className="mt-3 text-xs leading-5">
-                Your projected savings profile is on track based on current account activity.
+                Your private retirement profile is on track based on current account activity.
               </p>
             </div>
             <button
@@ -1284,11 +1284,11 @@ function UserPortal() {
                       Private client retirement banking overview
                     </div>
                     <h1 className="mt-3 font-serif text-4xl font-semibold tracking-tight text-[#071f46]">
-                      Welcome back, {dashboard.data?.customer?.name ?? "Private Client"}
+                      Welcome back, {dashboard.data?.customer?.name?.split(" ")?.[0] ?? "Private Client"}
                     </h1>
                     <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
                       Review private retirement assets, vested balance, deposits and contributions,
-                      investment profile, documents, beneficiaries, and secure service requests.
+                      investment profile, documents, beneficiaries, and secure client service requests.
                     </p>
                   </div>
 
@@ -1312,8 +1312,8 @@ function UserPortal() {
                         {dashboard.data ? money(totalRetirementSavings) : "Loading"}
                       </div>
                       <p className="mt-4 max-w-xl text-sm leading-6 text-white/70">
-                        Includes private retirement accounts, IRA records, cash reserve balances,
-                        deposits, and investment profile values available through CBHfinance.
+                        Includes private retirement accounts, IRA records, deposits, cash reserve balances,
+                        and investment profile values available through CBHfinance.
                       </p>
                     </div>
 
@@ -1740,13 +1740,13 @@ function UserPortal() {
 
                     <div className="rounded-2xl bg-[#f6f7fb] p-5 md:col-span-2">
                       <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                        Retirement readiness
+                        Private client readiness
                       </div>
                       <div className="mt-3 h-2 rounded-full bg-slate-200">
                         <div className="h-2 w-[72%] rounded-full bg-[#d6ad42]" />
                       </div>
                       <p className="mt-3 text-sm leading-6 text-slate-600">
-                        Your projected savings profile is on track based on current account activity.
+                        Your private retirement profile is on track based on current account activity.
                       </p>
                     </div>
                   </div>
@@ -2229,7 +2229,7 @@ function retirementActivityLabel(row: any) {
     return "Retirement Account Credit";
   }
 
-  return "Account Activity";
+  return "Private Activity";
 }
 
 function retirementActivityType(row: any) {
@@ -2802,13 +2802,13 @@ function Requests() {
         <div className="flex flex-wrap items-start justify-between gap-5">
           <div>
             <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
-              Deposits, Contributions, and Transfers
+              Money Movement
             </div>
             <h2 className="mt-2 font-serif text-4xl font-semibold">
-              Private client request center
+              Private client money movement
             </h2>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-white/70">
-              Submit contribution, rollover, transfer, and withdrawal review requests.
+              Submit deposit, contribution, rollover, transfer, and withdrawal review requests.
               Certain retirement requests require plan-level verification before completion.
             </p>
           </div>
