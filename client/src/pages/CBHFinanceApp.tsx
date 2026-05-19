@@ -1832,120 +1832,32 @@ function UserPortal() {
             </div>
           )}
 
-          {tab === "settings" && (
+          {tab === "beneficiaries" && (
             <div className="grid gap-6">
               <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
                 <div className="flex flex-wrap items-start justify-between gap-5">
                   <div>
                     <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
-                      Profile, Beneficiaries and Security
+                      Beneficiaries
                     </div>
                     <h2 className="mt-2 font-serif text-4xl font-semibold">
-                      Manage your retirement profile
+                      Beneficiary records and account review
                     </h2>
                     <p className="mt-3 max-w-3xl text-sm leading-6 text-white/70">
-                      Review personal information, beneficiary records, trusted contact details,
-                      document delivery preferences, and account security settings.
+                      Review beneficiary status, trusted contact guidance, delivery preferences,
+                      and retirement account review tools in one secure place.
                     </p>
                   </div>
 
                   <div className="rounded-3xl border border-white/15 bg-white/5 p-5 text-sm">
-                    <div className="text-white/55">Security status</div>
-                    <div className="mt-2 text-2xl font-semibold">Secure</div>
+                    <div className="text-white/55">Beneficiary status</div>
+                    <div className="mt-2 text-2xl font-semibold text-[#d6ad42]">Protected</div>
                     <p className="mt-2 max-w-xs text-xs leading-5 text-white/60">
-                      Email OTP verification and secure session monitoring are active.
+                      Beneficiary details remain hidden until identity verification is completed.
                     </p>
                   </div>
                 </div>
               </section>
-
-              {profileNotice && (
-                <div className="rounded-2xl border border-[#d6ad42]/30 bg-[#fff8e1] p-5 text-sm font-medium leading-6 text-[#071f46]">
-                  <div className="flex flex-wrap items-start justify-between gap-4">
-                    <span>{profileNotice}</span>
-                    <button
-                      type="button"
-                      onClick={() => setProfileNotice("")}
-                      className="rounded-full border border-[#071f46]/15 px-3 py-1 text-xs font-semibold hover:bg-white"
-                    >
-                      Dismiss
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-                <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                  <div className="mb-5 flex items-center justify-between">
-                    <h3 className="font-serif text-2xl font-semibold">Personal information</h3>
-                    <button
-                      type="button"
-                      className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
-                    >
-                      Request update
-                    </button>
-                  </div>
-
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <Setting label="Full name" value="Emily Ann Johnson" />
-                    <Setting label="Email" value="emilyajohnson196@gmail.com" />
-                    <Setting label="Phone" value="+1 (305) 863 - 2132" />
-                    <Setting label="Member since" value="March 2002" />
-                    <Setting
-                      label="Mailing address"
-                      value="1501 NW 20th St, Homestead, FL 33030"
-                    />
-                    <Setting label="Document delivery" value="Electronic delivery enabled" />
-                  </div>
-                </section>
-
-                <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                  <div className="mb-5 flex items-center justify-between">
-                    <h3 className="font-serif text-2xl font-semibold">Security center</h3>
-                    <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                      Active
-                    </span>
-                  </div>
-
-                  <div className="grid gap-4">
-                    <div className="rounded-2xl bg-[#f6f7fb] p-5">
-                      <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                        Two-factor authentication
-                      </div>
-                      <div className="mt-2 font-semibold text-[#071f46]">Email OTP enabled</div>
-                      <p className="mt-2 text-sm leading-6 text-slate-600">
-                        A one-time passcode is required for secure sign-in and sensitive requests.
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl bg-[#f6f7fb] p-5">
-                      <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                        Last login
-                      </div>
-                      <div className="mt-2 font-semibold text-[#071f46]">
-                        {dashboard.data?.customer.lastLoginAt
-                          ? new Date(dashboard.data.customer.lastLoginAt).toLocaleString()
-                          : "Loading"}
-                      </div>
-                      <p className="mt-2 text-sm leading-6 text-slate-600">
-                        {dashboard.data?.customer.lastLoginLocation ?? "San Francisco, CA"}
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl bg-[#f6f7fb] p-5">
-                      <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                        Session protection
-                      </div>
-                      <div className="mt-2 font-semibold text-[#071f46]">
-                        Inactivity timeout enabled
-                      </div>
-                      <p className="mt-2 text-sm leading-6 text-slate-600">
-                        Online sessions are monitored and protected by automatic timeout controls.
-                      </p>
-                    </div>
-                  </div>
-                </section>
-              </div>
 
               <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
@@ -2068,6 +1980,125 @@ function UserPortal() {
                   </button>
                 </section>
               </div>
+            </div>
+          )}
+
+          {tab === "settings" && (
+            <div className="grid gap-6">
+              <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
+                <div className="flex flex-wrap items-start justify-between gap-5">
+                  <div>
+                    <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
+                      Profile and Security
+                    </div>
+                    <h2 className="mt-2 font-serif text-4xl font-semibold">
+                      Manage your retirement profile
+                    </h2>
+                    <p className="mt-3 max-w-3xl text-sm leading-6 text-white/70">
+                      Review personal information, beneficiary records, trusted contact details,
+                      document delivery preferences, and account security settings.
+                    </p>
+                  </div>
+
+                  <div className="rounded-3xl border border-white/15 bg-white/5 p-5 text-sm">
+                    <div className="text-white/55">Security status</div>
+                    <div className="mt-2 text-2xl font-semibold">Secure</div>
+                    <p className="mt-2 max-w-xs text-xs leading-5 text-white/60">
+                      Email OTP verification and secure session monitoring are active.
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              {profileNotice && (
+                <div className="rounded-2xl border border-[#d6ad42]/30 bg-[#fff8e1] p-5 text-sm font-medium leading-6 text-[#071f46]">
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <span>{profileNotice}</span>
+                    <button
+                      type="button"
+                      onClick={() => setProfileNotice("")}
+                      className="rounded-full border border-[#071f46]/15 px-3 py-1 text-xs font-semibold hover:bg-white"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+                <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                  <div className="mb-5 flex items-center justify-between">
+                    <h3 className="font-serif text-2xl font-semibold">Personal information</h3>
+                    <button
+                      type="button"
+                      className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
+                    >
+                      Request update
+                    </button>
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Setting label="Full name" value="Emily Ann Johnson" />
+                    <Setting label="Email" value="emilyajohnson196@gmail.com" />
+                    <Setting label="Phone" value="+1 (305) 863 - 2132" />
+                    <Setting label="Member since" value="March 2002" />
+                    <Setting
+                      label="Mailing address"
+                      value="1501 NW 20th St, Homestead, FL 33030"
+                    />
+                    <Setting label="Document delivery" value="Electronic delivery enabled" />
+                  </div>
+                </section>
+
+                <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                  <div className="mb-5 flex items-center justify-between">
+                    <h3 className="font-serif text-2xl font-semibold">Security center</h3>
+                    <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                      Active
+                    </span>
+                  </div>
+
+                  <div className="grid gap-4">
+                    <div className="rounded-2xl bg-[#f6f7fb] p-5">
+                      <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                        Two-factor authentication
+                      </div>
+                      <div className="mt-2 font-semibold text-[#071f46]">Email OTP enabled</div>
+                      <p className="mt-2 text-sm leading-6 text-slate-600">
+                        A one-time passcode is required for secure sign-in and sensitive requests.
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl bg-[#f6f7fb] p-5">
+                      <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                        Last login
+                      </div>
+                      <div className="mt-2 font-semibold text-[#071f46]">
+                        {dashboard.data?.customer.lastLoginAt
+                          ? new Date(dashboard.data.customer.lastLoginAt).toLocaleString()
+                          : "Loading"}
+                      </div>
+                      <p className="mt-2 text-sm leading-6 text-slate-600">
+                        {dashboard.data?.customer.lastLoginLocation ?? "San Francisco, CA"}
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl bg-[#f6f7fb] p-5">
+                      <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                        Session protection
+                      </div>
+                      <div className="mt-2 font-semibold text-[#071f46]">
+                        Inactivity timeout enabled
+                      </div>
+                      <p className="mt-2 text-sm leading-6 text-slate-600">
+                        Online sessions are monitored and protected by automatic timeout controls.
+                      </p>
+                    </div>
+                  </div>
+                </section>
+              </div>
+
+
             </div>
           )}
         </div>
