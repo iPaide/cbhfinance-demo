@@ -1017,7 +1017,8 @@ function UserPortal() {
                 ["Investments", "investments"],
                 ["Contributions", "payments"],
                 ["Activity", "transactions"],
-                ["Documents", "statements"],
+                ["Statements", "statements"],
+                ["Beneficiaries", "beneficiaries"],
                 ["Profile & Security", "settings"],
               ].map(([label, value]) => (
                 <button
@@ -1039,9 +1040,12 @@ function UserPortal() {
             </nav>
 
             <div className="mt-8 rounded-3xl bg-white/5 p-5 text-sm text-white/75">
-              <div className="font-semibold text-white">Secure session</div>
-              <p className="mt-2 text-xs leading-5">
-                Your retirement account access is protected by secure session controls.
+              <div className="font-semibold text-white">Retirement readiness</div>
+              <div className="mt-3 h-2 rounded-full bg-white/10">
+                <div className="h-2 w-[72%] rounded-full bg-[#d6ad42]" />
+              </div>
+              <p className="mt-3 text-xs leading-5">
+                Your projected savings profile is on track based on current account activity.
               </p>
             </div>
           </aside>
@@ -1088,17 +1092,21 @@ function UserPortal() {
               <div className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-[#071f46]">
                 {tab === "dashboard"
                   ? "Overview"
-                  : tab === "payments"
-                    ? "Contributions"
-                    : tab === "transactions"
-                      ? "Activity"
-                      : tab === "statements"
-                        ? "Documents"
-                        : tab === "beneficiaries"
-                          ? "Beneficiaries"
-                          : tab === "settings"
-                            ? "Profile & Security"
-                            : "Overview"}
+                  : tab === "accounts"
+                    ? "Retirement Accounts"
+                    : tab === "investments"
+                      ? "Investments"
+                      : tab === "payments"
+                        ? "Contributions"
+                        : tab === "transactions"
+                          ? "Activity"
+                          : tab === "statements"
+                            ? "Statements"
+                            : tab === "beneficiaries"
+                              ? "Beneficiaries"
+                              : tab === "settings"
+                                ? "Profile & Security"
+                                : "Overview"}
               </div>
             </div>
           </div>
