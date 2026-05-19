@@ -1432,7 +1432,7 @@ function UserPortal() {
                           <div className="text-xs font-bold uppercase tracking-widest text-[#d6ad42]">
                             {displayName}
                           </div>
-                          <h3 className="mt-3 font-serif text-2xl font-semibold text-[#071f46]">
+                          <h3 className="mt-3 text-3xl font-bold tracking-tight text-[#071f46]">
                             {money(balance)}
                           </h3>
                           <p className="mt-2 text-sm text-slate-500">{accountNote}</p>
