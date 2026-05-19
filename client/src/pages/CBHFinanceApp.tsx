@@ -2493,145 +2493,115 @@ function TransactionHistory() {
 }
 
 function Requests() {
-  const utils = trpc.useUtils();
-  const block = trpc.banking.blockRequest.useMutation();
-  const transfer = trpc.banking.transfer.useMutation({
-    onSuccess: async () => {
-      await utils.banking.dashboard.invalidate();
-      await utils.banking.accounts.invalidate();
-      await utils.banking.transactions.invalidate();
-    },
-  });
-
   const accounts = trpc.banking.accounts.useQuery();
   const [activeForm, setActiveForm] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ fromAccount: "", toAccount: "", amount: "", memo: "" });
-  const [submitting, setSubmitting] = useState(false);
-  const [reviewNotice, setReviewNotice] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [notice, setNotice] = useState("");
+  const [formData, setFormData] = useState({
+    fromAccount: "",
+    toAccount: "",
+    details: "",
+    amount: "",
+    memo: "",
+  });
 
-  const contributionActions = [
+  const requestActions = [
     {
-      name: "One-Time Contribution",
-      desc: "Add funds to your retirement savings profile.",
+      name: "One-time Contribution",
+      desc: "Submit a one-time retirement contribution request for review.",
       icon: "CON",
-      type: "review",
     },
     {
       name: "Recurring Contribution",
-      desc: "Set up a scheduled retirement contribution.",
+      desc: "Set up or update an ongoing retirement contribution schedule.",
       icon: "REC",
-      type: "review",
     },
     {
       name: "Internal Transfer",
-      desc: "Move funds between eligible CBHfinance accounts.",
-      icon: "TRN",
-      type: "transfer",
+      desc: "Move available funds between eligible CBHfinance retirement accounts.",
+      icon: "TRF",
     },
     {
       name: "Rollover Request",
-      desc: "Start a rollover from another retirement provider.",
+      desc: "Start a rollover review from an outside retirement provider.",
       icon: "ROL",
-      type: "review",
     },
     {
       name: "Withdrawal Review",
-      desc: "Request a distribution or withdrawal review.",
-      icon: "WDR",
-      type: "review",
+      desc: "Request review for a retirement withdrawal or distribution.",
+      icon: "REV",
     },
     {
       name: "Contribution Limits",
-      desc: "Review annual limits and account guidance.",
+      desc: "Review contribution guidance before making additional deposits.",
       icon: "LIM",
-      type: "info",
     },
   ];
 
-  const accountLabel = (account: any) => {
-    const name =
-      account.type === "Checking"
-        ? "Traditional Retirement Savings"
-        : account.type === "Savings"
-          ? "High-Yield Cash Reserve"
-          : account.type === "IRA"
-            ? "Individual Retirement Account"
-            : account.type;
-
-    return `${name} · ${account.number} · ${money(account.balance)}`;
-  };
-
-  function resetForm(actionName?: string) {
-    setActiveForm(actionName ?? null);
-    setFormData({ fromAccount: "", toAccount: "", amount: "", memo: "" });
-    setReviewNotice(null);
-    setSuccess(false);
+  function accountType(account: any) {
+    return account?.accountType ?? account?.type ?? "Retirement";
   }
 
-  async function submitContributionAction(e: FormEvent) {
-    e.preventDefault();
+  function accountNumber(account: any) {
+    return account?.accountNumber ?? account?.number ?? "Secure account";
+  }
+
+  function accountBalance(account: any) {
+    return Number(account?.balance ?? 0);
+  }
+
+  function accountLabel(account: any) {
+    const type = accountType(account);
+    const name =
+      type === "Checking"
+        ? "Traditional Retirement Savings"
+        : type === "Savings"
+          ? "High-Yield Cash Reserve"
+          : type === "IRA"
+            ? "Individual Retirement Account"
+            : `${type} Account`;
+
+    return `${name} · ${accountNumber(account)} · ${money(accountBalance(account))}`;
+  }
+
+  function resetForm() {
+    setActiveForm(null);
+    setNotice("");
+    setFormData({
+      fromAccount: "",
+      toAccount: "",
+      details: "",
+      amount: "",
+      memo: "",
+    });
+  }
+
+  function submitRequest(event: FormEvent) {
+    event.preventDefault();
 
     if (!activeForm) return;
 
-    setSubmitting(true);
-    setReviewNotice(null);
-    setSuccess(false);
-
-    try {
-      if (activeForm === "Internal Transfer") {
-        if (!formData.fromAccount || !formData.toAccount) {
-          throw new Error("Please select both source and destination accounts.");
-        }
-
-        if (formData.fromAccount === formData.toAccount) {
-          throw new Error("Source and destination accounts must be different.");
-        }
-
-        await transfer.mutateAsync({
-          fromAccountId: formData.fromAccount,
-          toAccountId: formData.toAccount,
-          amount: Number(formData.amount) || 100,
-          memo: formData.memo || "Retirement account transfer",
-        });
-
-        setSuccess(true);
-        return;
-      }
-
-      if (activeForm === "Contribution Limits") {
-        setReviewNotice(
-          "Contribution limits are displayed for planning guidance. Final eligibility depends on account type, age, tax year, income, and plan rules."
-        );
-        return;
-      }
-
-      await block.mutateAsync({
-        requestType: "ACH",
-        amount: Number(formData.amount) || 100,
-        memo: formData.memo || `${activeForm} submitted for review`,
-      });
-
-      setReviewNotice(
-        `${activeForm} has been captured for review. Retirement contributions, rollovers, and distributions require plan-level verification before processing.`
+    if (activeForm === "Contribution Limits") {
+      setNotice(
+        "Contribution limits are provided for planning guidance. Final eligibility depends on account type, age, tax year, income, and plan rules."
       );
-    } catch (err: any) {
-      setReviewNotice(err?.message || "This request could not be completed online. Please contact support.");
-    } finally {
-      setSubmitting(false);
+      return;
     }
+
+    setNotice(
+      `${activeForm} has been captured for review. CBHfinance will verify account eligibility, request details, and any required retirement documentation before processing.`
+    );
+
+    setFormData({
+      fromAccount: "",
+      toAccount: "",
+      details: "",
+      amount: "",
+      memo: "",
+    });
   }
 
   return (
     <div className="grid gap-6">
-      <SecureOtpPrompt
-        open={Boolean(pendingDownload)}
-        title="Verify document download"
-        description="For your protection, CBHfinance requires a one-time passcode before downloading retirement statements or secure documents."
-        onClose={() => setPendingDownload(null)}
-        onVerified={downloadPendingDocument}
-      />
-
       <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
         <div className="flex flex-wrap items-start justify-between gap-5">
           <div>
@@ -2639,31 +2609,33 @@ function Requests() {
               Contributions and Transfers
             </div>
             <h2 className="mt-2 font-serif text-4xl font-semibold">
-              Manage retirement money movement
+              Retirement request center
             </h2>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-white/70">
-              Submit contribution, transfer, rollover, and withdrawal review requests.
-              Internal transfers between eligible CBHfinance accounts may process immediately;
-              other retirement requests require review before completion.
+              Submit contribution, rollover, transfer, and withdrawal review requests.
+              Certain retirement requests require plan-level verification before completion.
             </p>
           </div>
 
           <div className="rounded-3xl border border-white/15 bg-white/5 p-5 text-sm">
-            <div className="text-white/55">Online request status</div>
-            <div className="mt-2 text-2xl font-semibold">Review required</div>
+            <div className="text-white/55">Request status</div>
+            <div className="mt-2 text-2xl font-semibold text-[#d6ad42]">Review required</div>
             <p className="mt-2 max-w-xs text-xs leading-5 text-white/60">
-              Rollovers, withdrawals, and new external contributions are reviewed for plan compliance.
+              Sensitive retirement actions may require additional verification.
             </p>
           </div>
         </div>
       </section>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {contributionActions.map((action) => (
+        {requestActions.map((action) => (
           <button
             key={action.name}
             type="button"
-            onClick={() => resetForm(action.name)}
+            onClick={() => {
+              setActiveForm(action.name);
+              setNotice("");
+            }}
             className={`rounded-2xl border bg-white p-6 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#d6ad42] hover:shadow-md ${
               activeForm === action.name ? "border-[#d6ad42]" : "border-slate-200"
             }`}
@@ -2689,14 +2661,15 @@ function Requests() {
               </h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">
                 {activeForm
-                  ? "Complete the details below. Some requests are submitted for review instead of immediate processing."
+                  ? "Complete the details below. Requests are captured for review before processing."
                   : "Choose one of the retirement actions above to begin."}
               </p>
             </div>
+
             {activeForm && (
               <button
                 type="button"
-                onClick={() => resetForm()}
+                onClick={resetForm}
                 className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
               >
                 Clear
@@ -2705,7 +2678,7 @@ function Requests() {
           </div>
 
           {activeForm ? (
-            <form onSubmit={submitContributionAction} className="grid gap-4">
+            <form onSubmit={submitRequest} className="grid gap-4">
               {activeForm === "Internal Transfer" ? (
                 <>
                   <div>
@@ -2714,15 +2687,15 @@ function Requests() {
                     </label>
                     <select
                       value={formData.fromAccount}
-                      onChange={(e) =>
-                        setFormData({ ...formData, fromAccount: e.target.value, toAccount: "" })
+                      onChange={(event) =>
+                        setFormData({ ...formData, fromAccount: event.target.value, toAccount: "" })
                       }
                       className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
                       required
                     >
                       <option value="">Select source account</option>
-                      {accounts.data?.map((account: any) => (
-                        <option key={account.id} value={account.id}>
+                      {(accounts.data ?? []).map((account: any) => (
+                        <option key={account.id ?? accountNumber(account)} value={account.id ?? accountNumber(account)}>
                           {accountLabel(account)}
                         </option>
                       ))}
@@ -2735,15 +2708,15 @@ function Requests() {
                     </label>
                     <select
                       value={formData.toAccount}
-                      onChange={(e) => setFormData({ ...formData, toAccount: e.target.value })}
+                      onChange={(event) => setFormData({ ...formData, toAccount: event.target.value })}
                       className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
                       required
                     >
                       <option value="">Select destination account</option>
-                      {accounts.data
-                        ?.filter((account: any) => account.id !== formData.fromAccount)
+                      {(accounts.data ?? [])
+                        .filter((account: any) => String(account.id ?? accountNumber(account)) !== formData.fromAccount)
                         .map((account: any) => (
-                          <option key={account.id} value={account.id}>
+                          <option key={account.id ?? accountNumber(account)} value={account.id ?? accountNumber(account)}>
                             {accountLabel(account)}
                           </option>
                         ))}
@@ -2757,6 +2730,8 @@ function Requests() {
                   </label>
                   <input
                     type="text"
+                    value={formData.details}
+                    onChange={(event) => setFormData({ ...formData, details: event.target.value })}
                     placeholder={
                       activeForm === "Rollover Request"
                         ? "Current provider or plan name"
@@ -2766,9 +2741,8 @@ function Requests() {
                             ? "Contribution schedule, e.g. monthly"
                             : "Contribution or request details"
                     }
-                    value={formData.fromAccount}
-                    onChange={(e) => setFormData({ ...formData, fromAccount: e.target.value })}
                     className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
+                    required={activeForm !== "Contribution Limits"}
                   />
                 </div>
               )}
@@ -2779,24 +2753,25 @@ function Requests() {
                 </label>
                 <input
                   type="number"
-                  placeholder="0.00"
-                  min="0.01"
+                  min="0"
                   step="0.01"
                   value={formData.amount}
-                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                  onChange={(event) => setFormData({ ...formData, amount: event.target.value })}
+                  placeholder="0.00"
                   className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
+                  required={activeForm !== "Contribution Limits"}
                 />
               </div>
 
               <div>
                 <label className="mb-2 block text-sm font-semibold text-slate-700">
-                  Memo / notes
+                  Memo
                 </label>
                 <input
                   type="text"
-                  placeholder="Optional note for retirement services"
                   value={formData.memo}
-                  onChange={(e) => setFormData({ ...formData, memo: e.target.value })}
+                  onChange={(event) => setFormData({ ...formData, memo: event.target.value })}
+                  placeholder="Optional note for review"
                   className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-[#d6ad42]"
                 />
               </div>
@@ -2804,19 +2779,14 @@ function Requests() {
               <div className="flex flex-wrap gap-3 pt-2">
                 <button
                   type="submit"
-                  disabled={submitting}
-                  className="rounded-full bg-[#071f46] px-7 py-3 font-semibold text-white transition disabled:opacity-50"
+                  className="rounded-full bg-[#071f46] px-7 py-3 font-semibold text-white transition hover:bg-[#0b2d63]"
                 >
-                  {submitting
-                    ? "Processing..."
-                    : activeForm === "Internal Transfer"
-                      ? "Submit transfer"
-                      : "Submit for review"}
+                  {activeForm === "Contribution Limits" ? "View guidance" : "Submit for review"}
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => resetForm()}
+                  onClick={resetForm}
                   className="rounded-full border border-slate-200 px-7 py-3 font-semibold text-[#071f46] hover:bg-slate-50"
                 >
                   Cancel
@@ -2829,20 +2799,10 @@ function Requests() {
             </div>
           )}
 
-          {success && (
-            <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-emerald-900">
-              <div className="font-serif text-xl font-semibold">Transfer completed</div>
-              <p className="mt-2 text-sm leading-6">
-                Your internal transfer of {money(Number(formData.amount || 0))} has been processed,
-                and your account balances have been updated.
-              </p>
-            </div>
-          )}
-
-          {reviewNotice && (
+          {notice && (
             <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-900">
               <AlertCircle className="mr-2 inline h-4 w-4" />
-              <span className="text-sm leading-6">{reviewNotice}</span>
+              <span className="text-sm leading-6">{notice}</span>
             </div>
           )}
         </section>
@@ -2854,8 +2814,7 @@ function Requests() {
               <div className="rounded-2xl bg-[#f6f7fb] p-4">
                 <div className="font-semibold text-[#071f46]">Annual limits</div>
                 <p className="mt-2 leading-6">
-                  Contribution eligibility can vary by account type, tax year, age, income,
-                  and plan rules.
+                  Contribution eligibility can vary by account type, tax year, age, income, and plan rules.
                 </p>
               </div>
               <div className="rounded-2xl bg-[#f6f7fb] p-4">
@@ -2876,21 +2835,27 @@ function Requests() {
           <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
             <h3 className="font-serif text-2xl font-semibold">Eligible accounts</h3>
             <div className="mt-5 grid gap-3">
-              {accounts.data?.map((account: any) => (
-                <div key={account.id} className="rounded-2xl bg-[#f6f7fb] p-4">
+              {(accounts.data ?? []).map((account: any) => (
+                <div key={account.id ?? accountNumber(account)} className="rounded-2xl bg-[#f6f7fb] p-4">
                   <div className="font-semibold text-[#071f46]">
-                    {account.type === "Checking"
+                    {accountType(account) === "Checking"
                       ? "Traditional Retirement Savings"
-                      : account.type === "Savings"
+                      : accountType(account) === "Savings"
                         ? "High-Yield Cash Reserve"
-                        : account.type === "IRA"
+                        : accountType(account) === "IRA"
                           ? "Individual Retirement Account"
-                          : account.type}
+                          : `${accountType(account)} Account`}
                   </div>
-                  <div className="mt-1 text-sm text-slate-500">{account.number}</div>
-                  <div className="mt-2 font-semibold">{money(account.balance)}</div>
+                  <div className="mt-1 text-sm text-slate-500">{accountNumber(account)}</div>
+                  <div className="mt-2 font-semibold">{money(accountBalance(account))}</div>
                 </div>
               ))}
+
+              {!(accounts.data ?? []).length && (
+                <div className="rounded-2xl bg-[#f6f7fb] p-4 text-sm text-slate-500">
+                  Eligible accounts are loading.
+                </div>
+              )}
             </div>
           </section>
         </aside>
