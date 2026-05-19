@@ -206,17 +206,48 @@ function LandingPage() {
             </div>
 
             <div className="relative lg:pl-6">
-              <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-2xl shadow-[#071f46]/15 lg:mt-10">
+              <div className="absolute -right-4 top-2 hidden rounded-full bg-[#d6ad42] px-5 py-2 text-xs font-black uppercase tracking-[0.22em] text-white shadow-lg shadow-black/20 lg:block">
+                Secure access
+              </div>
+
+              <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-2xl shadow-[#071f46]/15 lg:mt-10">
                 <div className="rounded-[1.5rem] bg-[#071f46] p-6 text-white">
-                  <div className="text-xs uppercase tracking-[0.3em] text-[#d6ad42]">
-                    Retirement overview
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <div className="text-xs uppercase tracking-[0.3em] text-[#d6ad42]">
+                        Retirement portal preview
+                      </div>
+                      <div className="mt-4 font-serif text-3xl font-semibold">
+                        Private account access begins after secure sign-in.
+                      </div>
+                    </div>
+                    <img
+                      src="/icons/icon-192.png"
+                      alt=""
+                      className="h-14 w-14 rounded-2xl shadow-lg shadow-black/20"
+                    />
                   </div>
-                  <div className="mt-4 font-serif text-3xl font-semibold">
-                    Private account access begins after secure sign-in.
-                  </div>
+
                   <p className="mt-4 text-sm leading-6 text-white/70">
                     Account values, documents, and personal records remain protected inside the client portal.
                   </p>
+
+                  <div className="mt-6 rounded-2xl bg-white/5 p-4">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-white/60">Retirement savings</span>
+                      <span className="font-semibold text-[#d6ad42]">Protected</span>
+                    </div>
+                    <div className="mt-4 h-2 rounded-full bg-white/10">
+                      <div className="h-2 w-[72%] rounded-full bg-[#d6ad42]" />
+                    </div>
+                    <div className="mt-4 grid grid-cols-3 gap-3 text-center text-xs">
+                      {["Activity", "Documents", "Profile"].map((item) => (
+                        <div key={item} className="rounded-xl bg-white/5 px-2 py-3 text-white/75">
+                          {item}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="mt-5 grid gap-3">
@@ -236,6 +267,46 @@ function LandingPage() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-[1.5rem] border border-slate-200 bg-white p-5 shadow-sm">
+                  <div className="text-xs font-black uppercase tracking-[0.25em] text-[#d6ad42]">
+                    Allocation
+                  </div>
+                  <div className="mt-4 grid gap-3">
+                    {[
+                      ["Target date", "48%"],
+                      ["Equity index", "24%"],
+                      ["Bond income", "18%"],
+                    ].map(([label, value]) => (
+                      <div key={label}>
+                        <div className="mb-2 flex justify-between text-xs font-semibold text-slate-600">
+                          <span>{label}</span>
+                          <span>{value}</span>
+                        </div>
+                        <div className="h-2 rounded-full bg-slate-100">
+                          <div className="h-2 rounded-full bg-[#d6ad42]" style={{ width: value }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-[1.5rem] border border-slate-200 bg-white p-5 shadow-sm">
+                  <div className="text-xs font-black uppercase tracking-[0.25em] text-[#d6ad42]">
+                    Verification
+                  </div>
+                  <div className="mt-4 rounded-2xl bg-[#f6f7fb] p-4">
+                    <div className="flex items-center gap-3">
+                      <ShieldCheck className="h-6 w-6 text-[#071f46]" />
+                      <div>
+                        <div className="font-semibold text-[#071f46]">OTP protected</div>
+                        <div className="text-xs text-slate-500">Secure document and portal access</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
