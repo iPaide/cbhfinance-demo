@@ -47,7 +47,7 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
       {!compact && (
         <span className="leading-none">
           <span className="font-serif text-2xl font-semibold tracking-tight text-[#0a1f44]">CBHfinance</span>
-          <span className="block text-xs uppercase tracking-[0.32em] text-slate-500">Retirement Portal</span>
+          <span className="block text-xs uppercase tracking-[0.32em] text-slate-500">Private Banking</span>
         </span>
       )}
     </Link>
@@ -56,7 +56,7 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
 
 function MarketingNav() {
   const navLinks = [
-    ["Retirement Services", "#services"],
+    ["Private Client Services", "#services"],
     ["Planning", "#planning"],
     ["Documents", "#documents"],
     ["Security", "#security"],
@@ -77,7 +77,7 @@ function MarketingNav() {
               CBHfinance
             </div>
             <div className="mt-1 text-[10px] font-black uppercase tracking-[0.32em] text-[#d6ad42]">
-              Retirement Portal
+              Private Banking
             </div>
           </div>
         </a>
@@ -112,13 +112,13 @@ function MarketingNav() {
 function LandingPage() {
   const serviceCards = [
     {
-      title: "Retirement account access",
-      copy: "Review retirement savings, IRA records, cash reserve balances, and account activity from one protected portal.",
+      title: "Private retirement account access",
+      copy: "Review private retirement accounts, IRA records, deposits, cash reserve balances, and account activity from one protected portal.",
       label: "Account view",
     },
     {
-      title: "IRA and rollover support",
-      copy: "Submit rollover, transfer, and contribution requests through review-ready retirement workflows.",
+      title: "IRA, deposits, and rollover support",
+      copy: "Submit rollover, transfer, deposit, and contribution requests through review-ready private client workflows.",
       label: "Guided requests",
     },
     {
@@ -168,7 +168,7 @@ function LandingPage() {
               </div>
 
               <h1 className="mt-7 font-serif text-5xl font-semibold leading-[0.98] tracking-tight text-[#071f46] md:text-7xl">
-                Retirement account access built for every stage of saving.
+                Private banking built around retirement wealth.
               </h1>
 
               <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-700">
@@ -181,13 +181,13 @@ function LandingPage() {
                   href="/login"
                   className="rounded-full bg-[#071f46] px-7 py-3.5 font-semibold text-white shadow-lg shadow-[#071f46]/15 transition hover:bg-[#0b2d63]"
                 >
-                  Access your account
+                  Access private client portal
                 </a>
                 <a
                   href="/login"
                   className="rounded-full border border-slate-300 bg-white px-7 py-3.5 font-semibold text-[#071f46] transition hover:border-[#d6ad42] hover:bg-[#fffdf5]"
                 >
-                  Enroll or request access
+                  Enroll or request private access
                 </a>
               </div>
 
@@ -215,10 +215,10 @@ function LandingPage() {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <div className="text-xs uppercase tracking-[0.3em] text-[#d6ad42]">
-                        Client access preview
+                        Private client access
                       </div>
                       <div className="mt-4 font-serif text-3xl font-semibold">
-                        Enroll, sign in, and manage retirement records securely.
+                        Enroll, sign in, and manage private retirement banking records securely.
                       </div>
                     </div>
                     <img
@@ -229,7 +229,7 @@ function LandingPage() {
                   </div>
 
                   <p className="mt-4 text-sm leading-6 text-white/70">
-                    Clients can securely access account activity, documents, rollovers, contribution records, and profile tools after verification.
+                    Clients can securely access retirement activity, IRA records, rollovers, deposits, documents, beneficiary tools, and service requests after verification.
                   </p>
 
                   <div className="mt-6 rounded-2xl bg-white/5 p-4">
@@ -252,7 +252,7 @@ function LandingPage() {
 
                 <div className="mt-5 grid gap-3">
                   {[
-                    ["Enroll or request access", "Begin secure online access for eligible retirement accounts"],
+                    ["Enroll or request private access", "Begin secure online access for eligible retirement accounts"],
                     ["Account dashboard", "Review retirement balances, activity, and savings records"],
                     ["Statements and tax forms", "Access account documents through secure delivery"],
                     ["Rollovers and beneficiaries", "Manage retirement requests and profile records"],
@@ -312,7 +312,7 @@ function LandingPage() {
 
         <section className="border-y border-slate-200 bg-[#071f46] py-5 text-white">
           <div className="container grid gap-4 text-sm font-semibold md:grid-cols-5">
-            {["Secure portal", "IRA records", "Rollover review", "Tax documents", "Beneficiary tools"].map((item) => (
+            {["Private access", "IRA records", "Rollover review", "Tax documents", "Beneficiary tools"].map((item) => (
               <div key={item} className="rounded-2xl bg-white/5 px-4 py-3 text-center text-white/85">
                 {item}
               </div>
@@ -326,7 +326,7 @@ function LandingPage() {
               Retirement services
             </div>
             <h2 className="mt-4 font-serif text-4xl font-semibold tracking-tight md:text-5xl">
-              A secure retirement platform for account holders.
+              A private banking platform for retirement-focused clients.
             </h2>
             <p className="mt-5 text-lg leading-8 text-slate-700">
               CBHfinance brings together the tools clients expect from a retirement platform:
@@ -354,7 +354,7 @@ function LandingPage() {
                 Planning and readiness
               </div>
               <h2 className="mt-4 font-serif text-4xl font-semibold tracking-tight md:text-5xl">
-                Designed for retirement savers, account holders, and rollover needs.
+                Designed for private clients managing retirement wealth.
               </h2>
               <p className="mt-5 text-lg leading-8 text-slate-700">
                 The portal focuses on long-term savings visibility, review workflows,
@@ -417,7 +417,7 @@ function LandingPage() {
                 Security and review controls
               </div>
               <h2 className="mt-4 font-serif text-4xl font-semibold tracking-tight md:text-5xl">
-                Built for secure client access at scale.
+                Built for secure private client access.
               </h2>
               <p className="mt-5 text-lg leading-8 text-slate-700">
                 Sensitive account information, documents, and selected actions are protected
@@ -470,7 +470,7 @@ function LandingPage() {
                 Secure retirement access
               </div>
               <h2 className="mt-3 font-serif text-4xl font-semibold">
-                Enroll, sign in, and manage retirement access with confidence.
+                Enroll, sign in, and manage private retirement banking access with confidence.
               </h2>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-white/70">
                 Sign in to review account activity, documents, contribution records,
@@ -513,8 +513,8 @@ function LandingPage() {
           </div>
 
           <div className="container mt-8 border-t border-slate-200 pt-6 text-xs leading-6 text-slate-500">
-            Investment and retirement account information is available only after secure sign-in.
-            Certain contribution, rollover, transfer, withdrawal, and beneficiary requests require review before processing.
+            Private banking, retirement account, deposit, IRA, rollover, document, and beneficiary services may be subject to eligibility, identity verification, review controls, and applicable financial institution disclosures.
+            Certain contribution, rollover, transfer, withdrawal, deposit, and beneficiary requests require review before processing.
           </div>
         </footer>
       </main>
@@ -666,14 +666,14 @@ function LoginPage({ role, onAuthenticated }: { role: "user" | "admin"; onAuthen
               {step === "otp" && "Verify one-time passcode"}
               {step === "forgotEmail" && "Recover email access"}
               {step === "forgotPassword" && "Reset password"}
-              {step === "enroll" && "Enroll or request access"}
+              {step === "enroll" && "Enroll or request private access"}
             </h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">
               {step === "login" && "Enter your credentials to begin secure account verification."}
               {step === "otp" && "Enter the 6-digit passcode sent to the verified email address on file."}
               {step === "forgotEmail" && "Provide identifying information so support can help recover account access."}
               {step === "forgotPassword" && "Submit your email to begin a secure password reset request."}
-              {step === "enroll" && "Enroll or request access for a retirement account, rollover, or IRA relationship."}
+              {step === "enroll" && "Enroll or request private access for a retirement account, rollover, or IRA relationship."}
             </p>
           </div>
 
@@ -999,7 +999,7 @@ function UserPortal() {
 
   const navItems = [
     ["Overview", "dashboard"],
-    ["Retirement Accounts", "accounts"],
+    ["Private Retirement Accounts", "accounts"],
     ["Investments", "investments"],
     ["Contributions", "requests"],
     ["Activity", "transactions"],
@@ -1095,7 +1095,7 @@ function UserPortal() {
             <div className="min-w-0">
               <div className="truncate font-serif text-2xl font-bold leading-none text-white">CBHfinance</div>
               <div className="mt-2 truncate text-[9px] uppercase tracking-[0.28em] text-[#d6ad42]">
-                Retirement Portal
+                Private Banking
               </div>
             </div>
           </div>
@@ -1159,7 +1159,7 @@ function UserPortal() {
                     CBHfinance
                   </div>
                   <div className="mt-2 truncate text-[9px] uppercase tracking-[0.28em] text-[#d6ad42]">
-                    Retirement Portal
+                    Private Banking
                   </div>
                 </div>
               </div>
@@ -1168,7 +1168,7 @@ function UserPortal() {
             <nav className="mt-8 grid gap-2">
               {[
                 ["Overview", "dashboard"],
-                ["Retirement Accounts", "accounts"],
+                ["Private Retirement Accounts", "accounts"],
                 ["Investments", "investments"],
                 ["Contributions", "requests"],
                 ["Activity", "transactions"],
@@ -1255,7 +1255,7 @@ function UserPortal() {
                 {tab === "dashboard"
                   ? "Overview"
                   : tab === "accounts"
-                    ? "Retirement Accounts"
+                    ? "Private Retirement Accounts"
                     : tab === "investments"
                       ? "Investments"
                       : tab === "payments"
@@ -1540,7 +1540,7 @@ function UserPortal() {
                 <div className="flex flex-wrap items-start justify-between gap-5">
                   <div>
                     <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
-                      Retirement Accounts
+                      Private Retirement Accounts
                     </div>
                     <h2 className="mt-2 font-serif text-4xl font-semibold">
                       Account balances and savings structure
@@ -2696,7 +2696,7 @@ function TransactionHistory() {
         <div className="flex flex-wrap items-start justify-between gap-5">
           <div>
             <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
-              Retirement Account Activity
+              Private Client Activity
             </div>
             <h2 className="mt-2 font-serif text-4xl font-semibold">Activity and Transactions</h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-white/70">
@@ -2915,10 +2915,10 @@ function Requests() {
         <div className="flex flex-wrap items-start justify-between gap-5">
           <div>
             <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
-              Contributions and Transfers
+              Deposits, Contributions, and Transfers
             </div>
             <h2 className="mt-2 font-serif text-4xl font-semibold">
-              Retirement request center
+              Private client request center
             </h2>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-white/70">
               Submit contribution, rollover, transfer, and withdrawal review requests.
@@ -3338,7 +3338,7 @@ function Statements({ rows }: { rows: any[] }) {
               Statements and Documents
             </div>
             <h2 className="mt-2 font-serif text-4xl font-semibold">
-              Retirement document center
+              Private banking document center
             </h2>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-white/70">
               Access retirement account statements, tax forms, contribution confirmations,
