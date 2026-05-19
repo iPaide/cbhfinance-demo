@@ -1399,46 +1399,77 @@ function UserPortal() {
               </section>
 
               <section className="grid gap-5 md:grid-cols-3">
-                {accountCards.map((account: any) => (
-                  <div
-                    key={account.id}
-                    className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <div className="text-xs font-bold uppercase tracking-widest text-[#d6ad42]">
-                          {account.displayName}
-                        </div>
-                        <h3 className="mt-3 font-serif text-2xl font-semibold text-[#071f46]">
-                          {money(account.balance)}
-                        </h3>
-                        <p className="mt-2 text-sm text-slate-500">{account.accountNote}</p>
-                      </div>
-                      <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                        {account.status}
-                      </span>
-                    </div>
+                {(dashboard.data?.accounts ?? []).map((account: any) => {
+                  const accountType = account.accountType ?? account.type ?? "Retirement";
+                  const accountNumber = account.accountNumber ?? account.number ?? "Protected";
+                  const balance = Number(account.balance ?? 0);
 
-                    <div className="mt-6 rounded-2xl bg-[#f6f7fb] p-4 text-sm">
-                      <div className="flex justify-between gap-3">
-                        <span className="text-slate-500">Account number</span>
-                        <span className="font-semibold text-[#071f46]">{account.accountNumber}</span>
-                      </div>
-                      <div className="mt-3 flex justify-between gap-3">
-                        <span className="text-slate-500">Account type</span>
-                        <span className="font-semibold text-[#071f46]">{account.accountType}</span>
-                      </div>
-                    </div>
+                  const displayName =
+                    accountType === "Checking"
+                      ? "Traditional Retirement Savings"
+                      : accountType === "Savings"
+                        ? "High-Yield Cash Reserve"
+                        : accountType === "IRA"
+                          ? "Individual Retirement Account"
+                          : `${accountType} Account`;
 
-                    <button
-                      type="button"
-                      onClick={() => setTab("transactions")}
-                      className="mt-6 rounded-full border border-[#071f46]/15 px-5 py-3 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
+                  const accountNote =
+                    accountType === "Checking"
+                      ? "Core retirement savings account"
+                      : accountType === "Savings"
+                        ? "Liquid reserve for retirement planning"
+                        : accountType === "IRA"
+                          ? "Tax-advantaged individual retirement account"
+                          : "Protected retirement account";
+
+                  return (
+                    <div
+                      key={account.id ?? accountNumber}
+                      className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm"
                     >
-                      View account activity
-                    </button>
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <div className="text-xs font-bold uppercase tracking-widest text-[#d6ad42]">
+                            {displayName}
+                          </div>
+                          <h3 className="mt-3 font-serif text-2xl font-semibold text-[#071f46]">
+                            {money(balance)}
+                          </h3>
+                          <p className="mt-2 text-sm text-slate-500">{accountNote}</p>
+                        </div>
+
+                        <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                          {account.status ?? "Active"}
+                        </span>
+                      </div>
+
+                      <div className="mt-6 rounded-2xl bg-[#f6f7fb] p-4 text-sm">
+                        <div className="flex justify-between gap-3">
+                          <span className="text-slate-500">Account number</span>
+                          <span className="font-semibold text-[#071f46]">{accountNumber}</span>
+                        </div>
+                        <div className="mt-3 flex justify-between gap-3">
+                          <span className="text-slate-500">Account type</span>
+                          <span className="font-semibold text-[#071f46]">{accountType}</span>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setTab("transactions")}
+                        className="mt-6 rounded-full border border-[#071f46]/15 px-5 py-3 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
+                      >
+                        View account activity
+                      </button>
+                    </div>
+                  );
+                })}
+
+                {!(dashboard.data?.accounts ?? []).length && (
+                  <div className="rounded-[2rem] border border-slate-200 bg-white p-8 text-sm text-slate-600 shadow-sm md:col-span-3">
+                    Retirement accounts are loading. Please refresh if this continues.
                   </div>
-                ))}
+                )}
               </section>
             </div>
           )}
