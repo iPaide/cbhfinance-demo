@@ -985,6 +985,7 @@ function UserPortal() {
   const [tab, setTab] = useState(initialTab);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileNotice, setProfileNotice] = useState("");
+  const [profileUpdateOpen, setProfileUpdateOpen] = useState(false);
   const [beneficiaryWorkflow, setBeneficiaryWorkflow] = useState<
     null | "beneficiary" | "trustedContact" | "delivery" | "accountReview"
   >(null);
@@ -2131,7 +2132,13 @@ function UserPortal() {
                     <h3 className="font-serif text-2xl font-semibold">Personal information</h3>
                     <button
                       type="button"
-                      className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
+                      onClick={() => {
+                        setProfileUpdateOpen(true);
+                        setProfileNotice(
+                          "Profile update request started. A CBHfinance representative will verify identity before applying profile changes."
+                        );
+                      }}
+                      className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
                     >
                       Request update
                     </button>
@@ -2149,6 +2156,73 @@ function UserPortal() {
                     <Setting label="Document delivery" value="Electronic delivery enabled" />
                   </div>
                 </section>
+
+                {profileUpdateOpen && (
+                  <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                      <div>
+                        <div className="text-xs font-bold uppercase tracking-widest text-[#d6ad42]">
+                          Profile update
+                        </div>
+                        <h3 className="mt-2 font-serif text-2xl font-semibold text-[#071f46]">
+                          Request personal information update
+                        </h3>
+                        <p className="mt-2 text-sm leading-6 text-slate-600">
+                          Profile changes require identity verification before email, phone,
+                          mailing address, or document delivery details are updated.
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setProfileUpdateOpen(false);
+                          setProfileNotice("");
+                        }}
+                        className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
+                      >
+                        Close
+                      </button>
+                    </div>
+
+                    {profileNotice && (
+                      <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm leading-6 text-emerald-900">
+                        <CheckCircle2 className="mr-2 inline h-4 w-4" />
+                        {profileNotice}
+                      </div>
+                    )}
+
+                    <div className="mt-5 grid gap-4 md:grid-cols-3">
+                      <div className="rounded-2xl bg-[#f6f7fb] p-5">
+                        <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                          Request type
+                        </div>
+                        <div className="mt-2 font-semibold text-[#071f46]">
+                          Profile update
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl bg-[#f6f7fb] p-5">
+                        <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                          Status
+                        </div>
+                        <div className="mt-2 font-semibold text-[#071f46]">
+                          Verification required
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl bg-[#f6f7fb] p-5">
+                        <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                          Next step
+                        </div>
+                        <div className="mt-2 font-semibold text-[#071f46]">
+                          Representative review
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                )}
+
 
                 <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
                   <div className="mb-5 flex items-center justify-between">
