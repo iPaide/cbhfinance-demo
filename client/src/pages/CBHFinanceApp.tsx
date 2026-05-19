@@ -1284,7 +1284,12 @@ function UserPortal() {
                       Private client retirement banking overview
                     </div>
                     <h1 className="mt-3 font-serif text-4xl font-semibold tracking-tight text-[#071f46]">
-                      Welcome back, {dashboard.data?.customer?.name?.split(" ")?.[0] ?? "Private Client"}
+                      Welcome back, {(
+                        ((dashboard.data?.customer as any)?.name ??
+                          (dashboard.data?.customer as any)?.fullName ??
+                          (dashboard.data?.customer as any)?.displayName ??
+                          "Emily Ann Johnson") as string
+                      ).split(" ")[0]}
                     </h1>
                     <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
                       Review private retirement assets, vested balance, deposits and contributions,
