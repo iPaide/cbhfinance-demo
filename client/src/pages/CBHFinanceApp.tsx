@@ -1113,7 +1113,7 @@ function UserPortal() {
         </header>
 
         <div className="p-5 lg:p-10">
-          {["dashboard", "accounts", "investments"].includes(tab) && (
+          {tab === "dashboard" && (
             <div className="grid gap-6">
               <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
                 <section className="overflow-hidden rounded-[2rem] bg-[#071f46] p-6 text-white shadow-xl sm:p-8">
@@ -1365,6 +1365,170 @@ function UserPortal() {
                     <div className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">
                       <AlertCircle className="mr-2 inline h-4 w-4" />
                       Withdrawal and rollover requests require review before processing.
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          )}
+
+          {tab === "accounts" && (
+            <div className="grid gap-6">
+              <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
+                <div className="flex flex-wrap items-start justify-between gap-5">
+                  <div>
+                    <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
+                      Retirement Accounts
+                    </div>
+                    <h2 className="mt-2 font-serif text-4xl font-semibold">
+                      Account balances and savings structure
+                    </h2>
+                    <p className="mt-3 max-w-3xl text-sm leading-6 text-white/70">
+                      Review retirement savings, cash reserve, and individual retirement account
+                      balances in one secure account view.
+                    </p>
+                  </div>
+
+                  <div className="rounded-3xl border border-white/15 bg-white/5 p-5 text-sm">
+                    <div className="text-white/55">Total retirement savings</div>
+                    <div className="mt-2 text-2xl font-semibold text-[#d6ad42]">
+                      {dashboard.data ? money(totalRetirementSavings) : "Loading"}
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section className="grid gap-5 md:grid-cols-3">
+                {accountCards.map((account: any) => (
+                  <div
+                    key={account.id}
+                    className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <div className="text-xs font-bold uppercase tracking-widest text-[#d6ad42]">
+                          {account.displayName}
+                        </div>
+                        <h3 className="mt-3 font-serif text-2xl font-semibold text-[#071f46]">
+                          {money(account.balance)}
+                        </h3>
+                        <p className="mt-2 text-sm text-slate-500">{account.accountNote}</p>
+                      </div>
+                      <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                        {account.status}
+                      </span>
+                    </div>
+
+                    <div className="mt-6 rounded-2xl bg-[#f6f7fb] p-4 text-sm">
+                      <div className="flex justify-between gap-3">
+                        <span className="text-slate-500">Account number</span>
+                        <span className="font-semibold text-[#071f46]">{account.accountNumber}</span>
+                      </div>
+                      <div className="mt-3 flex justify-between gap-3">
+                        <span className="text-slate-500">Account type</span>
+                        <span className="font-semibold text-[#071f46]">{account.accountType}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setTab("transactions")}
+                      className="mt-6 rounded-full border border-[#071f46]/15 px-5 py-3 text-sm font-semibold text-[#071f46] hover:bg-slate-50"
+                    >
+                      View account activity
+                    </button>
+                  </div>
+                ))}
+              </section>
+            </div>
+          )}
+
+          {tab === "investments" && (
+            <div className="grid gap-6">
+              <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
+                <div className="flex flex-wrap items-start justify-between gap-5">
+                  <div>
+                    <div className="text-xs uppercase tracking-[0.35em] text-[#d6ad42]">
+                      Investments
+                    </div>
+                    <h2 className="mt-2 font-serif text-4xl font-semibold">
+                      Allocation and investment profile
+                    </h2>
+                    <p className="mt-3 max-w-3xl text-sm leading-6 text-white/70">
+                      Review the current retirement allocation strategy, investment profile,
+                      savings direction, and portfolio readiness indicators.
+                    </p>
+                  </div>
+
+                  <div className="rounded-3xl border border-white/15 bg-white/5 p-5 text-sm">
+                    <div className="text-white/55">Investment profile</div>
+                    <div className="mt-2 text-2xl font-semibold text-[#d6ad42]">Balanced</div>
+                    <p className="mt-2 text-xs leading-5 text-white/60">
+                      Designed for long-term growth with diversified exposure.
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+                <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                  <h3 className="font-serif text-2xl font-semibold">Allocation snapshot</h3>
+
+                  <div className="mt-6 grid gap-5">
+                    {[
+                      ["Target date strategy", "48%"],
+                      ["US equity index", "24%"],
+                      ["Bond income fund", "18%"],
+                      ["Cash reserve", "10%"],
+                    ].map(([label, percent]) => (
+                      <div key={label}>
+                        <div className="mb-2 flex justify-between text-sm">
+                          <span className="font-medium">{label}</span>
+                          <span className="font-semibold text-[#071f46]">{percent}</span>
+                        </div>
+                        <div className="h-2 rounded-full bg-slate-100">
+                          <div
+                            className="h-2 rounded-full bg-[#d6ad42]"
+                            style={{ width: percent }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                  <h3 className="font-serif text-2xl font-semibold">Investment readiness</h3>
+
+                  <div className="mt-6 grid gap-4 md:grid-cols-2">
+                    <div className="rounded-2xl bg-[#f6f7fb] p-5">
+                      <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                        Vested balance
+                      </div>
+                      <div className="mt-2 font-serif text-2xl font-semibold text-[#071f46]">
+                        {money(estimatedVestedBalance)}
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl bg-[#f6f7fb] p-5">
+                      <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                        YTD contributions
+                      </div>
+                      <div className="mt-2 font-serif text-2xl font-semibold text-[#071f46]">
+                        {money(estimatedYtdContributions)}
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl bg-[#f6f7fb] p-5 md:col-span-2">
+                      <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                        Retirement readiness
+                      </div>
+                      <div className="mt-3 h-2 rounded-full bg-slate-200">
+                        <div className="h-2 w-[72%] rounded-full bg-[#d6ad42]" />
+                      </div>
+                      <p className="mt-3 text-sm leading-6 text-slate-600">
+                        Your projected savings profile is on track based on current account activity.
+                      </p>
                     </div>
                   </div>
                 </section>
