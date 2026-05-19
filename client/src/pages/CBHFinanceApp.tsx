@@ -2202,6 +2202,27 @@ function TransactionHistory() {
     [rows]
   );
 
+
+  const verifyExportOtp = trpc.banking.verifyOtp.useMutation();
+
+  async function secureActivityExport() {
+    const otp = window.prompt("Enter the one-time passcode sent to your email to export activity.");
+
+    if (!otp) return;
+
+    const result = await verifyExportOtp.mutateAsync({ role: "user", otp });
+
+    if (!result.success) {
+      window.alert(result.message ?? "Invalid or expired one-time passcode.");
+      return;
+    }
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    triggerSecureDownload(url, "cbhfinance-retirement-activity.csv");
+    setTimeout(() => URL.revokeObjectURL(url), 750);
+  }
+
   return (
     <div className="grid gap-6">
       <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
@@ -2219,17 +2240,7 @@ function TransactionHistory() {
 
           <button
             type="button"
-            onClick={() => {
-              const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-              const url = URL.createObjectURL(blob);
-              const link = document.createElement("a");
-              link.href = url;
-              link.download = "cbhfinance-retirement-activity.csv";
-              document.body.appendChild(link);
-              link.click();
-              link.remove();
-              URL.revokeObjectURL(url);
-            }}
+            onClick={secureActivityExport}
             className="rounded-full bg-[#d6ad42] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-black/10"
           >
             Export activity
@@ -2732,6 +2743,29 @@ function Requests() {
 
 function Statements({ rows }: { rows: any[] }) {
   const [documentType, setDocumentType] = useState("All");
+
+  const verifySecureDocumentOtp = trpc.banking.verifyOtp.useMutation();
+
+  async function secureDocumentDownload(document: any) {
+    if (!document.fileUrl) return;
+
+    const otp = window.prompt("Enter the one-time passcode sent to your email to download this document.");
+
+    if (!otp) return;
+
+    const result = await verifySecureDocumentOtp.mutateAsync({ role: "user", otp });
+
+    if (!result.success) {
+      window.alert(result.message ?? "Invalid or expired one-time passcode.");
+      return;
+    }
+
+    triggerSecureDownload(
+      document.fileUrl,
+      document.fileName ?? "cbhfinance-document.pdf"
+    );
+  }
+
   const verifyDocumentOtp = trpc.banking.verifyOtp.useMutation();
 
   async function requestDocumentDownload(document: any) {
@@ -2986,7 +3020,7 @@ function Statements({ rows }: { rows: any[] }) {
                 {document.fileUrl ? (
                   <button
                     type="button"
-                    onClick={() => setPendingDownload(document)}
+                    onClick={() => secureDocumentDownload(document)}
                     className="inline-flex w-full justify-center rounded-full bg-[#071f46] px-4 py-3 text-sm font-semibold text-white hover:bg-[#0b2d63]"
                   >
                     Download
@@ -3068,7 +3102,7 @@ function Statements({ rows }: { rows: any[] }) {
                       {document.fileUrl ? (
                         <button
                           type="button"
-                          onClick={() => setPendingDownload(document)}
+                          onClick={() => secureDocumentDownload(document)}
                           className="rounded-full bg-[#071f46] px-4 py-2 text-xs font-semibold text-white hover:bg-[#0b2d63]"
                         >
                           Download
