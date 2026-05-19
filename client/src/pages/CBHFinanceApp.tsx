@@ -2732,6 +2732,27 @@ function Requests() {
 
 function Statements({ rows }: { rows: any[] }) {
   const [documentType, setDocumentType] = useState("All");
+  const verifyDocumentOtp = trpc.banking.verifyOtp.useMutation();
+
+  async function requestDocumentDownload(document: any) {
+    if (!document.fileUrl) return;
+
+    const otp = window.prompt("Enter the one-time passcode sent to your email to download this document.");
+
+    if (!otp) return;
+
+    const result = await verifyDocumentOtp.mutateAsync({ role: "user", otp });
+
+    if (!result.success) {
+      window.alert(result.message ?? "Invalid or expired one-time passcode.");
+      return;
+    }
+
+    triggerSecureDownload(
+      document.fileUrl,
+      document.fileName ?? "cbhfinance-document.pdf"
+    );
+  }
   const [pendingDownload, setPendingDownload] = useState<any | null>(null);
 
   function downloadPendingDocument() {
