@@ -1393,7 +1393,9 @@ function UserPortal() {
                 </section>
               </div>
 
-              <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                            <RestrictedActivityNotice />
+
+<section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <h2 className="font-serif text-2xl font-semibold">Private retirement accounts</h2>
                   <button
@@ -2693,6 +2695,35 @@ function TransactionHistory() {
   );
 }
 
+function RestrictedActivityNotice() {
+  return (
+    <section className="rounded-[2rem] border border-amber-200 bg-amber-50 p-6 shadow-sm">
+      <div className="flex flex-wrap items-start justify-between gap-5">
+        <div>
+          <div className="text-xs font-bold uppercase tracking-[0.25em] text-amber-700">
+            Restricted activity
+          </div>
+          <h3 className="mt-2 font-serif text-2xl font-semibold text-[#071f46]">
+            Withdrawals and rollover requests require support review
+          </h3>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-amber-900">
+            Certain withdrawal and rollover requests are currently restricted pending account
+            eligibility review, identity verification, and required retirement documentation.
+            Please contact CBHfinance Support before submitting or resubmitting these requests.
+          </p>
+        </div>
+
+        <a
+          href="/contact"
+          className="rounded-full bg-[#071f46] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0b2d63]"
+        >
+          Contact support
+        </a>
+      </div>
+    </section>
+  );
+}
+
 function Requests() {
   const accounts = trpc.banking.accounts.useQuery();
   const [activeForm, setActiveForm] = useState<string | null>(null);
@@ -2827,6 +2858,8 @@ function Requests() {
           </div>
         </div>
       </section>
+
+      <RestrictedActivityNotice />
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {requestActions.map((action) => (
