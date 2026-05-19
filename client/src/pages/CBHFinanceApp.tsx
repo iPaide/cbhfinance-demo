@@ -1800,7 +1800,7 @@ function UserPortal() {
                     type="button"
                     className="mt-6 rounded-full bg-[#071f46] px-6 py-3 font-semibold text-white hover:bg-[#0b2d63]"
                   >
-                    Request beneficiary update
+                    Start update request
                   </button>
                 </section>
 
@@ -1963,9 +1963,9 @@ function UserPortal() {
               <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
                   <div>
-                    <h3 className="font-serif text-2xl font-semibold">Beneficiaries</h3>
+                    <h3 className="font-serif text-2xl font-semibold">Beneficiary records</h3>
                     <p className="mt-2 text-sm text-slate-600">
-                      Beneficiary records are protected. Changes require verification and review.
+                      Primary and contingent beneficiary records are protected. Changes require verification and review.
                     </p>
                   </div>
                   <button
@@ -2067,9 +2067,9 @@ function UserPortal() {
                 </section>
 
                 <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                  <h3 className="font-serif text-xl font-semibold">Account review</h3>
+                  <h3 className="font-serif text-xl font-semibold">Annual review</h3>
                   <p className="mt-3 text-sm leading-6 text-slate-600">
-                    Review your profile, beneficiary records, and security settings regularly.
+                    Review beneficiary records, trusted contact guidance, delivery preferences, and account status regularly.
                   </p>
                   <button
                     type="button"
