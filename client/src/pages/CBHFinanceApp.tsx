@@ -1023,20 +1023,20 @@ function UserPortal() {
     },
     {
       icon: "INV",
-      label: "Change Investments",
+      label: "Review Investment Strategy",
       desc: "Review allocations and adjust future contribution elections.",
       target: "settings",
     },
     {
       icon: "BEN",
-      label: "Update Beneficiaries",
+      label: "Beneficiary and Legacy Review",
       desc: "Review beneficiary information for your retirement account.",
       target: "settings",
     },
     {
       icon: "PDF",
-      label: "View Statements",
-      desc: "Download monthly and annual account documents.",
+      label: "Open Document Vault",
+      desc: "Access statements, tax forms, confirmations, and private client records.",
       target: "statements",
     },
     {
@@ -1279,20 +1279,24 @@ function UserPortal() {
             <div className="grid gap-6">
               <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
                 <section className="overflow-hidden rounded-[2rem] bg-[#071f46] p-6 text-white shadow-xl sm:p-8">
+                  <div className="mb-6 inline-flex rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-black uppercase tracking-[0.28em] text-[#d6ad42]">
+                    Private client overview
+                  </div>
+
                   <div className="flex flex-wrap items-start justify-between gap-5">
                     <div>
-                      <p className="text-white/60">Total retirement savings</p>
+                      <p className="text-white/60">Total private retirement assets</p>
                       <div className="mt-3 text-4xl font-bold tracking-tight text-[#d6ad42] sm:text-5xl">
                         {dashboard.data ? money(totalRetirementSavings) : "Loading"}
                       </div>
                       <p className="mt-4 max-w-xl text-sm leading-6 text-white/70">
-                        Includes retirement savings, cash reserve, and investment account values
-                        available through CBHfinance.
+                        Includes private retirement accounts, IRA records, cash reserve balances,
+                        deposits, and investment profile values available through CBHfinance.
                       </p>
                     </div>
 
                     <div className="rounded-3xl border border-white/15 bg-white/5 p-5 text-sm">
-                      <div className="text-white/55">Projected status</div>
+                      <div className="text-white/55">Private client status</div>
                       <div className="mt-2 text-2xl font-semibold text-white">On track</div>
                       <div className="mt-4 h-2 w-48 rounded-full bg-white/10">
                         <div className="h-2 w-[72%] rounded-full bg-[#d6ad42]" />
@@ -1303,7 +1307,7 @@ function UserPortal() {
                   <div className="mt-8 grid gap-4 2xl:grid-cols-3">
                     <div className="min-w-0 overflow-hidden rounded-2xl bg-white/10 p-6">
                       <div className="text-xs uppercase tracking-widest text-white/45">
-                        Vested balance
+                        Vested retirement balance
                       </div>
                       <div className="mt-2 whitespace-nowrap text-[1.65rem] font-semibold leading-tight tracking-tight 2xl:text-3xl">
                         {money(estimatedVestedBalance)}
@@ -1311,7 +1315,7 @@ function UserPortal() {
                     </div>
                     <div className="min-w-0 overflow-hidden rounded-2xl bg-white/10 p-6">
                       <div className="text-xs uppercase tracking-widest text-white/45">
-                        YTD contributions
+                        YTD deposits and contributions
                       </div>
                       <div className="mt-2 whitespace-nowrap text-[1.65rem] font-semibold leading-tight tracking-tight 2xl:text-3xl">
                         {money(estimatedYtdContributions)}
@@ -1328,13 +1332,13 @@ function UserPortal() {
 
                 <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
                   <div className="flex items-center justify-between">
-                    <h2 className="font-serif text-2xl font-semibold">Allocation snapshot</h2>
+                    <h2 className="font-serif text-2xl font-semibold">Private allocation snapshot</h2>
                     <button
                       type="button"
                       onClick={() => setTab("settings")}
                       className="text-sm font-semibold text-[#003d8f] hover:underline"
                     >
-                      Review elections
+                      Review strategy
                     </button>
                   </div>
 
@@ -1364,13 +1368,13 @@ function UserPortal() {
 
               <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-4">
-                  <h2 className="font-serif text-2xl font-semibold">Retirement accounts</h2>
+                  <h2 className="font-serif text-2xl font-semibold">Private retirement accounts</h2>
                   <button
                     type="button"
                     onClick={() => setTab("transactions")}
                     className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-[#003d8f] hover:bg-slate-50"
                   >
-                    View activity
+                    View private activity
                   </button>
                 </div>
 
@@ -1398,7 +1402,7 @@ function UserPortal() {
                         onClick={() => setTab("transactions")}
                         className="mt-6 text-sm font-semibold text-[#003d8f] hover:underline"
                       >
-                        View account details →
+                        View account activity →
                       </button>
                     </div>
                   ))}
@@ -1406,7 +1410,7 @@ function UserPortal() {
               </section>
 
               <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 className="font-serif text-2xl font-semibold">What would you like to do?</h2>
+                <h2 className="font-serif text-2xl font-semibold">Private client actions</h2>
                 <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                   {quickActions.map((action) => (
                     <button
@@ -1431,7 +1435,7 @@ function UserPortal() {
               <div className="grid gap-6 xl:grid-cols-[1.55fr_0.85fr]">
                 <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
                   <div className="mb-4 flex items-center justify-between">
-                    <h2 className="font-serif text-2xl font-semibold">Recent retirement activity</h2>
+                    <h2 className="font-serif text-2xl font-semibold">Recent private client activity</h2>
                     <button
                       type="button"
                       onClick={() => setTab("transactions")}
@@ -1514,11 +1518,11 @@ function UserPortal() {
                 </section>
 
                 <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                  <h2 className="font-serif text-2xl font-semibold">Guidance and alerts</h2>
+                  <h2 className="font-serif text-2xl font-semibold">Private client guidance</h2>
                   <div className="mt-5 grid gap-3">
                     <div className="rounded-2xl bg-emerald-50 p-4 text-sm text-emerald-900">
                       <ShieldCheck className="mr-2 inline h-4 w-4" />
-                      Your secure email OTP protection is active.
+                      Secure email OTP protection is active for private client access.
                     </div>
                     <div className="rounded-2xl bg-blue-50 p-4 text-sm text-blue-900">
                       <Bell className="mr-2 inline h-4 w-4" />
@@ -1526,7 +1530,7 @@ function UserPortal() {
                     </div>
                     <div className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">
                       <AlertCircle className="mr-2 inline h-4 w-4" />
-                      Withdrawal and rollover requests require review before processing.
+                      Deposits, rollovers, withdrawals, and beneficiary requests may require review before processing.
                     </div>
                   </div>
                 </section>
@@ -1552,7 +1556,7 @@ function UserPortal() {
                   </div>
 
                   <div className="rounded-3xl border border-white/15 bg-white/5 p-5 text-sm">
-                    <div className="text-white/55">Total retirement savings</div>
+                    <div className="text-white/55">Total private retirement assets</div>
                     <div className="mt-2 text-2xl font-semibold text-[#d6ad42]">
                       {dashboard.data ? money(totalRetirementSavings) : "Loading"}
                     </div>
@@ -1629,7 +1633,7 @@ function UserPortal() {
 
                 {!(dashboard.data?.accounts ?? []).length && (
                   <div className="rounded-[2rem] border border-slate-200 bg-white p-8 text-sm text-slate-600 shadow-sm md:col-span-3">
-                    Retirement accounts are loading. Please refresh if this continues.
+                    Private retirement accounts are loading. Please refresh if this continues.
                   </div>
                 )}
               </section>
@@ -1665,7 +1669,7 @@ function UserPortal() {
 
               <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
                 <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                  <h3 className="font-serif text-2xl font-semibold">Allocation snapshot</h3>
+                  <h3 className="font-serif text-2xl font-semibold">Private allocation snapshot</h3>
 
                   <div className="mt-6 grid gap-5">
                     {[
@@ -1696,7 +1700,7 @@ function UserPortal() {
                   <div className="mt-6 grid gap-4 md:grid-cols-2">
                     <div className="rounded-2xl bg-[#f6f7fb] p-5">
                       <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                        Vested balance
+                        Vested retirement balance
                       </div>
                       <div className="mt-2 text-2xl font-bold tracking-tight text-[#071f46]">
                         {money(estimatedVestedBalance)}
@@ -1705,7 +1709,7 @@ function UserPortal() {
 
                     <div className="rounded-2xl bg-[#f6f7fb] p-5">
                       <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                        YTD contributions
+                        YTD deposits and contributions
                       </div>
                       <div className="mt-2 text-2xl font-bold tracking-tight text-[#071f46]">
                         {money(estimatedYtdContributions)}
