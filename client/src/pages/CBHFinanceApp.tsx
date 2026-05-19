@@ -986,11 +986,20 @@ function UserPortal() {
 
           <aside className="relative flex h-full w-[82vw] max-w-sm flex-col bg-[#071f46] p-6 text-white shadow-2xl">
             <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
-              <div className="font-serif text-3xl font-bold leading-none text-white">
-                CBHfinance
-              </div>
-              <div className="mt-2 text-[10px] uppercase tracking-[0.35em] text-[#d6ad42]">
-                Retirement Portal
+              <div className="flex items-center gap-4">
+                <img
+                  src="/icons/icon-192.png"
+                  alt="CBHfinance"
+                  className="h-16 w-16 rounded-2xl shadow-lg shadow-black/20"
+                />
+                <div>
+                  <div className="font-serif text-3xl font-bold leading-none text-white">
+                    CBHfinance
+                  </div>
+                  <div className="mt-2 text-[10px] uppercase tracking-[0.35em] text-[#d6ad42]">
+                    Retirement Portal
+                  </div>
+                </div>
               </div>
             </div>
 
