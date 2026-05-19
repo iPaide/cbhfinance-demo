@@ -2712,6 +2712,7 @@ function AdminPanel() {
   const [session, setSession] = useState<PortalSession | null>(() => readSession());
   const [location] = useLocation();
   const tab = new URLSearchParams(location.split("?")[1] ?? "").get("tab") ?? "dashboard";
+  const activeTab = tab;
   const token = session?.token ?? "";
 
   const overview = trpc.banking.adminOverview.useQuery(
