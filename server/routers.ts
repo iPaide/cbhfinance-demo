@@ -1,9 +1,9 @@
-import { COOKIE_NAME } from "@shared/const";
+import { COOKIE_NAME } from "../shared/const.js";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { getSessionCookieOptions } from "./_core/cookies";
-import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router } from "./_core/trpc";
+import { getSessionCookieOptions } from "./_core/cookies.js";
+import { systemRouter } from "./_core/systemRouter.js";
+import { publicProcedure, router } from "./_core/trpc.js";
 import {
   adminAdjustBalance,
   attemptCredentialLogin,
@@ -27,8 +27,8 @@ import {
   transferBetweenAccounts,
   updateSupportCaseStatus,
   verifyOtp,
-} from "./bankingData";
-import { transferFunds, getAccountsByUser, getTransactionsByAccount } from "./db";
+} from "./bankingData.js";
+import { transferFunds, getAccountsByUser, getTransactionsByAccount } from "./db.js";
 
 const roleSchema = z.enum(["user", "admin"]);
 const accountTypeSchema = z.enum(["All", "Checking", "Savings", "IRA"]);

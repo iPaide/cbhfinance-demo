@@ -1,13 +1,13 @@
 import crypto from "crypto";
 import { eq, desc } from "drizzle-orm";
 
-import { getDb } from "./db";
+import { getDb } from "./db.js";
 
 import {
   cbhAccounts,
   cbhTransactions,
   cbhCustomers,
-} from "../drizzle/schema";
+} from "../drizzle/schema.js";
 
 // ===============================
 // HELPERS

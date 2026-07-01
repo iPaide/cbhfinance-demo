@@ -17,7 +17,7 @@ import {
   getTransactions,
   resetPortalStateForTests,
   updateSupportCaseStatus,
-} from "./bankingData";
+} from "./bankingData.js";
 
 describe("CBHfinance retirement account data", () => {
   beforeEach(() => resetPortalStateForTests());
