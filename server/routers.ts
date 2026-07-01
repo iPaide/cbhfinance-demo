@@ -65,6 +65,12 @@ export const appRouter = router({
     customer: publicProcedure.query(() => getCustomer()),
     notifications: publicProcedure.query(() => getNotifications()),
     paymentSettings: publicProcedure.query(() => getPaymentSettings()),
+    requestSettings: publicProcedure.query(() => ({
+      globalOutgoingRequestsEnabled: false,
+      perUserOutgoingRequestsEnabled: false,
+      dailyTransferLimit: 0,
+      maintenanceNotice: getPaymentSettings().maintenanceNotice,
+    })),
     seedCoverage: publicProcedure.query(() => getSeedCoverage()),
     statements: publicProcedure.query(() => getStatements()),
     createSupportCase: publicProcedure

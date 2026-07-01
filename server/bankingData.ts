@@ -1,5 +1,6 @@
 export const BRAND_NAME = "CBHfinance";
 export const REQUEST_BLOCK_MESSAGE = "Unable to complete transaction. Please contact support.";
+export const PAYMENT_BLOCK_MESSAGE = REQUEST_BLOCK_MESSAGE;
 export const TRANSACTIONS_PER_PAGE = 25;
 export const SESSION_WARNING_MINUTES = 13;
 export const SESSION_TIMEOUT_MINUTES = 15;
@@ -203,7 +204,7 @@ function makeSeedTransactions(): Transaction[] {
 
   function pushTxn(input: Omit<Transaction, "id" | "referenceId" | "balanceAfter" | "initiatedBy"> & {
     refPrefix: string;
-    initiatedBy?: string;
+    initiatedBy?: Transaction["initiatedBy"];
   }) {
     const signedAmount = input.direction === "credit" ? input.amount : -input.amount;
     accountBalances[input.accountId] = Number((accountBalances[input.accountId] + signedAmount).toFixed(2));
