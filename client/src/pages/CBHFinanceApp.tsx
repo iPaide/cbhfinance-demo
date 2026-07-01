@@ -38,6 +38,22 @@ function writeSession(session: PortalSession | null) {
   else localStorage.setItem(SESSION_KEY, JSON.stringify(session));
 }
 
+function AnimatedTabPanel({
+  tabKey,
+  className = "",
+  children,
+}: {
+  tabKey: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div key={tabKey} className={`tab-transition ${className}`}>
+      {children}
+    </div>
+  );
+}
+
 function BrandMark({ compact = false }: { compact?: boolean }) {
   return (
     <Link href="/" className="flex items-center gap-3">
@@ -1274,7 +1290,7 @@ function UserPortal() {
           </div>
         </header>
 
-        <div className="p-5 lg:p-10">
+        <AnimatedTabPanel tabKey={`portal-${tab}`} className="p-5 lg:p-10">
           {tab === "dashboard" && (
             <div className="grid gap-6">
               <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
@@ -2169,7 +2185,7 @@ function UserPortal() {
 
             </div>
           )}
-        </div>
+        </AnimatedTabPanel>
       </main>
     </div>
   );
@@ -3647,6 +3663,7 @@ function AdminPanel() {
 
   return (
     <PortalLayout title="Retirement Operations Console" role="admin">
+      <AnimatedTabPanel tabKey={`admin-${tab}`}>
       {["dashboard", "accounts", "investments"].includes(tab) && (
         <div className="grid gap-6">
           <section className="rounded-[2rem] bg-[#071f46] p-8 text-white shadow-xl">
@@ -4003,6 +4020,7 @@ function AdminPanel() {
           </div>
         </Panel>
       )}
+      </AnimatedTabPanel>
     </PortalLayout>
   );
 }
